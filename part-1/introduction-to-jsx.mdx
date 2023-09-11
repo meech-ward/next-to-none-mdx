@@ -1,0 +1,190 @@
+---
+type: article
+title: "Introduction to JSX"
+slug: introduction-to-jsx
+
+description: "Introduction to JSX"
+image:
+  name: "next-js-intro.png"
+  width: 1024
+  height: 1024
+
+status: "published"
+date: "2023-09-08T18:21:08.346Z"
+tags: ["React", "typescript", "Next.js", "javascript", "jsx", "tsx"]
+---
+
+# Introduction to JSX and Components
+
+<YouTube videoId="PbkwqVZsUgs" startTime={230} />
+
+This video starts by setting up a react app using Vite. Ignore this part and just start watching from the JSX chapter. There's also a section on CSS that you can ignore.
+
+The JSX section starts with an App.jsx file that looks like this:
+
+```js
+function App() {
+  return (
+    <h1>Hello</h1>
+  )
+}
+
+export default App
+```
+
+This is similar to a page in Next.js, so follow along with my examples but use the `page.tsx` component. 
+
+## JSX and TSX
+
+### The rules 
+
+
+```some-component.jsx
+return (
+  <div>
+    <h1 className="header">Hello</h1>
+    <h2>World</h2>
+    <img className="image" src="https://picsum.photos/200" alt="random"></img>
+  </div>
+)
+```
+
+* Return a single root element, div or empty tag `<>`
+* All tags must close, so you can `<img></img>` or self close tags like `<img />`
+* This is js, not html, so any reserved word in JavaScript has a different name here like `className` instead of `class`
+
+
+## JavaScript in JSX
+
+So like I said, this is js, so you can inject js into jsx. 
+
+<ExampleBlock>
+  <ExampleBlock.Action>
+    **Not rendered as JS:**
+  </ExampleBlock.Action>
+  <ExampleBlock.Implementation>
+    ```js 
+    <p>6 + 9</p>
+    ```
+  </ExampleBlock.Implementation>
+</ExampleBlock>
+
+
+<ExampleBlock>
+  <ExampleBlock.Action>
+    **Rendered as JS:**
+  </ExampleBlock.Action>
+  <ExampleBlock.Implementation>
+    ```js
+    <p>{6 + 9}</p>
+    ```
+  </ExampleBlock.Implementation>
+</ExampleBlock>
+
+
+<InstructionBlock>
+  <InstructionBlock.Action>
+    Try adding more JS things to your markup:
+  </InstructionBlock.Action>
+  <InstructionBlock.Implementation>
+
+  ```js
+  return (
+      <div className="App">
+        <h1 className="heading">Hello</h1>
+        <h2>World</h2>
+        <h3>{new Date().toString()}</h3>
+      </div>
+  )
+  ```
+  </InstructionBlock.Implementation>
+</InstructionBlock>
+
+
+A component couples the UI logic and markup together in the same file. So instead of separating your js and html into separate files, it all goes in the same file and we split the app into separate components instead. 
+
+**Rendering logic and markup live together in the same place—components.**
+
+
+## More components and Child components
+
+
+<InstructionBlock>
+  <InstructionBlock.Action>
+    If we want to create another component, we can just create a new function with an uppercase character that returns markup:
+  </InstructionBlock.Action>
+  <InstructionBlock.Implementation>
+    ```jsx
+    function SomeNewComponent() {
+      return (
+        <h1>Some Markup</h1>
+      )
+    }
+    ```
+  </InstructionBlock.Implementation>
+</InstructionBlock>
+
+### Component Files
+
+It's common to put each component in their own file, even if they're very small like this one.
+
+<InstructionBlock>
+  <InstructionBlock.Action>
+    Create a new file with the kebab-named version of your component's name and put it in there:
+  </InstructionBlock.Action>
+  <InstructionBlock.Implementation>
+    ```
+    some-new-component.jsx
+    ```
+  </InstructionBlock.Implementation>
+</InstructionBlock>
+
+<InstructionBlock>
+  <InstructionBlock.Action>
+    `export` using esmodules synax:
+  </InstructionBlock.Action>
+  <InstructionBlock.Implementation>
+    ```some-new-component.tsx
+      export default function SomeNewComponent() {
+        return (
+          <h1>Some Markup</h1>
+        )
+      }
+      ```
+  </InstructionBlock.Implementation>
+</InstructionBlock>
+
+
+<InstructionBlock>
+  <InstructionBlock.Action>
+    `import` using esmodules synax:
+  </InstructionBlock.Action>
+  <InstructionBlock.Implementation>
+    ```page.tsx
+    import SomeNewComponent from './some-new-component'
+    ```
+  </InstructionBlock.Implementation>
+</InstructionBlock>
+
+
+
+
+<InstructionBlock>
+  <InstructionBlock.Action>
+    Then include it in the markup:
+  </InstructionBlock.Action>
+  <InstructionBlock.Implementation>
+    ```page.tsx
+    function Page() {
+      return (
+        <div className="App">
+          <h1 className="heading">Hello</h1>
+          <h2>World</h2>
+          <h3>{new Date().toString()}</h3>
+          <SomeNewComponent />
+        </div>
+      )
+    }
+        ```
+  </InstructionBlock.Implementation>
+</InstructionBlock>

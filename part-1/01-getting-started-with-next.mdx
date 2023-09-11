@@ -1,0 +1,597 @@
+---
+type: article
+title: "Getting Started with Next.js"
+slug: next-js-getting-started
+
+description: "To learn how to use Next.js, let's create a clone of x.com."
+image:
+  name: "next-js-intro.png"
+  width: 1024
+  height: 1024
+
+status: "published"
+date: "2023-09-08T18:21:08.346Z"
+tags: ["React", "typescript", "Next.js", "javascript", "jsx", "tsx"]
+nextPostSlug: "naming-tsx"
+---
+
+# Getting Started with Next.js
+
+This is the first tutorial in a set of tutorials on building a full stack web app with Next.js. To learn how to use Next.js, let's create a clone of [x.com](https://x.com). We won't include all the features, it will be a simplified version, a mock version, but it will have all the *important* features and a similar look and feel. Let's call this clone **threads**.
+
+In this tutorial, we will:
+
+* Setup a new project from scratch
+* Create different pages and routes
+* Navigate between those pages
+
+Basically, we're going to learn how to use Next.js to serve HTML pages to the browser. This might sound basic, because it is, but Next is a very powerful framework that does some very sophisticated and impressive things. Let's start with the basics and work our way up from there. 
+
+Here's what we will build in this tutorial:
+
+- Threads: [https://threads-1xzzkryfs-sa-m.vercel.app/](https://threads-1xzzkryfs-sa-m.vercel.app/)
+- Source Code: [https://github.com/Sam-Meech-Ward/threads/tree/01_initial_UI](https://github.com/Sam-Meech-Ward/threads/tree/01_initial_UI)
+
+Avoid looking at the source code until the you've completed the tutorial for yourself. It exists as a reference for you to look at if you get stuck or want to compare your code to mine, but you need to try to build it yourself first.
+
+## Setup
+
+<InstructionBlock>
+  <InstructionBlock.Action step={1}>
+  Create a new Next.js project using
+  [`create-next-app`](https://nextjs.org/docs/pages/api-reference/create-next-app)
+  </InstructionBlock.Action>
+  <InstructionBlock.Implementation>
+
+    {/* prettier-ignore */}
+    <Tabs>
+      <Tab name="npx">
+        ```sh
+        npx create-next-app@latest
+        ```
+      </Tab>
+      <Tab name="yarn">
+        ```sh
+        yarn create next-app
+        ```
+      </Tab>
+      <Tab name="pnpm">
+        ```sh
+        pnpm create next-app
+        ```
+      </Tab>
+      <Tab name="bunx">
+        ```sh
+        bunx create-next-app
+        ```
+      </Tab>
+    </Tabs>
+
+  </InstructionBlock.Implementation>
+</InstructionBlock>
+
+
+<InstructionBlock>
+  <InstructionBlock.Action step={2}>
+  When prompted, answer the prompts like this:
+  </InstructionBlock.Action>
+  <InstructionBlock.Implementation>
+  ```
+  What is your project named?  threads
+  Would you like to use TypeScript? Yes
+  Would you like to use ESLint? Yes
+  Would you like to use Tailwind CSS? Yes
+  Would you like to use `src/` directory? Yes
+  Would you like to use App Router? (recommended) Yes
+  Would you like to customize the default import alias?  No
+  ```
+  </InstructionBlock.Implementation>
+</InstructionBlock>
+
+- The project name doesn't matter, you can really use whatever you like here.
+- **Yes** to TypeScript, get used to it. It doesn't matter what your (or my) oppinions are anymore, TS is taking over in web dev and to **not** use it in a project like this is to go against the grain.
+- **Yes** to [`ESLint`](https://eslint.org/) because it's nice to have a tool tell you that you're coding wrong. https://www.youtube.com/watch?v=sSJBeWPIipQ&t=0s&ab_channel=JSWORLDConference
+- [Tailwind is popular and seems to make developers happy](https://2023.stateofcss.com/en-US/css-frameworks/), so select Yes. You can select no to tailwind and use plain old css, sass, css modules, or whatever you like for CSS. Just be careful about [CSS-in-js](https://nextjs.org/docs/app/building-your-application/styling/css-in-js) which are **not** supported in Server Components.
+- **Yes** to `src/`, it makes organizing code easier which becomes more helpful when your project grows.
+- **Yes to App Router**. This is the most important thing to say yes to. If you selected no here, give up and start again.
+- **No** to customizing the default alias, the default is good. This let's you import files from `src/` using `@/` instead of having any of those `../../` go up a parent directory or serveral nonsense.
+
+<InstructionBlock>
+  <InstructionBlock.Action step={3}>
+  From inside the project's directory, run the development server.
+  </InstructionBlock.Action>
+  <InstructionBlock.Implementation>
+
+    {/* prettier-ignore */}
+    <Tabs>
+      <Tab name="npm">
+        ```sh
+        npm run dev
+        ```
+      </Tab>
+      <Tab name="yarn">
+        ```sh
+        yarn dev
+        ```
+      </Tab>
+      <Tab name="pnpm">
+        ```sh
+        pnpm dev
+        ```
+      </Tab>
+      <Tab name="bun">
+        ```sh
+        bun run dev
+        ```
+      </Tab>
+    </Tabs>
+  </InstructionBlock.Implementation>
+</InstructionBlock>
+
+<InstructionBlock>
+  <InstructionBlock.Action step={4}>
+  Open [http://localhost:3000](http://localhost:3000) in your web browser.
+  </InstructionBlock.Action>
+  <InstructionBlock.Implementation>
+  </InstructionBlock.Implementation>
+</InstructionBlock>
+
+Congrats, you're now staring at the Next.js marketing page. Let's dig into the source code and update this page.
+
+The code for this home page is in `/src/app/page.tsx`.
+
+<InstructionBlock>
+  <InstructionBlock.Action step={5}>
+  Replace the contents of `/src/app/page.tsx` with the following:
+  </InstructionBlock.Action>
+  <InstructionBlock.Implementation>
+
+    ```src/app/page.tsx
+    export default function Home() {
+      return (
+        <main className="text-center mt-10">
+          <h1>Threads</h1>
+          <p>Threads is a clone of x.com</p>
+        </main>
+      )
+    }
+    ```
+    
+  </InstructionBlock.Implementation>
+</InstructionBlock>
+
+Go back to the browser and you'll see the updated content. No need to re run the next server or refresh the browser page because Next.js's dev server uses [fast refresh](https://nextjs.org/docs/architecture/fast-refresh#how-it-works). Just save a file and see the updates immediately. Feel free to play around with the JSX syntax a bit.
+
+<Note>
+  We're using [.tsx](https://www.typescriptlang.org/docs/handbook/jsx.html)
+  extension so that we can write
+  [JSX](https://react.dev/learn/writing-markup-with-jsx) inside our TypeScript
+  files. I'll talk more about JSX later on, but for now, just know that it's a
+  way to write HTML-like markup inside of a JavaScript or TypeScript file.
+</Note>
+
+## App Router
+
+<Note>
+  You will hear people talk about the [**App
+  Router**](https://nextjs.org/docs/app/building-your-application/routing#the-app-router)
+  and compare it to the [**Pages
+  Router**](https://nextjs.org/docs/pages/building-your-application/routing)
+  because the App Router is new and supports [React Server
+  Components](https://nextjs.org/docs/app/building-your-application/rendering/server-components).
+  You might end up down a rabbit hold of maybe-interesting information that
+  really doesn't matter right now (in the beginning). Here's all you need to
+  know:
+</Note>
+
+All of the application source code is inside of the `/src` directory. Everything else is configuration, tooling, or static assets that we can ignore right now.
+
+Inside of `/src` there is an `app` directory where we can setup all the **routes** for our app. This paradigm is called [**App Router**](https://nextjs.org/docs/app) and here are the rules:
+
+- **Folders** inside of `app` are used to define routes.
+- **Files** are used to create UI.
+
+### Home Route `localhost:3000/`
+
+Right now, there are no folders inside of `app`, so we're in the root route which maps to the url:
+
+```
+localhost:3000/
+```
+
+In the web browser, we see the home page, the content of `src/app/page.tsx`.
+
+### Create Post Route `localhost:3000/create-post`
+
+Let's create a new route for a "create post" page.
+
+<Instruction>
+  Create a new folder inside of `app` called `create-post`.
+</Instruction>
+
+We have now defined a new route that maps to the url:
+
+```
+localhost:3000/create-post
+```
+
+But visiting that url gives us a 404 error. That's because there's no file inside of `create-post` to generate the UI.
+
+<Instruction>
+  Create a new file inside of `create-post` called `page.tsx` and add the
+  following content:
+</Instruction>
+
+```create-post/page.tsx
+export default function CreatePost() {
+  return (
+    <main className="text-center mt-10">
+      <h1>Create Post</h1>
+      <p>TODO: create post form</p>
+    </main>
+  )
+}
+```
+
+Visit `localhost:3000/create-post` and you'll see the new page.
+
+### Dynamic Routes
+
+When we eventually create a new post, we'll display a list of posts on the home page. Clicking on a post will take you to a url like `localhost:3000/post/123` where `123` is the id of the post. This is called a dynamic route because the url is dynamic, it changes based on the post id.
+
+<Instruction>
+  Setup the dynamic route for a post at `/app/post/[id]/page.tsx`
+</Instruction>
+
+<Instruction>Create a new folder inside of `app` called `post`.</Instruction>
+
+Now we have a route that maps to `localhost:3000/post`
+
+<Instruction>Create a new folder inside of `post` called `[id]`.</Instruction>
+
+Now we have a route that maps to `localhost:3000/post/any-value`
+
+Logically, the route will be `post/id` but id needs to be dynamic, not the literal value `id`. By wrapping the folder name `id` in square brackets `[id]`, we've created a dynamic route, where any value can be used in place of `id`.
+
+<Instruction>
+  Create a new file inside of `[id]` called `page.tsx` with the following
+  content:
+</Instruction>
+
+```tsx
+export default function Post({ params }: { params: { id: string } }) {
+  return (
+    <main className="text-center mt-10">
+      <h1>Post {params.id}</h1>
+      <p>TODO: display post</p>
+    </main>
+  );
+}
+```
+
+This page is slightly different because the function takes a `params` object as an argument. This object contains the dynamic route parameters. In this case, the `id` of the post.
+
+It is important to note that the name of the directory, without the square brackets will be the name of the param in the `params` object. So if we had a folder called `[pancakes]`, the `params` object would have look like `{ params: { pancakes: string } }`.
+
+Visit `localhost:3000/post/any-value` in your browser and change the value of `any-value` to something else. You'll see the page update with the new value.
+
+### page.tsx
+
+As you might have guessed, `page.tsx` is kind of a special file that's used to render the UI for a specific route.
+
+The name of the folder maps to the url in the browser, but the file name, `page.tsx`, does not. Next knows to look for a file called `page` inside of the folder and use that to generate the UI.
+
+Next has some [special file conventions](https://nextjs.org/docs/app/building-your-application/routing#file-conventions) that we use to render UI. There's `layout`, `page`, `loading`, `not-found`, `error	`, `global-error`, `route`, `template`, and `default`. You don't need to learn all of those right now, learn them as you need them.
+
+### not-found.tsx
+
+Visit a route that doesn't exist, something like [`localhost:3000/search`](http://localhost:3000/search). You'll see a very generic Next.js 404 page. It's really nice that Next gives us a 404 html page and doesn't fail or error out in a different way, however, we might want our own 404 page that we can customize and style.
+
+<Instruction>
+  Create a new file inside of `app` called `not-found.tsx` and add the following
+  content:
+</Instruction>
+
+```tsx
+export default function NotFound() {
+  return (
+    <main className="text-center mt-10">
+      <h1>404</h1>
+      <p>A custom not found page</p>
+    </main>
+  );
+}
+```
+
+Now visiting a URL that doesn't exist will show our custom not-found page.
+
+We can add a not-found page to any route. For example, we could add a `not-found.tsx` file to the `/post/[id]` route if we wanted a custom 404 page when someone is trying to find a specific post that doesn't exist. Only adding a not-found file to the root will give us a custom 404 page for all routes which is good enough for now.
+
+### Root Layout
+
+The app directory came already setup with a file called `app.tsx` and a file called `layout.tsx`. Let's take a look at the layout file.
+
+```tsx
+import "./globals.css"; // styles for tailwind
+import type { Metadata } from "next"; // meta data
+import { Inter } from "next/font/google"; // font
+
+// import the inter font
+const inter = Inter({ subsets: ["latin"] });
+
+// specify some meta data
+export const metadata: Metadata = {
+  title: "Create Next App",
+  description: "Generated by create next app",
+};
+
+// define the layout
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  return (
+    <html lang="en">
+      <body className={inter.className}>{children}</body>
+    </html>
+  );
+}
+```
+
+The main thing we're going to focus on right now is the `RootLayout` function at the bottom. This file also contains the default [tailwind styles](https://nextjs.org/docs/app/building-your-application/styling/tailwind-css), an imported [font](https://nextjs.org/docs/pages/building-your-application/optimizing/fonts), and some [meta data] (https://nextjs.org/docs/app/building-your-application/optimizing/metadata). We'll address these things later on, for now just look at the `RootLayout`.
+
+This is the [`Root Layout`](https://nextjs.org/docs/app/building-your-application/routing/pages-and-layouts#root-layout-required) and it is a required file and function in the **root** of your Next app. This layout defines UI that is shared between all of the pages, so it must define the `<html>` and `<body>` tags. It's also responsible for rendering the pages using the `children` prop.
+
+At a bare minimum, the function would look like this:
+
+```tsx
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode
+}) {
+  return (
+    <html>
+      <body>
+        {children}
+      </body>
+    <html>
+  )
+}
+```
+
+We don't add a `<head>` tag because next manages that for us with the use of `Metadata`, but we are responsible for adding in the html and body tags. `{children}` will be the current page that is being rendered, and is currently the only thing that changes when we visit a different page.
+
+<Instruction>
+  Update the `RootLayout` to include a *placeholder* for a nav bar:
+</Instruction>
+
+{/* prettier-ignore */}
+```tsx
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode
+}) {
+  return (
+    <html lang="en">
+      <body className={inter.className}>
+
+        <nav className="text-lg text-center">
+          This is going to be the site navigation
+        </nav>
+
+        {children}
+      </body>
+    </html>
+  )
+}
+```
+
+Now try navigating between the different pages [home](http://localhost:3000/), [/create-post](http://localhost:3000/create-post), [/post/123](http://localhost:3000/post/123). Notice how the layout code is always the same, but the page changes.
+
+### layout.tsx
+
+Just like with the `not-found.tsx` file, you can also include a `layout.tsx` file in any of the child directories. For example, we could add a `layout.tsx` file to the `/post` or `/create-post` folder if we wanted to have a **nested** layout for those child routes. Nested route We don't need to do that right now, but it's good to know that we can.
+
+## Components (NavBar)
+
+We've only looked at the special files that Next uses to render UI, but we can also create our own components and use them in our pages.
+
+<Instruction>
+  Create a new file `/src/app/nav-bar.tsx` with the following content:
+</Instruction>
+
+```tsx
+export default function NavBar() {
+  return (
+    <nav className="text-lg text-center">
+      This is going to be the site navigation
+    </nav>
+  );
+}
+```
+
+<Instruction>
+  Update the `RootLayout` to use the new `NavBar` component:
+</Instruction>
+
+{/* prettier-ignore */}
+```tsx
+import NavBar from "./nav-bar"
+
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode
+}) {
+  return (
+    <html lang="en">
+      <body className={inter.className}>
+
+        <NavBar />
+
+        {children}
+      </body>
+    </html>
+  )
+}
+```
+
+The UI of the site has not changed, we've just refactored the nav bar code into it's own file. As our code grows, refactoring code into smaller components will help us keep our code organized and easier to maintain.
+
+As long as the name of the file, `nav-bar.tsx` in this case, doesn't conflict with the name of a [special file](https://nextjs.org/docs/app/building-your-application/routing#file-conventions), `page.tsx` for example, then it won't effect our routes. We can create as many components as we like and import them into the pages, layouts, or other special files so they can be rendered as part of the UI.
+
+### Link
+
+<Instruction>
+  Update the `NavBar` component to include links to the home and create post
+  pages:
+</Instruction>
+
+```tsx
+import Link from "next/link";
+
+export default function NavBar() {
+  return (
+    <nav className="w-full">
+      <ul className="flex justify-between items-center max-w-lg m-auto">
+        <li>
+          <Link href="/">Home</Link>
+        </li>
+        <li>
+          <Link href="/create-post">Create Post</Link>
+        </li>
+      </ul>
+    </nav>
+  );
+}
+```
+
+Now we are able to more easily navigate between the pages. Notice that we're using `Link` instead of `a` tags. This is because Next has a special `Link` component that we can use that enables Next to do some optimizations like [prefetch](https://nextjs.org/docs/app/building-your-application/routing/linking-and-navigating#1-prefetching) and client-side navigation between routes.
+
+## Fake Database
+
+Let's setup a fake database so that we can start to build out the UI for the home page and the individual post pages.
+
+<Instruction>
+  Create a new file `/src/fakeDatabase.ts` with the following content:
+</Instruction>
+
+```ts
+export type User = {
+  id: number;
+  username: string;
+  firstName: string;
+  lastName: string;
+  avatar: string;
+  followers: number;
+};
+
+export type Media = {
+  id: number;
+  type: "image" | "video";
+  url: string;
+  width: number;
+  height: number;
+};
+
+export type Post = {
+  id: number;
+  user: User;
+  date: string;
+  content: string;
+  likes: number;
+  replies: number;
+  replyId?: number;
+  media?: Media;
+};
+
+const users: User[] = [
+  {
+    id: 1,
+    username: "sam",
+    avatar:
+      "https://images.clerk.dev/uploaded/img_2UwOmQYFLO3AhjoORmTygZ7OM8Y.png",
+    firstName: "saM",
+    lastName: "saM",
+    followers: 100,
+  },
+];
+
+const posts: Post[] = [
+  {
+    id: 1,
+    user: users[1],
+    date: "2024-01-01T12:00:00.000Z",
+    content:
+      "Just some content to get us started. This is a post with some content. It's not very interesting, but it's a post.",
+    likes: 10,
+    replies: 0,
+  },
+  {
+    id: 1,
+    user: users[1],
+    date: "2024-01-01T12:00:00.000Z",
+    content: "This one is slightly more interesting. It has an image.",
+    likes: 10,
+    replies: 0,
+    media: {
+      id: 1,
+      type: "image",
+      url: "https://picsum.photos/seed/picsum/200/300",
+      width: 200,
+      height: 300,
+    },
+  },
+];
+
+export function getPosts(): Post[] {
+  return posts.filter((post) => !post.replyId);
+}
+
+export function getPost(id: number): Post | undefined {
+  return posts.find((post) => post.id === id);
+}
+
+export function getPostResponses(id: number): Post[] {
+  return posts.filter((post) => post.replyId === id);
+}
+
+export function getUser(username: string): User | undefined {
+  return users.find((user) => user.username === username);
+}
+
+export function getPostsForUser(username: string): Post[] {
+  return posts.filter((post) => post.user.username === username);
+}
+```
+
+---
+
+## CSS
+
+We already know our project is setup to use Tailwind. Style your project to match the look and feel of x.com or threads.net or https://threads-1xzzkryfs-sa-m.vercel.app
+
+Use a mixture of AI and the https://tailwindcss.com/docs to figure out how to style your project.
+
+{/*
+
+## Fonts
+
+This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+
+## Link
+
+## Image
+
+## More Files
+
+## Fake DB
+
+```
+
+```
+
+*/}
