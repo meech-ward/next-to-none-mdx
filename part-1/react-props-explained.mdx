@@ -1,0 +1,87 @@
+---
+type: article
+title: "React Props Explained"
+slug: react-props-explained
+
+description: "Everything you need to know about props in React"
+image:
+  name: "next-js-intro.png"
+  width: 1024
+  height: 1024
+
+status: "published"
+date: "2023-09-08T18:21:08.346Z"
+tags: ["React", "typescript", "Next.js", "javascript", "jsx", "tsx"]
+---
+
+# React Props Explained
+
+<YouTube videoId="hpZmKR9FmQw" />
+
+## Destructing Props
+
+All properties that are passed into a component are passed in as a single object. 
+
+Remember that the following three examples are equivalent:
+
+```jsx
+export default function Joke({ rating = 0, joke }) {
+```
+
+```jsx
+export default function Joke(props) {
+  let { rating = 0, joke } = props
+```
+
+
+```jsx
+export default function Joke(props) {
+  let rating = props.rating || 0
+  let joke = props.joke
+```
+
+
+## Code
+
+
+```jsx
+export default function Joke({ rating = 0, joke }) {
+   
+  let stars = ""
+  for (let i = 0; i < 5; i++) {
+    if (i < rating) {
+      stars += "⭐"
+    } else {
+      stars += "☆"
+    }
+  }
+
+  return (
+    <div>
+      <p>{joke}</p>
+      <p>{stars}</p>
+    </div>
+  )
+}
+```
+
+**App.jsx**
+
+```jsx
+import './App.css'
+import Joke from './Joke'
+
+function App() {
+  
+  return (
+    <div className="">
+      <h1>Dad Jokes</h1>
+
+      <Joke joke={"I used to be a banker, but then I lost interest!"} rating={3} />
+
+    </div>
+  )
+}
+
+export default App
+```
