@@ -17,6 +17,7 @@ nextPostSlug: "naming-tsx"
 
 # Getting Started with Next.js
 
+
 This is the first tutorial in a set of tutorials on building a full stack web app with Next.js. To learn how to use Next.js, let's create a clone of [x.com](https://x.com). We won't include all the features, it will be a simplified version, a mock version, but it will have all the *important* features and a similar look and feel. Let's call this clone **threads**.
 
 In this tutorial, we will:
@@ -27,7 +28,7 @@ In this tutorial, we will:
 
 Basically, we're going to learn how to use Next.js to serve HTML pages to the browser. This might sound basic, because it is, but Next is a very powerful framework that does some very sophisticated and impressive things. Let's start with the basics and work our way up from there. 
 
-Here's what we will build in this tutorial:
+Here's an example of what we will build in this tutorial:
 
 - Threads: [https://threads-1xzzkryfs-sa-m.vercel.app/](https://threads-1xzzkryfs-sa-m.vercel.app/)
 - Source Code: [https://github.com/Sam-Meech-Ward/threads/tree/01_initial_UI](https://github.com/Sam-Meech-Ward/threads/tree/01_initial_UI)
@@ -138,7 +139,7 @@ Avoid looking at the source code until the you've completed the tutorial for you
 
 Congrats, you're now staring at the Next.js marketing page. Let's dig into the source code and update this page.
 
-The code for this home page is in `/src/app/page.tsx`.
+The code for this home page is in `/src/app/page.tsx` which contains a lot of code we just don't care about right now. 
 
 <InstructionBlock>
   <InstructionBlock.Action step={5}>
@@ -162,13 +163,9 @@ The code for this home page is in `/src/app/page.tsx`.
 
 Go back to the browser and you'll see the updated content. No need to re run the next server or refresh the browser page because Next.js's dev server uses [fast refresh](https://nextjs.org/docs/architecture/fast-refresh#how-it-works). Just save a file and see the updates immediately. Feel free to play around with the JSX syntax a bit.
 
-<Note>
-  We're using [.tsx](https://www.typescriptlang.org/docs/handbook/jsx.html)
-  extension so that we can write
-  [JSX](https://react.dev/learn/writing-markup-with-jsx) inside our TypeScript
-  files. I'll talk more about JSX later on, but for now, just know that it's a
-  way to write HTML-like markup inside of a JavaScript or TypeScript file.
-</Note>
+## TSX
+
+We're using [`.tsx`](https://www.typescriptlang.org/docs/handbook/jsx.html) extension so that we can write [`JSX`](https://react.dev/learn/writing-markup-with-jsx) inside our TypeScript files. You will learn more about `JSX` in the [Introduction to JSX](/introduction-to-jsx) section. For now, just know that it's a way to write HTML-like markup inside of a JavaScript or TypeScript file.
 
 ## App Router
 
@@ -184,96 +181,214 @@ Go back to the browser and you'll see the updated content. No need to re run the
   know:
 </Note>
 
+
+<ExampleBlock>
+  <ExampleBlock.Action>
 All of the application source code is inside of the `/src` directory. Everything else is configuration, tooling, or static assets that we can ignore right now.
+  </ExampleBlock.Action>
+  <ExampleBlock.Implementation>
+    ```
+    - 📁 public
+    - 📁 src
+      - 📁 app
+        - 🔵 page.tsx
+        - 🔵 layout.tsx
+        - 🎨 globals.css
+    - ⚪️ next.config.js
+    - ⚪️ tailwind.config.ts
+    - ⚪️ tsconfig.json
+    ...
+    ```
+    </ExampleBlock.Implementation>
+</ExampleBlock>
+
 
 Inside of `/src` there is an `app` directory where we can setup all the **routes** for our app. This paradigm is called [**App Router**](https://nextjs.org/docs/app) and here are the rules:
 
-- **Folders** inside of `app` are used to define routes.
-- **Files** are used to create UI.
 
-### Home Route `localhost:3000/`
+<ExampleBlock>
+  <ExampleBlock.Action>
+  - **Folders** inside of `app` are used to define routes.
+  - **Files** are used to create UI.
+  </ExampleBlock.Action>
+  <ExampleBlock.Implementation>
+    ```
+    - 📁 src
+      - 📁 app (`/` route)
+        - 🔵 page.tsx (UI)
+        - 📁 create-post (`/create-post` route)
+          - 🔵 page.tsx (UI)
+    ```
+    </ExampleBlock.Implementation>
+</ExampleBlock>
 
-Right now, there are no folders inside of `app`, so we're in the root route which maps to the url:
 
-```
-localhost:3000/
-```
+### Home Route `/`
 
-In the web browser, we see the home page, the content of `src/app/page.tsx`.
+Right now, there are no folders inside of `app`, so we're in the `/` route which maps to the url: [http://localhost:3000/](http://localhost:3000/). In the web browser, we see the home page which is the contents of `src/app/page.tsx`.
 
-### Create Post Route `localhost:3000/create-post`
+<ExampleBlock>
+  <ExampleBlock.Action>
+  localhost:3000/
+  </ExampleBlock.Action>
+  <ExampleBlock.Implementation>
+    ```
+    - 📁 src
+      - 📁 app (`/`)
+        - 🔵 page.tsx (UI)
+    ```
+    </ExampleBlock.Implementation>
+</ExampleBlock>
 
-Let's create a new route for a "create post" page.
+### Create Post Route
 
-<Instruction>
-  Create a new folder inside of `app` called `create-post`.
-</Instruction>
+Next, we will create a new route for `localhost:3000/create-post`
 
-We have now defined a new route that maps to the url:
+<InstructionBlock step={1}>
+  <InstructionBlock.Action>
+    Create a new folder inside of `app` called `create-post`.
+  </InstructionBlock.Action>
+ <InstructionBlock.Implementation>
+    ```
+    - 📁 src
+      - 📁 app (`/` route)
+        - 🔵 page.tsx (UI)
+        - 📁 create-post (`/create-post` route)
+    ```
+    </InstructionBlock.Implementation>
+</InstructionBlock>
 
-```
-localhost:3000/create-post
-```
+<ExampleBlock columns={1}>
+  <ExampleBlock.Action>
+    We have now defined a new route that maps to the url:
+  </ExampleBlock.Action>
+  <ExampleBlock.Implementation>
+    ```
+    localhost:3000/create-post
+    ```
+    </ExampleBlock.Implementation>
+</ExampleBlock>
+
+
 
 But visiting that url gives us a 404 error. That's because there's no file inside of `create-post` to generate the UI.
 
-<Instruction>
-  Create a new file inside of `create-post` called `page.tsx` and add the
-  following content:
-</Instruction>
+<InstructionBlock step={1}>
+  <InstructionBlock.Action>
+    Create a new file inside of `create-post` called `page.tsx`.
+  </InstructionBlock.Action>
+ <InstructionBlock.Implementation>
+    ```
+    - 📁 src
+      - 📁 app (`/` route)
+        - 🔵 page.tsx (UI)
+        - 📁 create-post (`/create-post` route)
+          - 🔵 page.tsx (UI)
+    ```
+    </InstructionBlock.Implementation>
+</InstructionBlock>
 
-```create-post/page.tsx
-export default function CreatePost() {
-  return (
-    <main className="text-center mt-10">
-      <h1>Create Post</h1>
-      <p>TODO: create post form</p>
-    </main>
-  )
-}
-```
+<InstructionBlock step={1}>
+  <InstructionBlock.Action>
+   And add the following code to `page.tsx`:
+  </InstructionBlock.Action>
+ <InstructionBlock.Implementation>
+    ```src/app/create-post/page.tsx
+    export default function CreatePost() {
+      return (
+        <main className="text-center mt-10">
+          <h1>Create Post</h1>
+          <p>TODO: create post form</p>
+        </main>
+      )
+    }
+    ```
+    </InstructionBlock.Implementation>
+</InstructionBlock>
 
-Visit `localhost:3000/create-post` and you'll see the new page.
+
+
+Now you can visit `localhost:3000/create-post` to see the new page.
 
 ### Dynamic Routes
 
 When we eventually create a new post, we'll display a list of posts on the home page. Clicking on a post will take you to a url like `localhost:3000/post/123` where `123` is the id of the post. This is called a dynamic route because the url is dynamic, it changes based on the post id.
 
-<Instruction>
-  Setup the dynamic route for a post at `/app/post/[id]/page.tsx`
-</Instruction>
+<InstructionBlock>
+  <InstructionBlock.Action step={1}>
+    Create a new folder inside of `app` called `post`.
+  </InstructionBlock.Action>
+  <InstructionBlock.Action>
+    Create a new folder inside of `post` called `[id]`.
+  </InstructionBlock.Action>
+  <InstructionBlock.Action>
+    Create a new file inside of `/post/[id]` called `page.tsx`.
+  </InstructionBlock.Action>
+ <InstructionBlock.Implementation>
+    ```
+    - 📁 src
+      - 📁 app 
+        - 📁 post 
+          - 📁 [id] (`/post/[id]` route)
+            - 🔵 page.tsx (UI)
+        ...
+    ```
+    </InstructionBlock.Implementation>
+</InstructionBlock>
 
-<Instruction>Create a new folder inside of `app` called `post`.</Instruction>
+If we named the directory `id` instead of `[id]`, the url will be `localhost:3000/post/id` but id needs to be dynamic, not the literal value `id`. By wrapping the folder name `id` in square brackets `[id]`, we've created a dynamic route, where any value can be used in place of `id`.
 
-Now we have a route that maps to `localhost:3000/post`
+This means we have a route that maps to `localhost:3000/post/any-value`. Eventually we will make sure that this route only works with a valid post id, but for now any value will work.
 
-<Instruction>Create a new folder inside of `post` called `[id]`.</Instruction>
+<InstructionBlock>
+  <InstructionBlock.Action step={1}>
+    Add the following code to the `page.tsx` file:
+  </InstructionBlock.Action>
+ <InstructionBlock.Implementation>
+    ```post/[id]/page.tsx
+    export default function PostPage({ params }: { params: { id: string } }) {
+      return (
+        <main className="text-center mt-10">
+          <h1>Post {params.id}</h1>
+          <p>TODO: display post</p>
+        </main>
+      );
+    }
+    ```
+    </InstructionBlock.Implementation>
+</InstructionBlock>
 
-Now we have a route that maps to `localhost:3000/post/any-value`
-
-Logically, the route will be `post/id` but id needs to be dynamic, not the literal value `id`. By wrapping the folder name `id` in square brackets `[id]`, we've created a dynamic route, where any value can be used in place of `id`.
-
-<Instruction>
-  Create a new file inside of `[id]` called `page.tsx` with the following
-  content:
-</Instruction>
-
-```tsx
-export default function Post({ params }: { params: { id: string } }) {
-  return (
-    <main className="text-center mt-10">
-      <h1>Post {params.id}</h1>
-      <p>TODO: display post</p>
-    </main>
-  );
-}
-```
 
 This page is slightly different because the function takes a `params` object as an argument. This object contains the dynamic route parameters. In this case, the `id` of the post.
 
-It is important to note that the name of the directory, without the square brackets will be the name of the param in the `params` object. So if we had a folder called `[pancakes]`, the `params` object would have look like `{ params: { pancakes: string } }`.
+It is important to note that the name of the directory without the square brackets will be the name of the param in the `params` object. So if we had a folder called `[pancakes]`, the `params` object would have look like `{ params: { pancakes: string } }`.
 
-Visit `localhost:3000/post/any-value` in your browser and change the value of `any-value` to something else. You'll see the page update with the new value.
+<SideBySide>
+  ```
+  - 📁 src
+    - 📁 app 
+      - 📁 post 
+        - 📁 [id] (`/post/[id]` route) - 📁 [id] (`/post/[id]` route) - 📁 [id] (`/post/[id]` route)
+          - 🔵 page.tsx (UI)
+      ...
+  ```
+  ```post/[id]/page.tsx
+  function PostPage({ params }: { params: { id: string } }) {
+    return (
+      <main className="text-center mt-10">
+        <h1>Post {params.id}</h1>
+        <p>TODO: display post</p>
+      </main>
+    );
+  }
+  ```
+</SideBySide>
+
+<Instruction>
+  Visit `localhost:3000/post/any-value` in your browser and change the value of `any-value` to something else. You'll see the page update with the new value.
+</Instruction>
+
+
 
 ### page.tsx
 
