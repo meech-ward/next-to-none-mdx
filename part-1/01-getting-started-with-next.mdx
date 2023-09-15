@@ -36,12 +36,12 @@ Avoid looking at the source code until the you've completed the tutorial for you
 
 ## Setup
 
-<InstructionBlock>
-  <InstructionBlock.Action step={1}>
+<Instruction>
+  <Instruction.Action step={1}>
   Create a new Next.js project using
   [`create-next-app`](https://nextjs.org/docs/pages/api-reference/create-next-app)
-  </InstructionBlock.Action>
-  <InstructionBlock.Implementation>
+  </Instruction.Action>
+  <Instruction.Implementation>
 
     {/* prettier-ignore */}
     <Tabs>
@@ -67,15 +67,15 @@ Avoid looking at the source code until the you've completed the tutorial for you
       </Tab>
     </Tabs>
 
-  </InstructionBlock.Implementation>
-</InstructionBlock>
+  </Instruction.Implementation>
+</Instruction>
 
 
-<InstructionBlock>
-  <InstructionBlock.Action step={2}>
+<Instruction>
+  <Instruction.Action step={2}>
   When prompted, answer the prompts like this:
-  </InstructionBlock.Action>
-  <InstructionBlock.Implementation>
+  </Instruction.Action>
+  <Instruction.Implementation>
   ```
   What is your project named?  threads
   Would you like to use TypeScript? Yes
@@ -85,8 +85,8 @@ Avoid looking at the source code until the you've completed the tutorial for you
   Would you like to use App Router? (recommended) Yes
   Would you like to customize the default import alias?  No
   ```
-  </InstructionBlock.Implementation>
-</InstructionBlock>
+  </Instruction.Implementation>
+</Instruction>
 
 - The project name doesn't matter, you can really use whatever you like here.
 - **Yes** to TypeScript, get used to it. It doesn't matter what your (or my) oppinions are anymore, TS is taking over in web dev and to **not** use it in a project like this is to go against the grain.
@@ -96,11 +96,11 @@ Avoid looking at the source code until the you've completed the tutorial for you
 - **Yes to App Router**. This is the most important thing to say yes to. If you selected no here, give up and start again.
 - **No** to customizing the default alias, the default is good. This let's you import files from `src/` using `@/` instead of having any of those `../../` go up a parent directory or serveral nonsense.
 
-<InstructionBlock>
-  <InstructionBlock.Action step={3}>
+<Instruction>
+  <Instruction.Action step={3}>
   From inside the project's directory, run the development server.
-  </InstructionBlock.Action>
-  <InstructionBlock.Implementation>
+  </Instruction.Action>
+  <Instruction.Implementation>
 
     {/* prettier-ignore */}
     <Tabs>
@@ -125,26 +125,24 @@ Avoid looking at the source code until the you've completed the tutorial for you
         ```
       </Tab>
     </Tabs>
-  </InstructionBlock.Implementation>
-</InstructionBlock>
+  </Instruction.Implementation>
+</Instruction>
 
-<InstructionBlock>
-  <InstructionBlock.Action step={4}>
+<Instruction>
+  <Instruction.Action>
   Open [http://localhost:3000](http://localhost:3000) in your web browser.
-  </InstructionBlock.Action>
-  <InstructionBlock.Implementation>
-  </InstructionBlock.Implementation>
-</InstructionBlock>
+  </Instruction.Action>
+</Instruction>
 
 Congrats, you're now staring at the Next.js marketing page. Let's dig into the source code and update this page.
 
 The code for this home page is in `/src/app/page.tsx` which contains a lot of code we just don't care about right now. 
 
-<InstructionBlock>
-  <InstructionBlock.Action step={5}>
+<Instruction>
+  <Instruction.Action step={5}>
   Replace the contents of `/src/app/page.tsx` with the following:
-  </InstructionBlock.Action>
-  <InstructionBlock.Implementation>
+  </Instruction.Action>
+  <Instruction.Implementation>
 
     ```src/app/page.tsx
     export default function Home() {
@@ -157,8 +155,8 @@ The code for this home page is in `/src/app/page.tsx` which contains a lot of co
     }
     ```
     
-  </InstructionBlock.Implementation>
-</InstructionBlock>
+  </Instruction.Implementation>
+</Instruction>
 
 Go back to the browser and you'll see the updated content. No need to re run the next server or refresh the browser page because Next.js's dev server uses [fast refresh](https://nextjs.org/docs/architecture/fast-refresh#how-it-works). Just save a file and see the updates immediately. Feel free to play around with the JSX syntax a bit.
 
@@ -168,24 +166,10 @@ We're using [`.tsx`](https://www.typescriptlang.org/docs/handbook/jsx.html) exte
 
 ## App Router
 
-<Note>
-  You will hear people talk about the [**App
-  Router**](https://nextjs.org/docs/app/building-your-application/routing#the-app-router)
-  and compare it to the [**Pages
-  Router**](https://nextjs.org/docs/pages/building-your-application/routing)
-  because the App Router is new and supports [React Server
-  Components](https://nextjs.org/docs/app/building-your-application/rendering/server-components).
-  You might end up down a rabbit hold of maybe-interesting information that
-  really doesn't matter right now (in the beginning). Here's all you need to
-  know:
-</Note>
-
-
-<ExampleBlock>
-  <ExampleBlock.Action>
-All of the application source code is inside of the `/src` directory. Everything else is configuration, tooling, or static assets that we can ignore right now.
-  </ExampleBlock.Action>
-  <ExampleBlock.Implementation>
+<SideBySide ratio="3:5">
+  <ExampleCard>
+    All of the application source code is inside of the `/src` directory. Everything else is configuration, tooling, or static assets that we can ignore right now.
+  </ExampleCard>
     ```
     - 📁 public
     - 📁 src
@@ -198,19 +182,17 @@ All of the application source code is inside of the `/src` directory. Everything
     - ⚪️ tsconfig.json
     ...
     ```
-    </ExampleBlock.Implementation>
-</ExampleBlock>
+</SideBySide>
 
 
 Inside of `/src` there is an `app` directory where we can setup all the **routes** for our app. This paradigm is called [**App Router**](https://nextjs.org/docs/app) and here are the rules:
 
 
-<ExampleBlock>
-  <ExampleBlock.Action>
+<SideBySide ratio="3:5">
+  <ExampleCard>
   - **Folders** inside of `app` are used to define routes.
   - **Files** are used to create UI.
-  </ExampleBlock.Action>
-  <ExampleBlock.Implementation>
+  </ExampleCard>
     ```
     - 📁 src
       - 📁 app (`/` route)
@@ -218,80 +200,84 @@ Inside of `/src` there is an `app` directory where we can setup all the **routes
         - 📁 create-post (`/create-post` route)
           - 🔵 page.tsx (UI)
     ```
-    </ExampleBlock.Implementation>
-</ExampleBlock>
+</SideBySide>
+
+<Note>
+  You will hear people talk about the [**App
+  Router**](https://nextjs.org/docs/app/building-your-application/routing#the-app-router)
+  and compare it to the [**Pages
+  Router**](https://nextjs.org/docs/pages/building-your-application/routing)
+  because the App Router is new and supports [React Server
+  Components](https://nextjs.org/docs/app/building-your-application/rendering/server-components).
+  You might end up down a rabbit hold of maybe-interesting information that
+  really doesn't matter right now (in the beginning).
+</Note>
 
 
 ### Home Route `/`
 
 Right now, there are no folders inside of `app`, so we're in the `/` route which maps to the url: [http://localhost:3000/](http://localhost:3000/). In the web browser, we see the home page which is the contents of `src/app/page.tsx`.
 
-<ExampleBlock>
-  <ExampleBlock.Action>
+<SideBySide ratio="3:5">
+  <ExampleCard>
   localhost:3000/
-  </ExampleBlock.Action>
-  <ExampleBlock.Implementation>
+  </ExampleCard>
     ```
     - 📁 src
       - 📁 app (`/`)
         - 🔵 page.tsx (UI)
     ```
-    </ExampleBlock.Implementation>
-</ExampleBlock>
+</SideBySide>
 
 ### Create Post Route
 
 Next, we will create a new route for `localhost:3000/create-post`
 
-<InstructionBlock step={1}>
-  <InstructionBlock.Action>
+<Instruction step={1}>
+  <Instruction.Action>
     Create a new folder inside of `app` called `create-post`.
-  </InstructionBlock.Action>
- <InstructionBlock.Implementation>
+  </Instruction.Action>
+ <Instruction.Implementation>
     ```
     - 📁 src
-      - 📁 app (`/` route)
-        - 🔵 page.tsx (UI)
+      - 📁 app 
+        - 🔵 page.tsx 
         - 📁 create-post (`/create-post` route)
     ```
-    </InstructionBlock.Implementation>
-</InstructionBlock>
+    </Instruction.Implementation>
+</Instruction>
 
-<ExampleBlock columns={1}>
-  <ExampleBlock.Action>
+<SideBySide ratio="1">
     We have now defined a new route that maps to the url:
-  </ExampleBlock.Action>
-  <ExampleBlock.Implementation>
     ```
     localhost:3000/create-post
     ```
-    </ExampleBlock.Implementation>
-</ExampleBlock>
+</SideBySide>
 
 
 
 But visiting that url gives us a 404 error. That's because there's no file inside of `create-post` to generate the UI.
 
-<InstructionBlock step={1}>
-  <InstructionBlock.Action>
+<Instruction step={1}>
+  <Instruction.Action>
     Create a new file inside of `create-post` called `page.tsx`.
-  </InstructionBlock.Action>
- <InstructionBlock.Implementation>
+  </Instruction.Action>
+ <Instruction.Implementation>
     ```
     - 📁 src
-      - 📁 app (`/` route)
-        - 🔵 page.tsx (UI)
+      - 📁 app 
+        - 🔵 page.tsx 
         - 📁 create-post (`/create-post` route)
           - 🔵 page.tsx (UI)
     ```
-    </InstructionBlock.Implementation>
-</InstructionBlock>
+    </Instruction.Implementation>
+</Instruction>
 
-<InstructionBlock step={1}>
-  <InstructionBlock.Action>
+<Instruction step={1}>
+  <Instruction.Action>
    And add the following code to `page.tsx`:
-  </InstructionBlock.Action>
- <InstructionBlock.Implementation>
+  </Instruction.Action>
+ <Instruction.Implementation>
     ```src/app/create-post/page.tsx
     export default function CreatePost() {
       return (
@@ -302,8 +288,8 @@ But visiting that url gives us a 404 error. That's because there's no file insid
       )
     }
     ```
-    </InstructionBlock.Implementation>
-</InstructionBlock>
+    </Instruction.Implementation>
+</Instruction>
 
 
 
@@ -313,17 +299,17 @@ Now you can visit `localhost:3000/create-post` to see the new page.
 
 When we eventually create a new post, we'll display a list of posts on the home page. Clicking on a post will take you to a url like `localhost:3000/post/123` where `123` is the id of the post. This is called a dynamic route because the url is dynamic, it changes based on the post id.
 
-<InstructionBlock>
-  <InstructionBlock.Action step={1}>
+<Instruction>
+  <Instruction.Action step={1}>
     Create a new folder inside of `app` called `post`.
-  </InstructionBlock.Action>
-  <InstructionBlock.Action>
+  </Instruction.Action>
+  <Instruction.Action>
     Create a new folder inside of `post` called `[id]`.
-  </InstructionBlock.Action>
-  <InstructionBlock.Action>
+  </Instruction.Action>
+  <Instruction.Action>
     Create a new file inside of `/post/[id]` called `page.tsx`.
-  </InstructionBlock.Action>
- <InstructionBlock.Implementation>
+  </Instruction.Action>
+ <Instruction.Implementation>
     ```
     - 📁 src
       - 📁 app 
@@ -332,18 +318,18 @@ When we eventually create a new post, we'll display a list of posts on the home 
             - 🔵 page.tsx (UI)
         ...
     ```
-    </InstructionBlock.Implementation>
-</InstructionBlock>
+    </Instruction.Implementation>
+</Instruction>
 
 If we named the directory `id` instead of `[id]`, the url will be `localhost:3000/post/id` but id needs to be dynamic, not the literal value `id`. By wrapping the folder name `id` in square brackets `[id]`, we've created a dynamic route, where any value can be used in place of `id`.
 
 This means we have a route that maps to `localhost:3000/post/any-value`. Eventually we will make sure that this route only works with a valid post id, but for now any value will work.
 
-<InstructionBlock>
-  <InstructionBlock.Action step={1}>
+<Instruction>
+  <Instruction.Action step={1}>
     Add the following code to the `page.tsx` file:
-  </InstructionBlock.Action>
- <InstructionBlock.Implementation>
+  </Instruction.Action>
+ <Instruction.Implementation>
     ```post/[id]/page.tsx
     export default function PostPage({ params }: { params: { id: string } }) {
       return (
@@ -354,8 +340,8 @@ This means we have a route that maps to `localhost:3000/post/any-value`. Eventua
       );
     }
     ```
-    </InstructionBlock.Implementation>
-</InstructionBlock>
+    </Instruction.Implementation>
+</Instruction>
 
 
 This page is slightly different because the function takes a `params` object as an argument. This object contains the dynamic route parameters. In this case, the `id` of the post.

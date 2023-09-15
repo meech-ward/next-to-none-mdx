@@ -20,8 +20,10 @@ tags: ["React", "typescript", "Next.js", "javascript", "jsx", "tsx"]
 
 This video starts by setting up a react app using Vite. Ignore this part and just start watching from the JSX chapter. There's also a section on CSS that you can ignore.
 
+<SideBySide ratio="3:5">
+<ExampleCard>
 The JSX section starts with an App.jsx file that looks like this:
-
+</ExampleCard>
 ```js
 function App() {
   return (
@@ -31,62 +33,152 @@ function App() {
 
 export default App
 ```
+</SideBySide>
 
 This is similar to a page in Next.js, so follow along with my examples but use the `page.tsx` component. 
 
 ## JSX and TSX
 
-### The rules 
+JSX is a syntax extension for JavaScript, which means that it gives us new ways to write code that are **not** part of the JavaScript language. It's like adding new vocabulary or rules to an existing language, so we can express more complex ideas more easily.
 
+<SideBySide ratio="2:3">
+<ExampleCard>
+With JSX, we can write HTML-like markup inside a JavaScript file. TSX (TypeScript JSX) is the same thing but with in a TypeScript file. 
+</ExampleCard>
+```some-component.tsx
+// focus(4:7) 
+function SomeComponent() {
+  console.log("Some Component")
+  return (
+    <div>
+      <h1 className="text-bold">Hello</h1>
+      <h2>World</h2>
+    </div>
+  )
+}
+```
+</SideBySide>
 
-```some-component.jsx
-return (
-  <div>
-    <h1 className="header">Hello</h1>
-    <h2>World</h2>
-    <img className="image" src="https://picsum.photos/200" alt="random"></img>
-  </div>
+<SideBySide ratio="2:3">
+<ExampleCard>
+JSX and TSX is eventually transpiled into JavaScript, so the above code is transpiled into something like this:
+</ExampleCard>
+```some-component.js
+// focus(2:4)
+import { jsx } from "react/jsx-runtime";
+jsx("div", null,
+  jsx("h1", { className: "text-bold" }, "Hello"),
+  jsx("h2", null, "World")
 )
 ```
+</SideBySide>
 
-* Return a single root element, div or empty tag `<>`
-* All tags must close, so you can `<img></img>` or self close tags like `<img />`
-* This is js, not html, so any reserved word in JavaScript has a different name here like `className` instead of `class`
+Which is just normal JavaScript code that we can run in node, or the browser, or anywhere we can install and run the react library. 
 
+<SideBySide ratio="2:3">
+<ExampleCard>
+When the `jsx` function is called, it returns a JavaScript object that contains all the information about the JSX element we created. A simplified version looks like this:
+</ExampleCard>
+```js
+{
+  type: 'div',
+  props: {
+    children: [
+      {
+        type: 'h1',
+        props: {
+          className: 'text-bold',
+          children: 'Hello'
+        }
+      },
+      {
+        type: 'h2',
+        props: {
+          children: 'World'
+        }
+      }
+    ]
+  }
+}
+```
+</SideBySide>
+
+<SideBySide ratio="2:3">
+<ExampleCard>
+Then that code *might* eventually end up as HTML that we see in the browser:
+</ExampleCard>
+```html 
+<div>
+  <h1 class="text-bold">Hello</h1>
+  <h2>World</h2>
+</div>
+```
+</SideBySide>
+
+It seems like JSX is just a way to write HTML looking code in our JavaScript files, but it's actually a way to write JavaScript that eventually gets translated into HTML.
+
+
+<SideBySide ratio="1:1">
+<Card frameing="none" title="We write this:">
+```some-component.tsx
+function SomeComponent() {
+  console.log("Some Component")
+  return (
+    <div>
+      <h1 className="text-bold">Hello</h1>
+      <h2>World</h2>
+    </div>
+  )
+}
+```
+</Card>
+<Card frameing="none" title="We end up with this:">
+```html 
+<div>
+  <h1 class="text-bold">Hello</h1>
+  <h2>World</h2>
+</div>
+```
+</Card>
+</SideBySide>
+
+
+
+The point of all this is so that we can stay in JavaScript and do everything in JavaScript and never actually touch an HTML file. However, the way we describe a web page is with HTML. Everything we want the user to see eventaully gets translated into HTML and CSS. 
 
 ## JavaScript in JSX
 
 So like I said, this is js, so you can inject js into jsx. 
 
-<ExampleBlock>
-  <ExampleBlock.Action>
+<SideBySide ratio="4:7">
+  <ExampleCard>
     **Not rendered as JS:**
-  </ExampleBlock.Action>
-  <ExampleBlock.Implementation>
+  </ExampleCard>
+
     ```js 
     <p>6 + 9</p>
     ```
-  </ExampleBlock.Implementation>
-</ExampleBlock>
+
+</SideBySide>
 
 
-<ExampleBlock>
-  <ExampleBlock.Action>
+<SideBySide ratio="4:7">
+  <ExampleCard>
     **Rendered as JS:**
-  </ExampleBlock.Action>
-  <ExampleBlock.Implementation>
+  </ExampleCard>
+
     ```js
     <p>{6 + 9}</p>
     ```
-  </ExampleBlock.Implementation>
-</ExampleBlock>
+
+</SideBySide>
 
 
-<InstructionBlock>
-  <InstructionBlock.Action>
+<Instruction>
+  <Instruction.Action>
     Try adding more JS things to your markup:
-  </InstructionBlock.Action>
-  <InstructionBlock.Implementation>
+  </Instruction.Action>
+  <Instruction.Implementation>
 
   ```js
   return (
@@ -97,8 +189,8 @@ So like I said, this is js, so you can inject js into jsx.
       </div>
   )
   ```
-  </InstructionBlock.Implementation>
-</InstructionBlock>
+  </Instruction.Implementation>
+</Instruction>
 
 
 A component couples the UI logic and markup together in the same file. So instead of separating your js and html into separate files, it all goes in the same file and we split the app into separate components instead. 
@@ -109,11 +201,11 @@ A component couples the UI logic and markup together in the same file. So instea
 ## More components and Child components
 
 
-<InstructionBlock>
-  <InstructionBlock.Action>
+<Instruction>
+  <Instruction.Action>
     If we want to create another component, we can just create a new function with an uppercase character that returns markup:
-  </InstructionBlock.Action>
-  <InstructionBlock.Implementation>
+  </Instruction.Action>
+  <Instruction.Implementation>
     ```jsx
     function SomeNewComponent() {
       return (
@@ -121,29 +213,29 @@ A component couples the UI logic and markup together in the same file. So instea
       )
     }
     ```
-  </InstructionBlock.Implementation>
-</InstructionBlock>
+  </Instruction.Implementation>
+</Instruction>
 
 ### Component Files
 
 It's common to put each component in their own file, even if they're very small like this one.
 
-<InstructionBlock>
-  <InstructionBlock.Action>
+<Instruction>
+  <Instruction.Action>
     Create a new file with the kebab-named version of your component's name and put it in there:
-  </InstructionBlock.Action>
-  <InstructionBlock.Implementation>
+  </Instruction.Action>
+  <Instruction.Implementation>
     ```
     some-new-component.jsx
     ```
-  </InstructionBlock.Implementation>
-</InstructionBlock>
+  </Instruction.Implementation>
+</Instruction>
 
-<InstructionBlock>
-  <InstructionBlock.Action>
+<Instruction>
+  <Instruction.Action>
     `export` using esmodules synax:
-  </InstructionBlock.Action>
-  <InstructionBlock.Implementation>
+  </Instruction.Action>
+  <Instruction.Implementation>
     ```some-new-component.tsx
       export default function SomeNewComponent() {
         return (
@@ -151,29 +243,29 @@ It's common to put each component in their own file, even if they're very small 
         )
       }
       ```
-  </InstructionBlock.Implementation>
-</InstructionBlock>
+  </Instruction.Implementation>
+</Instruction>
 
 
-<InstructionBlock>
-  <InstructionBlock.Action>
+<Instruction>
+  <Instruction.Action>
     `import` using esmodules synax:
-  </InstructionBlock.Action>
-  <InstructionBlock.Implementation>
+  </Instruction.Action>
+  <Instruction.Implementation>
     ```page.tsx
     import SomeNewComponent from './some-new-component'
     ```
-  </InstructionBlock.Implementation>
-</InstructionBlock>
+  </Instruction.Implementation>
+</Instruction>
 
 
 
 
-<InstructionBlock>
-  <InstructionBlock.Action>
+<Instruction>
+  <Instruction.Action>
     Then include it in the markup:
-  </InstructionBlock.Action>
-  <InstructionBlock.Implementation>
+  </Instruction.Action>
+  <Instruction.Implementation>
     ```page.tsx
     function Page() {
       return (
@@ -186,5 +278,52 @@ It's common to put each component in their own file, even if they're very small 
       )
     }
         ```
-  </InstructionBlock.Implementation>
-</InstructionBlock>
+  </Instruction.Implementation>
+</Instruction>
+
+## The Rules of JSX and TSX
+
+
+<SideBySide ratio="3:5">
+<ExampleCard>
+Return a single root element, div or empty tag `<>`
+</ExampleCard>
+```some-component.jsx
+  // focus(1:2) 
+return (
+  <div>
+    <h1 className="header">Hello</h1>
+    <h2>World</h2>
+    <img className="image" src="https://picsum.photos/200" alt="random"></img>
+  </div>
+)
+```
+</SideBySide>
+<SideBySide ratio="3:5">
+<ExampleCard>
+All tags must close, so you can `<img></img>` or self close tags like `<img />`
+</ExampleCard>
+```some-component.jsx
+return (
+  <div>
+    <h1 className="header">Hello</h1>
+    <h2>World</h2>
+    <img className="image" src="https://picsum.photos/200" alt="random"></img>
+  </div>
+)
+```
+</SideBySide>
+<SideBySide ratio="3:5">
+<ExampleCard>
+ This is js, not html, so any reserved word in JavaScript has a different name here like `className` instead of `class`
+</ExampleCard>
+```some-component.jsx
+return (
+  <div>
+    <h1 className="header">Hello</h1>
+    <h2>World</h2>
+    <img className="image" src="https://picsum.photos/200" alt="random"></img>
+  </div>
+)
+```
+</SideBySide>

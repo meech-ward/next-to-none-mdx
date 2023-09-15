@@ -18,44 +18,40 @@ tags: ["React", "typescript", "Next.js", "javascript", "jsx", "tsx"]
 
 <YouTube videoId="f640Z6QZawc" />
 
-<ExampleBlock columns={1}>
-  <ExampleBlock.Action>
+<SideBySide ratio="1">
     Using map like this is super common in React. You need to know how this code works and how to use it.
-  </ExampleBlock.Action>
-  <ExampleBlock.Implementation>
-    ```jsx
+    ```tsx
     jokes.map(joke => (
       <Joke key={joke.id} joke={joke.joke} rating={joke.rating} />
     ))
     ```
-  </ExampleBlock.Implementation>
-</ExampleBlock>
+</SideBySide>
 
 
 ## Arrays of Components
 
 {/* Look at the [React Props Explained](/react-props-explained) section to see an example of the `Jokes` component. */}
 
-<ExampleBlock>
-  <ExampleBlock.Action>
+<SideBySide ratio="3:5">
+  <ExampleCard>
     A JSX component is a normal JavaScript value, so we can store them in an array just like any other value.
-  </ExampleBlock.Action>
-  <ExampleBlock.Implementation>
+  </ExampleCard>
+
     ```tsx
     const jokesComponents = [
       <Joke joke={"Torn jeans? Rip off"} rating={2} />,
       <Joke joke={"A Broken pencil is Pointless"} rating={3} />
     ]
     ```
-  </ExampleBlock.Implementation>
-</ExampleBlock>
+
+</SideBySide>
 
 
-<ExampleBlock>
-  <ExampleBlock.Action>
+<SideBySide ratio="3:5">
+  <ExampleCard>
     We can render a JavaScript value inside of JSX using `{}`. An array of components is just a JS value.
-  </ExampleBlock.Action>
-  <ExampleBlock.Implementation>
+  </ExampleCard>
+
     ```page.tsx
     const jokesComponents = [
       <Joke joke={"Torn jeans? Rip off"} rating={2} />,
@@ -69,19 +65,19 @@ tags: ["React", "typescript", "Next.js", "javascript", "jsx", "tsx"]
       )
     }
     ```
-  </ExampleBlock.Implementation>
-</ExampleBlock>
+
+</SideBySide>
 
 
 This is a really nice feature of JSX, but seems kind of pointless right now since we could have just written the `Joke` components directly in the JSX. But in a real application, this data is going to be coming from some other data source like a database. 
 
-<ExampleBlock>
-  <ExampleBlock.Action>
+<SideBySide ratio="3:5">
+  <ExampleCard>
     No matter where the data is coming from, it's very likely (almost guaranteed) that we'll end up with **an array of objects** that we need to render as components.
 
     Something like this:
-  </ExampleBlock.Action>
-  <ExampleBlock.Implementation>
+  </ExampleCard>
+
     ```js
     const jokes = [
       {
@@ -96,19 +92,19 @@ This is a really nice feature of JSX, but seems kind of pointless right now sinc
       }
     ]
     ```
-  </ExampleBlock.Implementation>
-</ExampleBlock>
+
+</SideBySide>
 
 All we need to do is take the **array of objects** and turn it into an array of components. Then we can render the components in JSX just as we did before. 
 
 ## For Loop
 
 
-<ExampleBlock columns={2}>
-  <ExampleBlock.Action>
+<SideBySide ratio="3:5">
+  <ExampleCard>
     This can of course be done with a `for` loop:
-  </ExampleBlock.Action>
-  <ExampleBlock.Implementation>
+  </ExampleCard>
+
     ```page.tsx
     const jokesComponents = []
     for (let i = 0; i < jokes.length; i++) {
@@ -124,17 +120,17 @@ All we need to do is take the **array of objects** and turn it into an array of 
       </div>
     )
     ```
-  </ExampleBlock.Implementation>
-</ExampleBlock>
+
+</SideBySide>
 
 
 ## Map
 
-<ExampleBlock columns={2}>
-  <ExampleBlock.Action>
+<SideBySide ratio="3:5">
+  <ExampleCard>
     A much better, and much more common way of doing this is with the `map` function:
-  </ExampleBlock.Action>
-  <ExampleBlock.Implementation>
+  </ExampleCard>
+
     ```page.tsx
     const jokesComponents = jokes.map(joke => (
       <Joke joke={joke.joke} rating={joke.rating} />
@@ -146,16 +142,16 @@ All we need to do is take the **array of objects** and turn it into an array of 
       </div>
     )
     ```
-  </ExampleBlock.Implementation>
-</ExampleBlock>
+
+</SideBySide>
 
 ## Keys
 
-<ExampleBlock columns={2}>
-  <ExampleBlock.Action>
+<SideBySide ratio="3:5">
+  <ExampleCard>
     Make sure you **always** include a key for each component in the array. This must be unique for each component in that array, so an `id` is a good choice.
-  </ExampleBlock.Action>
-  <ExampleBlock.Implementation>
+  </ExampleCard>
+
     ```js
     const jokesComponents = jokes.map(joke => (
       <Joke 
@@ -165,8 +161,8 @@ All we need to do is take the **array of objects** and turn it into an array of 
         />
     ))
     ```
-  </ExampleBlock.Implementation>
-</ExampleBlock>
+
+</SideBySide>
 
 
 Read more about [**Why does React need keys?**](https://beta.reactjs.org/learn/rendering-lists#why-does-react-need-keys): [https://beta.reactjs.org/learn/rendering-lists#why-does-react-need-keys](https://beta.reactjs.org/learn/rendering-lists#why-does-react-need-keys)
