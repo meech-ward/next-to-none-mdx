@@ -43,7 +43,6 @@ Avoid looking at the source code until the you've completed the tutorial for you
   </Instruction.Action>
   <Instruction.Implementation>
 
-    {/* prettier-ignore */}
     <Tabs>
       <Tab name="npx">
         ```sh
@@ -166,40 +165,44 @@ We're using [`.tsx`](https://www.typescriptlang.org/docs/handbook/jsx.html) exte
 
 ## App Router
 
-<SideBySide ratio="3:5">
+<SideBySide ratio="1:1">
   <ExampleCard>
     All of the application source code is inside of the `/src` directory. Everything else is configuration, tooling, or static assets that we can ignore right now.
   </ExampleCard>
-    ```
-    - 📁 public
-    - 📁 src
-      - 📁 app
-        - 🔵 page.tsx
-        - 🔵 layout.tsx
-        - 🎨 globals.css
-    - ⚪️ next.config.js
-    - ⚪️ tailwind.config.ts
-    - ⚪️ tsconfig.json
-    ...
-    ```
+  <Card>
+    <FileTree>
+    - public
+    - src
+      - app
+        - page.tsx
+        - layout.tsx
+        - globals.css
+    - next.config.js
+    - tailwind.config.ts
+    - tsconfig.json
+    - ...
+    </FileTree>
+  </Card>
 </SideBySide>
 
 
 Inside of `/src` there is an `app` directory where we can setup all the **routes** for our app. This paradigm is called [**App Router**](https://nextjs.org/docs/app) and here are the rules:
 
 
-<SideBySide ratio="3:5">
+<SideBySide ratio="1:1">
   <ExampleCard>
   - **Folders** inside of `app` are used to define routes.
   - **Files** are used to create UI.
   </ExampleCard>
-    ```
-    - 📁 src
-      - 📁 app (`/` route)
-        - 🔵 page.tsx (UI)
-        - 📁 create-post (`/create-post` route)
-          - 🔵 page.tsx (UI)
-    ```
+    <Card>
+      <FileTree>
+      - src
+        - app (`/` route)
+          - page.tsx (UI)
+          - create-post (`/create-post` route)
+            - page.tsx (UI)
+      </FileTree>
+    </Card>
 </SideBySide>
 
 <Note>
@@ -218,15 +221,17 @@ Inside of `/src` there is an `app` directory where we can setup all the **routes
 
 Right now, there are no folders inside of `app`, so we're in the `/` route which maps to the url: [http://localhost:3000/](http://localhost:3000/). In the web browser, we see the home page which is the contents of `src/app/page.tsx`.
 
-<SideBySide ratio="3:5">
+<SideBySide ratio="1:1">
   <ExampleCard>
   localhost:3000/
   </ExampleCard>
-    ```
-    - 📁 src
-      - 📁 app (`/`)
-        - 🔵 page.tsx (UI)
-    ```
+    <Card>
+      <FileTree>
+      - src
+        - app (`/`)
+          - page.tsx (UI)
+      </FileTree>
+    </Card>
 </SideBySide>
 
 ### Create Post Route
@@ -238,13 +243,15 @@ Next, we will create a new route for `localhost:3000/create-post`
     Create a new folder inside of `app` called `create-post`.
   </Instruction.Action>
  <Instruction.Implementation>
-    ```
-    - 📁 src
-      - 📁 app 
-        - 🔵 page.tsx 
-        - 📁 create-post (`/create-post` route)
-    ```
-    </Instruction.Implementation>
+  <Card>
+    <FileTree focus={[{depth: 3, item: 2}]}>
+    - src
+      - app 
+        - page.tsx 
+        - create-post (`/create-post` route)
+    </FileTree>
+  </Card>
+</Instruction.Implementation>
 </Instruction>
 
 <SideBySide ratio="1">
@@ -258,19 +265,21 @@ Next, we will create a new route for `localhost:3000/create-post`
 
 But visiting that url gives us a 404 error. That's because there's no file inside of `create-post` to generate the UI.
 
-<Instruction step={1}>
+<Instruction step={1} ratio="1:1">
   <Instruction.Action>
     Create a new file inside of `create-post` called `page.tsx`.
   </Instruction.Action>
- <Instruction.Implementation>
-    ```
-    - 📁 src
-      - 📁 app 
-        - 🔵 page.tsx 
-        - 📁 create-post (`/create-post` route)
-          - 🔵 page.tsx (UI)
-    ```
-    </Instruction.Implementation>
+  <Instruction.Implementation>
+    <Card>
+      <FileTree focus={[{depth: 4, item: 1}]}>
+      - src
+        - app 
+          - page.tsx 
+          - create-post (`/create-post` route)
+            - page.tsx (UI)
+      </FileTree>
+    </Card>
+  </Instruction.Implementation>
 </Instruction>
 
 <Instruction step={1}>
@@ -299,7 +308,7 @@ Now you can visit `localhost:3000/create-post` to see the new page.
 
 When we eventually create a new post, we'll display a list of posts on the home page. Clicking on a post will take you to a url like `localhost:3000/post/123` where `123` is the id of the post. This is called a dynamic route because the url is dynamic, it changes based on the post id.
 
-<Instruction>
+<Instruction ratio="1:1">
   <Instruction.Action step={1}>
     Create a new folder inside of `app` called `post`.
   </Instruction.Action>
@@ -310,14 +319,16 @@ When we eventually create a new post, we'll display a list of posts on the home 
     Create a new file inside of `/post/[id]` called `page.tsx`.
   </Instruction.Action>
  <Instruction.Implementation>
-    ```
-    - 📁 src
-      - 📁 app 
-        - 📁 post 
-          - 📁 [id] (`/post/[id]` route)
-            - 🔵 page.tsx (UI)
-        ...
-    ```
+    <Card>
+    <FileTree focus={[{depth: 3, item: 1}, {depth: 4, item: 1}, {depth: 5, item: 1}]}>
+    - src
+      - app 
+        - post 
+          - [id] (`/post/[id]` route)
+            - page.tsx (UI)
+      - ...
+    </FileTree>
+    </Card>
     </Instruction.Implementation>
 </Instruction>
 
@@ -349,15 +360,17 @@ This page is slightly different because the function takes a `params` object as 
 It is important to note that the name of the directory without the square brackets will be the name of the param in the `params` object. So if we had a folder called `[pancakes]`, the `params` object would have look like `{ params: { pancakes: string } }`.
 
 
-<SideBySide widths={["40%", "60%"]}>
-  ```
-  - 📁 src
-    - 📁 app 
-      - 📁 post 
-        - 📁 [pancakes] 
-          - 🔵 page.tsx 
-      ...
-  ```
+<SideBySide ratio="4:7">
+  <Card>
+  <FileTree focus={[{depth: 4, item: 1}]}>
+  - src
+    - app 
+      - post 
+        - [pancakes] 
+          - page.tsx 
+    - ...
+  </FileTree>
+  </Card>
   ```post/[id]/page.tsx
   function PostPage({ params }: { params: { pancakes: string } }) {
     return (
