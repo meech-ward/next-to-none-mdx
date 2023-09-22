@@ -1,0 +1,93 @@
+## Description
+
+
+Yes, well technically libSQL, but it looks like it could replace MySQL and Postgres in some cases. Or maybe most cases, I can't tell yet. 
+
+I've only been using for a few days but here's my little shpeel.
+
+The main thing I love about serverless is the pay as you go pricing which is often $0 for non business minded people like myself. 
++
+MySQL and Postgres are the best general purpose databases for any web dev!
+=
+I've been really excited by the idea of serverless MySQL and Postgres for years now.
+But
+I always end up disappointed. 
+
+**Neon cold starts are around 5s long**, but i've experienced **13s cold starts** at times. cockroach is kind of cool, low cold start times, but too custom to "just work" with any orm or query builder. Planetscale seems cool but I was always put off by their 1db limit in the free tier. MySQL and Postgres don't really work well in a serverless environment, it's not their fault they're just not good at it.The only good serverless database experience i've ever had was with DynamoDB, but that is an absolutely terrible general-purpose database. Turso isn't serverless but seems to have a serverless pay as you go pricing model. Actually it's way cheaper. No cold starts, just super fast, plus the edge is trendy right now.
+
+If someone is going to build a web app, it's really easy to suggest something like next with vercel. It just works, it's fast, and you won't have to pay any money because the free teir is amazing. I'm looking for the SQL database version of that. NoSQL has had it for a while, it's just the wrong database.
+
+
+- 
+
+https://fly.io/blog/all-in-on-sqlite-litestream/
+
+## SQLite is bad 
+
+Invited in 2000. The project aimed to offer local data storage for individual applications and devices. One of SQLite's most prominent features is its serverless, self-contained architecture, which makes it highly suitable for embedded systems.
+
+So like perfect for a mobile device or something. Introduce iphone in 2007 and sqlite is obviously. 
+
+## File-Level Locking
+
+In `SQLite`, the **entire database** is locked for writting during a write operation. so just one write at a time. This is different from databases like `PostgreSQL` or `MySQL`, which employ more granular row-level locking mechanisms. SQLite's file-level locking means that no two write transactions can occur concurrently. 
+
+MVCC is in mysql and posgres, not in sqlite. 
+
+
+### No User Management
+
+It's just a file with file permissions, but there are no roles or users. 
+
+So if a user or application has write permissions, they can pretty much do anything. 
+
+### Lack of Advanced Features:
+
+* stored procedures 
+* limited support for triggers 
+* less data types 
+* dynamic typing 🤦‍♀️ 
+* no Advanced Isolation Levels
+* no two phase commit 
+
+
+
+
+### Limited Scalability:
+
+SQLite does not have built-in support for clustering, replication, or other high-availability features. If your application grows, you'll need to migrate to a more robust database, which can be a significant effort.
+
+
+### ACID Constraints:
+
+While SQLite is ACID compliant, it doesn't support two-phase commit for transactions involving multiple databases, which can be a limitation in more complex transactional systems.
+
+#### Two-Phase Commit: This is a key feature missing in SQLite. Two-phase commit is essential for maintaining ACID properties in a distributed database environment. In a two-phase commit, a coordinator ensures that all participating databases agree to commit or roll back a transaction, thus maintaining consistency across multiple databases.
+
+
+### Memory Usage:
+
+For large datasets, SQLite may be less efficient in terms of memory usage. While it's designed to be lightweight, its internal data structures and indexing can become less efficient when handling large amounts of data.
+
+Pick up here: https://chat.openai.com/c/720d4f5e-331e-439b-bf89-b83360e17d23
+
+
+### 32-Bit File I/O Operations:
+
+SQLite often relies on 32-bit file I/O operations, even if running on a 64-bit system. This can limit the maximum size of a database file, potentially requiring workarounds like database sharding, which can be complex to manage.
+
+
+### No Network Access:
+
+SQLite is a serverless database, which means it doesn't have built-in network access. You'll need to rely on the host OS's file system permissions for any form of networked access, which can introduce complexity and security risks.
+
+
+### Migration Challenges:
+
+If you start with SQLite and then outgrow it, migrating to a more scalable database can be non-trivial, especially if you've used SQLite-specific features or data types. Although there are migration tools and guides available, the process will require time and effort.
+
+## How to geospatial queries 
+
+Mysql and pg have ST_Distance_Sphere
+
+sqlite extensions like SpatiaLite?

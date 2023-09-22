@@ -1,0 +1,59 @@
+
+
+
+
+- why bare bones library sucks
+- why prisma sucks
+- why drizzle is the perfect abstraction
+- serverless example where prisma breaks me for some reason
+- you can pull a database schema into drizzle 
+
+
+## pg/node-postgres vs postgres.js drizzle vs prisma
+
+## What do you need
+
+* connect to db from ts/js 
+* security? maybe just prepared statements for that sql injection shit
+* get the data from sql tables as ts/js objects
+* migrations 
+* ide intellisense 
+* type safe client 
+
+* in C# they come from classes, in Javascript, they're js objects. 
+You're going to end up with tuples in any language. Maybe the default ocnstruct is an object from a class like in C# or literally could be a dictionary. What i'm trying to say is you need to represent the data in a way that makes the most sense for a langauage and in JS that's SO FUCKIGN OBVIOUSLY going to be an array of objects. 
+
+Drizzle has always only been focused on TS, prisma decided to fuck around with go
+
+
+### Fucking cool shit
+
+* define your schema in a declerative way, so you say what your schema is then migrations are generated from that. This shit isnt' new, just look at efcore, fine, but we need soemthing for 
+
+
+### bare bones sucks
+
+- no type safety/no error safety. you just write some strings and sql injection and shit
+- need a plan for migrations
+
+### Prisma sucks
+
+- it's heavy with it's rust shit
+- it does weird compilation shit
+- the queries are sometimes a bit weird like multiple queries for the relational things
+- the prisma schema file is a completely custom thing that doesn't “just import” into you project. again back to the heavy weight compilation shit
+- prisma needs a shaddow db
+- it's faster now but ....
+
+### Drizzle
+
+- good at type safety
+- zod for front end and back end and database checks
+- light weight and just fucking works
+- gets you closer to the db which is good because you should understand your sql fucking database. stop completely abstracting that shit away.
+
+- the rust thing is ...whatever... i guess idk, but fuck it adds more complexity for not much performance or any perforamance
+
+### you should learn sql
+
+you really do need to learn how to normalize and denormalize or you'll end up making some realy fucking ugly queries that are super innefecient. like the justin beiber problem only works because you know how to denormalize correclty

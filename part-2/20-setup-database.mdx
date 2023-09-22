@@ -1,0 +1,229 @@
+
+# Drizzle
+  
+Drizzle ORM natively supports both [Neon Serverless](https://github.com/neondatabase/serverless) 
+driver with `drizzle-orm/neon-serverless` package and [`postgres`](./postgresjs) or [`pg`](./node-postgres) 
+drivers to access Neon database, as of their [official nodejs docs](https://neon.tech/docs/guides/node)
+
+<Instruction>
+  <Instruction.Action step={1}>
+    Install `@neondatabase/serverless` to communicate with the database and `drizzle-orm` for DX. 
+  </Instruction.Action>
+  
+  <Instruction.Implementation>
+    <Tabs>
+      <Tab name='npm'>
+        ```bash copy
+        npm i drizzle-orm @neondatabase/serverless
+        npm i -D drizzle-kit
+        ```
+      </Tab>
+      <Tab name='pnpm'>
+        ```bash copy
+        pnpm add drizzle-orm @neondatabase/serverless
+        pnpm add -D drizzle-kit
+        ```
+      </Tab>
+      <Tab name='yarn'>
+        ```bash copy
+        yarn add drizzle-orm @neondatabase/serverless
+        yarn add -D drizzle-kit
+        ```
+      </Tab>
+      <Tab name='bun'>
+        ```bash copy
+        bun add drizzle-orm @neondatabase/serverless
+        bun add -D drizzle-kit
+        ```
+      </Tab>
+    </Tabs>
+  </Instruction.Implementation>
+</Instruction>
+
+With Neon Serverless package [[github](https://github.com/neondatabase/serverless), [blog post](https://blog.cloudflare.com/neon-postgres-database-from-workers/)] 
+you can access Neon database from serverless environments with no TCP available, like Cloudflare Workers, through websockets.
+
+
+```typescript copy filename="index.ts"
+import { neon, neonConfig } from '@neondatabase/serverless';
+import { drizzle } from 'drizzle-orm/neon-http';
+
+neonConfig.fetchConnectionCache = true;
+
+const sql = neon(process.env.DATABASE_URL!);
+const db = drizzle(sql);
+
+const result = await db.select().from(...);
+```
+
+<Note>
+These instructions assume that you will host your Next.js application in a serverless environment. Since Next.js is designed around serverless, I would recommend hosting your Next app on something like [vercel](https://vercel.com/solutions/nextjs), [netlify](https://www.netlify.com/with/nextjs/), or aws serverless using [sst](https://docs.sst.dev/start/nextjs). However, if you plan is to host your Next.js app on a "real" server, then follow the [drizzle postgres.js setup instructions](https://orm.drizzle.team/docs/quick-postgresql/postgresjs) instead. This is according to the official [Neon nodejs docs](https://neon.tech/docs/guides/node).
+</Note>
+
+## Schema 
+
+We need to define the schema for each table in the database. If we just think about the database without the context of a web application, we tend to think about ERDs and creating tables using the a database specific SQL [DDL] Data Definition Language (DDL). 
+
+
+```ts 
+export type User = {
+  id: string
+  username: string
+  firstName: string
+  lastName: string
+  avatar: string
+}
+
+export type Media = {
+  id: number
+  type: "image" | "video"
+  url: string
+  width: number
+  height: number
+}
+
+export type Post = {
+  id: number
+  user: User
+  created: string
+  content: string
+  replyId?: number
+  media?: Media
+}
+
+```
+
+<Excalidraw id="B4BuNm9VO6gBPH8blmu2" />
+
+There is no noticable performance difference between `TEXT` and `VARCHAR` in postgres. If you know the exact limit of the number of characters, and you want to add that as a constraint to your database, then use `VARCHAR`. Otherwise, use `TEXT`. I don't have any limits for my 
+
+```sql 
+CREATE TABLE users (
+  id TEXT PRIMARY KEY,
+  username VARCHAR(30) NOT NULL,
+  first_name VARCHAR(50) NOT NULL,
+  last_name VARCHAR(50) NOT NULL,
+  avatar TEXT NOT NULL
+);
+
+CREATE TABLE media (
+  id SERIAL PRIMARY KEY,
+  type TEXT NOT NULL,
+  url TEXT NOT NULL,
+  width INTEGER NOT NULL,
+  height INTEGER NOT NULL
+);
+
+CREATE TABLE posts (
+  id SERIAL PRIMARY KEY,
+  user_id TEXT NOT NULL REFERENCES users(id),
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  content TEXT NOT NULL,
+  reply_id INTEGER,
+  media_id INTEGER REFERENCES media(id)
+);
+```
+
+<Instruction ratio="1:1">
+  <Instruction.Action step={1}>
+    Create a new file inside of `create-post` called `page.tsx`.
+  </Instruction.Action>
+  <Instruction.Implementation>
+    <Card>
+      <FileTree focus={[{depth: 4, item: 1}]}>
+      - src
+        - app 
+          - page.tsx 
+          - create-post (`/create-post` route)
+            - page.tsx (UI)
+      </FileTree>
+    </Card>
+  </Instruction.Implementation>
+</Instruction>
+
+
+```db/schema/user.ts 
+import {sqliteTable, text, integer} from "drizzle-orm/sqlite-core";
+
+export const users = sqliteTable("users", {
+    id: text("id").primaryKey(),
+    firstName: text("first_name"),
+    lastName: text("last_name"),
+    email: text("email")
+});
+```
+
+
+## Column Types 
+
+https://orm.drizzle.team/docs/sql-schema-declaration
+https://orm.drizzle.team/docs/column-types/pg
+
+## Drizzle Kit 
+
+<Instruction ratio="1:1">
+  <Instruction.Action step={1}>
+    Create a new `drizzle.config.ts` file in the root of your project (with all the other config files).
+  </Instruction.Action>
+  
+  <Instruction.Implementation>
+    <Card>
+      <FileTree focus={[{depth: 1, item: 3}]}>
+        - public
+        - src 
+        - drizzle.config.ts
+        - next.config.js
+        - ...
+      </FileTree>
+    </Card>
+  </Instruction.Implementation>
+</Instruction>
+
+<Instruction>
+  <Instruction.Action step={1}>
+    Add the following code to the drizzle config file:
+  </Instruction.Action>
+  
+  <Instruction.Implementation>
+    ```drizzle.config.ts
+    import { Config } from "drizzle-kit"
+
+    export default {
+      schema: "./src/db/schema/*",
+      driver: "pg",
+      dbCredentials: {
+        connectionString: process.env.DATABASE_URL!, 
+      },
+      out: "./drizzle",
+    } satisfies Config
+    ```
+  </Instruction.Implementation>
+</Instruction>
+
+In tsconfig.json, update the target target to `es6` 
+
+```json
+{
+  "compilerOptions": {
+    "target": "es5",
+
+```
+
+
+```json
+{
+  "compilerOptions": {
+    "target": "es6",
+    
+```
+
+
+Add to package.json 
+
+```json
+"migration:generate": "drizzle-kit generate:pg"
+```
+
+```
+npm run generate
+```

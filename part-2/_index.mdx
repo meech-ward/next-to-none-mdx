@@ -1,0 +1,44 @@
+---
+type: article
+title: "Part 2"
+slug: part-2
+
+description: "To learn how to use Next.js, let's create a clone of x.com."
+image:
+  name: "next-js-intro.png"
+  width: 1024
+  height: 1024
+
+status: "published"
+date: "2023-09-08T18:21:08.346Z"
+tags: ["React", "typescript", "Next.js", "javascript", "jsx", "tsx"]
+nextPostSlug: "naming-tsx"
+---
+
+In this part, we will learn how to setup our database schema
+
+## Drizzle 
+
+Why drizzle?
+
+## Database
+
+Database as a service?
+Which database as a service?
+
+* vercel postgres
+* neon 
+* planet scale
+* turso 
+
+
+```
+
+export const users = sqliteTable("users", {
+    id: text("id").primaryKey(),
+    firstName: text("first_name"),
+    lastName: text("last_name"),
+    email: text("email")
+});
+
+```

@@ -265,8 +265,8 @@ Next, we will create a new route for `localhost:3000/create-post`
 
 But visiting that url gives us a 404 error. That's because there's no file inside of `create-post` to generate the UI.
 
-<Instruction step={1} ratio="1:1">
-  <Instruction.Action>
+<Instruction ratio="1:1">
+  <Instruction.Action  step={1}>
     Create a new file inside of `create-post` called `page.tsx`.
   </Instruction.Action>
   <Instruction.Implementation>
@@ -282,8 +282,8 @@ But visiting that url gives us a 404 error. That's because there's no file insid
   </Instruction.Implementation>
 </Instruction>
 
-<Instruction step={1}>
-  <Instruction.Action>
+<Instruction>
+  <Instruction.Action  step={1}>
    And add the following code to `page.tsx`:
   </Instruction.Action>
  <Instruction.Implementation>
@@ -357,7 +357,7 @@ This means we have a route that maps to `localhost:3000/post/any-value`. Eventua
 
 This page is slightly different because the function takes a `params` object as an argument. This object contains the dynamic route parameters. In this case, the `id` of the post.
 
-It is important to note that the name of the directory without the square brackets will be the name of the param in the `params` object. So if we had a folder called `[pancakes]`, the `params` object would have look like `{ params: { pancakes: string } }`.
+It is **important** to know that the name of the directory without the square brackets will be the name of the param in the `params` object. So if we had a folder called `[pancakes]`, the `params` object would have look like `{ params: { pancakes: string } }`.
 
 
 <SideBySide ratio="4:7">
@@ -383,7 +383,7 @@ It is important to note that the name of the directory without the square bracke
   ```
 </SideBySide>
 
-That would be stupid, please don't name the folder `[pancakes]`, but hopefully you get the point.
+Please don't name the folder `[pancakes]`, but hopefully you get the point.
 
 <Instruction>
   Visit `localhost:3000/post/any-value` in your browser and change the value of `any-value` to something else. You'll see the page update with the new value.

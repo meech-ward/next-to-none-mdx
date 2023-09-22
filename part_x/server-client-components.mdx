@@ -1,0 +1,265 @@
+
+## Server Components 
+
+Server and client components seperate
+All get SSR 
+
+```html 
+<main>
+    <div>
+        <p>server yo</p>
+        <div>
+            <p>server yo</p>
+            <div>
+                <p>server yo</p>
+                <div>
+                    <p>server yo</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div>
+        <p>Client yo</p>
+        <div>
+            <p>Client yo</p>
+            <div>
+                <p>Client yo</p>
+            </div>
+        </div>
+    </div>
+</main>
+<script src="/_next/static/chunks/webpack.js?v=1695322722377" async=""></script>
+<script>
+    (self.__next_f = self.__next_f || []).push([0])
+</script>
+<script>
+    self.__next_f.push([1, "1:HL[...]\n2:HL[...]\n0:\"$L3\"\n"])
+</script>
+<script>
+    self.__next_f.push([1, "4:I{...}\n6:I{...}\n7:I{..."])
+</script>
+<script>
+    self.__next_f.push([1, "...}\n8:I{...}\n"])
+</script>
+<script>
+    self.__next_f.push([1, "3:[...[\"$\",\"main\",null,{\"children\":[[\"$\",\"div\",null,{\"children\":[[\"$\",\"p\",null,{\"children\":\"server yo\"}],[\"$\",\"div\",null,{\"children\":[[\"$\",\"p\",null,{\"children\":\"server yo\"}],[\"$\",\"div\",null,{\"children\":[[\"$\",\"p\",null,{\"children\":\"server yo\"}],[\"$\",\"div\",null,{\"children\":[[\"$\",\"p\",null,{\"children\":\"server yo\"}],\"$undefined\"]}]]}]]}]]}],[\"$\",\"$La\",null,{\"text\":\"client1\",\"children\":[\"$\",\"$La\",null,{\"text\":\"client2\",\"children\":[\"$\",\"$La\",null,{\"text\":\"client3\"}]}]}]]}]]\n"])
+</script>
+<script>
+    self.__next_f.push([1, "5:[]\n9:null\n"])
+</script>
+```
+
+Take a look at 3: 
+
+```json 
+[
+  "$",
+  "main",
+  null,
+  {
+    "children": [
+      [
+        // some nested server components represented as json, they can't change, they are immutable in the browser, frozen, this is their permanent state in the browser
+        "$",
+        "div",
+        null,
+        {
+          "children": [
+            ["$", "p", null, { "children": "server yo" }],
+            [
+              "$",
+              "div",
+              null,
+              {
+                "children": [
+                  ["$", "p", null, { "children": "server yo" }],
+                  [
+                    "$",
+                    "div",
+                    null,
+                    {
+                      "children": [
+                        ["$", "p", null, { "children": "server yo" }],
+                        [
+                          "$",
+                          "div",
+                          null,
+                          {
+                            "children": [
+                              ["$", "p", null, { "children": "server yo" }],
+                              "$undefined"
+                            ]
+                          }
+                        ]
+                      ]
+                    }
+                  ]
+                ]
+              }
+            ]
+          ]
+        }
+      ],
+      [
+        // some nested client components represented as json, they can change, they are mutable in the browser, they are not frozen, this is a very minimal repesentation of their state in the browser, the rest of their state is in the js bundle `page.js`.
+        "$",
+        "$La",
+        null,
+        {
+          "text": "client1",
+          "children": [
+            "$",
+            "$La",
+            null,
+            {
+              "text": "client2",
+              "children": ["$", "$La", null, { "text": "client3" }]
+            }
+          ]
+        }
+      ]
+    ]
+  }
+]
+```
+
+## Client Components Interleved with Server Components
+
+```html
+<main>
+    <div>
+        <p>server yo</p>
+        <div>
+            <p>server yo</p>
+            <div>
+                <p>Client yo</p>
+                <div>
+                    <p>server yo</p>
+                    <div>
+                        <p>Client yo</p>
+                        <div>
+                            <p>server yo</p>
+                            <div>
+                                <p>Client yo</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+<script src="/_next/static/chunks/webpack.js?v=1695323498455" async=""></script>
+<script>
+    (self.__next_f = self.__next_f || []).push([0])
+</script>
+<script>
+    self.__next_f.push([1, "1:HL[...]\n2:HL[...]\n0:\"$L3\"\n"])
+</script>
+<script>
+    self.__next_f.push([1, "4:I{...}\n6:I{...}\n7:I{..."])
+</script>
+<script>
+  self.__next_f.push([1, "...}\n8:I{...}\n"])
+</script>
+<script>
+    self.__next_f.push([1, "3:[[[\"$\",\"link\",\"0\",{\"rel\":\"stylesheet\",\"href\":\"/_next/static/css/app/layout.css?v=1695323498455\",\"precedence\":\"next_static/css/app/layout.css\"}]],[\"$\",\"$L4\",null,{\"buildId\":\"development\",\"assetPrefix\":\"\",\"initialCanonicalUrl\":\"/\",\"initialTree\":[\"\",{\"children\":[\"__PAGE__\",{}]},\"$undefined\",\"$undefined\",true],\"initialHead\":[false,\"$L5\"],\"globalErrorComponent\":\"$6\",\"children\":[null,[\"$\",\"html\",null,{\"lang\":\"en\",\"children\":[\"$\",\"body\",null,{\"className\":\"__className_e66fe9\",\"children\":[\"$\",\"$L7\",null,{\"parallelRouterKey\":\"children\",\"segmentPath\":[\"children\"],\"loading\":\"$undefined\",\"loadingStyles\":\"$undefined\",\"hasLoading\":false,\"error\":\"$undefined\",\"errorStyles\":\"$undefined\",\"template\":[\"$\",\"$L8\",null,{}],\"templateStyles\":\"$undefined\",\"notFound\":[[\"$\",\"title\",null,{\"children\":\"404: This page could not be found.\"}],[\"$\",\"div\",null,{\"style\":{\"fontFamily\":\"system-ui,\\\"Segoe UI\\\",Roboto,Helvetica,Arial,sans-serif,\\\"Apple Color Emoji\\\",\\\"Segoe UI Emoji\\\"\",\"height\":\"100vh\",\"textAlign\":\"center\",\"display\":\"flex\",\"flexDirection\":\"column\",\"alignItems\":\"center\",\"justifyContent\":\"center\"},\"children\":[\"$\",\"div\",null,{\"children\":[[\"$\",\"style\",null,{\"dangerouslySetInnerHTML\":{\"__html\":\"body{color:#000;background:#fff;margin:0}.next-error-h1{border-right:1px solid rgba(0,0,0,.3)}@media (prefers-color-scheme:dark){body{color:#fff;background:#000}.next-error-h1{border-right:1px solid rgba(255,255,255,.3)}}\"}}],[\"$\",\"h1\",null,{\"className\":\"next-error-h1\",\"style\":{\"display\":\"inline-block\",\"margin\":\"0 20px 0 0\",\"padding\":\"0 23px 0 0\",\"fontSize\":24,\"fontWeight\":500,\"verticalAlign\":\"top\",\"lineHeight\":\"49px\"},\"children\":\"404\"}],[\"$\",\"div\",null,{\"style\":{\"display\":\"inline-block\"},\"children\":[\"$\",\"h2\",null,{\"style\":{\"fontSize\":14,\"fontWeight\":400,\"lineHeight\":\"49px\",\"margin\":0},\"children\":\"This page could not be found.\"}]}]]}]}]],\"notFoundStyles\":[],\"childProp\":{\"current\":[\"$L9\",[\"$\",\"main\",null,{\"children\":[\"$\",\"div\",null,{\"children\":[[\"$\",\"p\",null,{\"children\":\"server yo\"}],[\"$\",\"div\",null,{\"children\":[[\"$\",\"p\",null,{\"children\":\"server yo\"}],[\"$\",\"$La\",null,{\"text\":\"client1\",\"children\":[\"$\",\"div\",null,{\"children\":[[\"$\",\"p\",null,{\"children\":\"server yo\"}],[\"$\",\"$La\",null,{\"text\":\"client2\",\"children\":[\"$\",\"div\",null,{\"children\":[[\"$\",\"p\",null,{\"children\":\"server yo\"}],[\"$\",\"$La\",null,{\"text\":\"client3\"}]]}]}]]}]}]]}]]}]}],null],\"segment\":\"__PAGE__\"},\"styles\":[]}]}]}],null]}]]\n"])
+</script>
+<script>
+    self.__next_f.push([1, "5:[]\n9:null\n"])
+</script>
+```
+
+
+Take a look at 3 `"segment": "__PAGE__"`: 
+
+```json 
+[
+  "$",
+  "main",
+  null,
+  {
+    "children": [
+      "$",
+      "div",
+      null,
+      {
+        "children": [
+          ["$", "p", null, { "children": "server yo" }],
+          [
+            "$",
+            "div",
+            null,
+            {
+              "children": [
+                ["$", "p", null, { "children": "server yo" }],
+                [
+                  "$",
+                  "$La",
+                  null,
+                  {
+                    "children": [
+                      "$",
+                      "div",
+                      null,
+                      {
+                        "children": [
+                          ["$", "p", null, { "children": "server yo" }],
+                          [
+                            "$",
+                            "$La",
+                            null,
+                            {
+                              "children": [
+                                "$",
+                                "div",
+                                null,
+                                {
+                                  "children": [
+                                    [
+                                      "$",
+                                      "p",
+                                      null,
+                                      { "children": "server yo" }
+                                    ],
+                                    ["$", "$La", null, { "text": "client3" }]
+                                  ]
+                                }
+                              ],
+                              "text": "client2" // placeholder to be able to invoke the client component
+                            }
+                          ]
+                        ]
+                      }
+                    ],
+                    "text": "client1"
+                  }
+                ]
+              ]
+            }
+          ]
+        ]
+      }
+    ]
+  }
+]
+```
+
+Not much difference from the previous example, but the client components are now interleved with the server components.
+
+## Notes
+
+* making a component a `client` component increases bundle size. Interleaving client components with server components does not increase bundle size.
+* server components always get run first, then client components.
+* To reduce the Client JavaScript bundle size, we recommend moving Client Components down your component tree.
+  - This will make the js running the browser less, so then interactivity will be quicker I assume 
+
+* Server components are sent as html and JSON (actually RSC payload which is maybe binary? idk yet but it definitely could be )
+  - no reference to props or any other jazz needs to be kept track of in the browser. no idea what the props were, it doesnt' matter 
+* Client components are sent as html and JS 
+  - their props, internal logic, all of it needs to be sent to the client as well. All the js, all of it needs to run client side 
+  - you need all information about the internals of the function including how it's called
+  - the funciton is invoked client side (hydration) to get the component into it's (SPA react like state)
+* Props always flow from React Server to React Client, and there is a serialization boundary between them. 
+* Untill the first client component, all content is static, can't change 
+* When a server component is inside a client component, everything is still mostly the same as before, but now there's a chance the server component could be moved or remove by a client component so it's not completely static anymore
