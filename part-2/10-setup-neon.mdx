@@ -1,5 +1,19 @@
 ## Neon Serverless
 
+We're going to use Neon posgres database for the project. Neon is a managed Postgres service. 
+
+<Note>
+We could setup a local Postgres database for local development, however this is out of scope for now and not really encouraged much, so all interactions with the database will be over the internet. 
+
+The upside to this is:
+* database is already in the cloud it's really easy to deploy staging to share features with anyone
+* All development is done more closely mimicing the production environment, so there *should* be less surprises when deploying.
+
+The downsides are:
+* we need to be connected to the internet to develop
+* if you're using a paid plan, you could incur charges from developing the app 
+</Note>
+
 ## Create a new role
 
 Purely so we can revoke or rotate it if needed.

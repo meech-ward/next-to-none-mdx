@@ -44,7 +44,7 @@ With Neon Serverless package [[github](https://github.com/neondatabase/serverles
 you can access Neon database from serverless environments with no TCP available, like Cloudflare Workers, through websockets.
 
 
-```typescript copy filename="index.ts"
+```index.ts copy filename="index.ts"
 import { neon, neonConfig } from '@neondatabase/serverless';
 import { drizzle } from 'drizzle-orm/neon-http';
 
@@ -187,6 +187,11 @@ https://orm.drizzle.team/docs/column-types/pg
   <Instruction.Implementation>
     ```drizzle.config.ts
     import { Config } from "drizzle-kit"
+    import * as dotenv from 'dotenv';
+
+    dotenv.config({
+      path: '.env.local',
+    });
 
     export default {
       schema: "./src/db/schema/*",
@@ -200,22 +205,21 @@ https://orm.drizzle.team/docs/column-types/pg
   </Instruction.Implementation>
 </Instruction>
 
-In tsconfig.json, update the target target to `es6` 
-
-```json
-{
-  "compilerOptions": {
-    "target": "es5",
-
-```
+{/* <Instruction>
+  <Instruction.Action step={1}>
+In `tsconfig.json`, update the `compilerOptions` target to `es6` 
+  </Instruction.Action>
+  
+  <Instruction.Implementation>
 
 
-```json
+```tsconfig.json
 {
   "compilerOptions": {
     "target": "es6",
-    
+    ...
 ```
+</Instruction.Implementation> */}
 
 
 Add to package.json 

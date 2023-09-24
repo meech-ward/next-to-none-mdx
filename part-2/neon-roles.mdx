@@ -1,0 +1,233 @@
+---
+title: Neon Roles 
+---
+
+# Neon Roles 
+
+Setting up a neon project is kind of like setting up a fresh install of Postgres that's fully managed for you. Within a project, you can setup databases and roles, and within the database you can manage your tables and schemas. It's all Postgres, but Neon makes it easier to manage. Way easier.
+
+Neon isn't 100% Postgres, it's build on top of Postgres. This gives us a few extra features but also comes with some [limitations](https://neon.tech/docs/reference/compatibility). That being said, when I'm talking about Neon and I use terms like `database` or `role` or `schema`, just picture a normal Postgres database.
+
+When we create a new project in neon, it comes with a [database](https://neon.tech/docs/manage/databases) called `neondb` a [**default role**](https://neon.tech/docs/manage/roles) that owns that database.
+
+We could create a new database with a different name, but the pre-created `neondb` is fine, so we can just leave that alone. We will, however, create some new roles. 
+
+## Roles
+
+Whenever we create a new database, it's not a bad idea (some would say it's best practice) to create new roles for our specific needs. For a web app, we'll generally benefit from having two distinct roles:
+
+* [**Migration Role**](#migration-role): Responsible for running migrations and reshaping the database schema.
+* [**Application Role**](#application-role): Handles all the application's CRUD operations but restricted from tinkering with the schema.
+
+By isolating responsibilities, we gain several advantages:
+
+* **Security**: Compromised or rotated credentials impact only a specific role, minimizing potential damage and work for us.
+* **Permission Efficiency**: The application role is only endowed with the permissions it genuinely requires, making our system more secure.
+* **Administrative Ease**: Keeping admin credentials under wraps simplifies managerial tasks, as we can be fairly certain that our admin role remains uncompromised.
+
+## Passwords 
+
+Before we create these new roles, we need to be able to generate secure passwords for them. Here are some ways you can generate a secure password:
+
+<Tabs>
+  <Tab name="openssl">
+    ```sh
+    openssl rand -base64 16 | tr '+/' '-_' | tr -d '='
+    ```
+  </Tab>
+  <Tab name="node">
+    ```js
+   import crypto from 'crypto'
+   const password = crypto.randomBytes(16).toString('base64').replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+   console.log(password);
+   ```
+  </Tab>
+  <Tab name="browser js">
+    ```js
+   function generateUrlSafePassword(length = 16) {
+   const array = new Uint8Array(length);
+   window.crypto.getRandomValues(array);å
+
+   const base64 = btoa(String.fromCharCode(...array))
+      .replace(/\+/g, '-') // Replace '+' with '-'
+      .replace(/\//g, '_') // Replace '/' with '_'
+      .replace(/=+$/, ''); // Remove '=' at the end
+   
+   return base64;
+   }
+
+   const password = generateUrlSafePassword();
+   console.log(password);
+   ```
+  </Tab>
+  <Tab name="python">
+    ```py 
+   import secrets
+   import urllib.parse
+
+   password = secrets.token_urlsafe(16)
+   encoded_password = urllib.parse.quote_plus(password)
+   print(encoded_password)
+   ```
+  </Tab>
+</Tabs>
+
+Or just click this button to generate a password:
+
+This button also changes the passwords in the following SQL code so you can just copy and paste the code blocks.
+
+<GeneratePassword />
+
+
+## Running SQL Code 
+
+To create new Postgres roles, you'll need to run SQL code. Choose one of the following options:
+
+<SideBySide>
+<Card title="Online Console">
+In the [Neon Console](https://console.neon.tech/), select your project.
+
+In the left sidebar, there is a **SQL Editor** tab. If you click on that tab, you can run SQL statements directly in the online console. 
+</Card>
+<Card title="Postgres Client">
+In the [Neon Console](https://console.neon.tech/), select your project.
+
+In the main dashboard, there is a **Connection Details** section. You can use these details to connect to your database using your favorite Postgres client like `psql` in terminal. 
+</Card>
+</SideBySide>
+
+## Migration Role
+
+<Instruction ratio="1">
+<Instruction.Action step={1}>
+Run this code to generate a new role for the migrations:
+</Instruction.Action>
+<Instruction.Implementation>
+```sql
+-- Create a new role for migrations
+CREATE ROLE migration_role WITH LOGIN PASSWORD 'your_password_here';
+
+-- Grant permissions on the "neon" database
+GRANT ALL PRIVILEGES ON DATABASE "neon" TO migration_role;
+
+-- Grant usage on the "public" schema
+GRANT USAGE, CREATE ON SCHEMA public TO migration_role;
+```
+</Instruction.Implementation>
+</Instruction>
+
+Your migration role can connect to the database using the following connection string as long as you replace `<PGHOST>` with the value from the **Connection Details** section of the [Neon Console](https://console.neon.tech/):
+
+```
+postgres://migration_role:your_password_here@<PGHOST>/neon
+```
+
+<Instruction ratio="1">
+<Instruction.Action step={2}>
+Add this to your `.env.local` file as `MIGRATION_DATABASE_URL`.
+</Instruction.Action>
+<Instruction.Implementation>
+```sh
+MIGRATION_DATABASE_URL=postgres://migration_role:your_password_here@<PGHOST>/neon
+```
+</Instruction.Implementation>
+</Instruction>
+
+## Application Role
+
+<Instruction ratio="1">
+<Instruction.Action step={3}>
+Run this code to generate a new role for the application CRUD operations:
+</Instruction.Action>
+<Instruction.Implementation>
+```sql
+-- Create a new role for the application
+CREATE ROLE app_role WITH LOGIN PASSWORD 'your_password_here';
+
+-- Grant permissions on the "neon" database
+GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA public TO app_role;
+```
+</Instruction.Implementation>
+</Instruction>
+
+Your application role can connect to the database using the following connection string as long as you replace `<PGHOST>` with the value from the **Connection Details** section of the [Neon Console](https://console.neon.tech/):
+
+```
+postgres://app_role:your_password_here@<PGHOST>/neon
+```
+
+<Instruction ratio="1">
+<Instruction.Action step={4}>
+Add this to your `.env.local` file as `DATABASE_URL`.
+</Instruction.Action>
+<Instruction.Implementation>
+```sh
+DATABASE_URL=postgres://app_role:your_password_here@<PGHOST>/neon
+```
+</Instruction.Implementation>
+</Instruction>
+
+
+## URLs
+
+<Instruction ratio="1">
+<Instruction.Action step={4}>
+Add `?sslmode=verify-full` to the end of the `MIGRATION_DATABASE_URL` connection string.
+</Instruction.Action>
+<Instruction.Implementation>
+```sh
+#focus(1:1)
+MIGRATION_DATABASE_URL=postgres://migration_role:your_password_here@<PGHOST>/neon?sslmode=verify-full
+DATABASE_URL=postgres://app_role:your_password_here@<PGHOST>/neon
+```
+</Instruction.Implementation>
+</Instruction>
+
+<Instruction>
+</Instruction>
+
+Neon requires SSL connections to it's database, so we need to add `?sslmode=verify-full` to the end of the connection string, but why only the migration URL?
+
+Our next.js application is going to [Neon Serverless Driver](https://neon.tech/docs/serverless/serverless-driver) to connect to the database. This driver does not encrypt the postgres connection, it [tunnels unencrypted Postgres connections over secure websockets](https://neon.tech/blog/quicker-serverless-postgres). So the DATABASE_URL doesn't need to specify SSL, because the connection itself doesn't use SSL, the connection is tunneled over Secure Websockets. 
+
+When we're performing migrations, we might connect to the database from a *standard* Postgres driver like posgres.js, in that case, we need the ssl flag to be set to `verify-full` so that the connection is encrypted.
+
+
+## Creating a new Migration Role 
+
+<Note>
+You don't need to run any of this code right now, but it's here as a reference for *if* you need it in the future.
+</Note>
+
+If you've already performed a migration and need to create a new user to perform migrations, first delete the `migration_user`, then create a new one using the same [migration code][#migration-role] code as above. Then grant permission to the `drizzle` schema **and** transfer ownership of all tables to the new user. 
+
+```sql 
+GRANT USAGE, CREATE ON SCHEMA public TO migration_user2;
+
+DO $$ 
+DECLARE 
+   table_name text;
+BEGIN 
+   FOR table_name IN (SELECT tablename FROM pg_catalog.pg_tables WHERE schemaname = 'public') 
+   LOOP
+      EXECUTE 'ALTER TABLE ' || table_name || ' OWNER TO migration_user2;';
+   END LOOP;
+END $$;
+```
+
+{/* ```sql
+-- Optionally, grant the role ability to create new schemas
+ALTER ROLE migration_user CREATEDB;
+
+-- Grant all privileges on all tables in the public schema
+GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO migration_user;
+GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA drizzle TO migration_user;
+
+-- To automatically grant privileges on all future tables in the public schema
+ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL PRIVILEGES ON TABLES TO migration_user;
+
+-- Optionally, you can also grant privileges on sequences if your tables use serial or identity columns
+GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO migration_user;
+ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL PRIVILEGES ON SEQUENCES TO migration_user;
+``` */}
+
