@@ -1,7 +1,17 @@
 
 
+I will fill this page out with my own words at some point, until then, these are some great resources that should be enough to show you **why** drizzle is a good option.
+
+* https://orm.drizzle.team/docs/overview
+* https://orm.drizzle.team/kit-docs/overview
+* https://orm.drizzle.team/drizzle-studio/overview
+* https://medium.com/drizzle-stories/weve-built-typescript-orm-for-821-days-then-this-happened-71282a8b0206
+* https://medium.com/drizzle-stories/best-typescript-orm-just-got-better-5a33688b8d2e
+* https://medium.com/drizzle-stories/the-data-access-pattern-first-approach-with-drizzle-bca035bbdc63
 
 
+
+{/* 
 - why bare bones library sucks
 - why prisma sucks
 - why drizzle is the perfect abstraction
@@ -56,4 +66,65 @@ Drizzle has always only been focused on TS, prisma decided to fuck around with g
 
 ### you should learn sql
 
-you really do need to learn how to normalize and denormalize or you'll end up making some realy fucking ugly queries that are super innefecient. like the justin beiber problem only works because you know how to denormalize correclty
+you really do need to learn how to normalize and denormalize or you'll end up making some realy fucking ugly queries that are super innefecient. like the justin beiber problem only works because you know how to denormalize correclty */}
+
+
+{/* 
+## Ideas 
+
+* Why use drizzle?
+* What is drizzle?
+* How to use drizzle?
+
+
+---
+
+
+* ORM (sequilaize): object relational mapping (OOP + database): think about OOP instead of databases
+  - less or no control over the query, can be bad for performance 
+  - learn orm not SQL (fucking learn sql)
+
+* query builder (knex): This can help prevent syntax errors and SQL injection attacks.
+* ORM prisma: cool for typscript, really cool. 
+  - I actually love the primsa schema file, but others don't 
+  - no control over the query
+
+ORMs and query builders like Prisma, TypeORM, and Knex are layers of abstractions 
+
+## Drizzle 
+
+Drizzle ORM is designed as a thin TypeScript layer atop SQL
+
+* Good performance 
+* control over queries
+* type safety 
+* integration with zod is really cool 
+* really light weight, just works with everything. If i have issues getting prisma working somewhere or with prisma performance on serverless functions, drizzle to the rescue 
+
+* **Drizzle lets developers love SQL again.**
+* Drizzle
+
+## Rant 
+
+I quite like writing SQL select statments. 
+
+* I know what I need to write to get the data I need 
+* I can get copilot and GPT to help me pretty well 
+* 
+
+I'm actually really happy not using any layers of abstraction, for the most part. 
+
+* I often feal pressured into using something because it's trendy, i'm a teacher, gotta teach the students. 
+* I did this with prisma, and I didn't hate prisma, but I didn't really care about it either 
+
+Drizzle is the fist abstraction that i've actually 
+
+#### JSON Array agg
+
+I like doing json array agg and json object agg in relational databases. it's a really nice thing to use somethings, but fuck it kinda sucks using most librares.\
+drizzle does this nicely with the relational queryies
+
+#### Pagination
+
+* try and add optional pagination and shit like that to query using plain old sql. it's shit. you need the js integration to make this kind of shit nice. an optional where.
+ */}
