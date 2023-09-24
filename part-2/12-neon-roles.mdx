@@ -25,6 +25,24 @@ By isolating responsibilities, we gain several advantages:
 * **Permission Efficiency**: The application role is only endowed with the permissions it genuinely requires, making our system more secure.
 * **Administrative Ease**: Keeping admin credentials under wraps simplifies managerial tasks, as we can be fairly certain that our admin role remains uncompromised.
 
+
+## Running SQL Code 
+
+To create new Postgres roles, you'll need to run SQL code. Choose one of the following options:
+
+<SideBySide>
+<Card title="Online Console">
+In the [Neon Console](https://console.neon.tech/), select your project.
+
+In the left sidebar, there is a **SQL Editor** tab. If you click on that tab, you can run SQL statements directly in the online console. 
+</Card>
+<Card title="Postgres Client">
+In the [Neon Console](https://console.neon.tech/), select your project.
+
+In the main dashboard, there is a **Connection Details** section. You can use these details to connect to your database using your favorite Postgres client like `psql` in terminal. 
+</Card>
+</SideBySide>
+
 ## Passwords 
 
 Before we create these new roles, we need to be able to generate secure passwords for them. Here are some ways you can generate a secure password:
@@ -79,22 +97,6 @@ This button also changes the passwords in the following SQL code so you can just
 <GeneratePassword />
 
 
-## Running SQL Code 
-
-To create new Postgres roles, you'll need to run SQL code. Choose one of the following options:
-
-<SideBySide>
-<Card title="Online Console">
-In the [Neon Console](https://console.neon.tech/), select your project.
-
-In the left sidebar, there is a **SQL Editor** tab. If you click on that tab, you can run SQL statements directly in the online console. 
-</Card>
-<Card title="Postgres Client">
-In the [Neon Console](https://console.neon.tech/), select your project.
-
-In the main dashboard, there is a **Connection Details** section. You can use these details to connect to your database using your favorite Postgres client like `psql` in terminal. 
-</Card>
-</SideBySide>
 
 ## Migration Role
 

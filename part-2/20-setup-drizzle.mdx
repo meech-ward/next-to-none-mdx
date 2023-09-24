@@ -1,3 +1,6 @@
+---
+title: "Setup Drizzle"
+---
 
 # Drizzle
   
@@ -55,6 +58,13 @@ const db = drizzle(sql);
 
 const result = await db.select().from(...);
 ```
+
+Experimental connection caching
+Connection caching provides server-side connection pooling, so that a new connection does not have to be set up for each query over HTTP. You can enable it by setting fetchConnectionCache to true in the neonConfig object.
+
+
+So much more information about the serverless driver and optomizations 
+https://neon.tech/docs/serverless/serverless-driver
 
 <Note>
 These instructions assume that you will host your Next.js application in a serverless environment. Since Next.js is designed around serverless, I would recommend hosting your Next app on something like [vercel](https://vercel.com/solutions/nextjs), [netlify](https://www.netlify.com/with/nextjs/), or aws serverless using [sst](https://docs.sst.dev/start/nextjs). However, if you plan is to host your Next.js app on a "real" server, then follow the [drizzle postgres.js setup instructions](https://orm.drizzle.team/docs/quick-postgresql/postgresjs) instead. This is according to the official [Neon nodejs docs](https://neon.tech/docs/guides/node).
