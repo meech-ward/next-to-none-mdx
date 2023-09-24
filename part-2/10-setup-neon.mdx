@@ -1,3 +1,7 @@
+---
+setup-neon
+---
+
 ## Neon Serverless
 
 We're going to use Neon posgres database for the project. Neon is a managed Postgres service. 
@@ -14,14 +18,41 @@ The downsides are:
 * if you're using a paid plan, you could incur charges from developing the app 
 </Note>
 
-## Create a new role
+## Neon Account
 
-Purely so we can revoke or rotate it if needed.
+<Instruction>
+<Instruction.Action step={1}>
+Go to [neon.tech](https://neon.tech/) and create a free account. 
+</Instruction.Action>
+</Instruction>
 
-Sam: check if there is a different preffered way.
+## Create a New Project 
 
-<Note>
-Roles created in the Neon console, CLI, or API, including the default role created with a Neon project, are granted membership in the neon_superuser role. 
+Setting up a neon project is kind of like setting up a fresh install of Postgres that's fully managed for you. Within a project, you can setup databases and roles, and within the database you can manage your tables and schemas. It's all Postgres, but Neon makes it easier to manage. Way easier.
 
-If you want more fine-grained control over permissions, generate the role using SQL like you would with a normal Postgres database.
-</Note>
+<Instruction>
+<Instruction.Action step={1}>
+Click the **New Project** button. 
+</Instruction.Action>
+<Instruction.Action step={2}>
+Use the settings to the right.
+</Instruction.Action>
+<Instruction.Action step={3}>
+Click the **Create Project** button.
+</Instruction.Action>
+<Instruction.Implementation>
+* Name: whatever you want, or just leave blank
+* Postgres Version: 15
+* Region: The region closest to where you will deploy your app.
+* Comput Size: Fixed Size 1/4
+* Auto-suspend delay: 300 seconds
+</Instruction.Implementation>
+</Instruction>
+
+Once your project has been created, you'll be taken to the project dashboard page where you are given your connection details. Copy these details and keep them somewhere safe. You'll need them later.
+
+## What Now?
+
+You have your project setup in neon so you have a postgres database that you can play around with if you like. Feel free to connect using a Postgres client or use the **SQL Editor** in Neon's online console. 
+
+Whenever you're ready to connect your app to the database, continue onto the next step.
