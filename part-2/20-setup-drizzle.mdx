@@ -4,12 +4,7 @@ title: "Setup Drizzle"
 
 # Drizzle
 
-Every time our application interacts with the database, it's going to use [Drizzle](https://orm.drizzle.team/docs/overview). That means we're not really going to be writing SQL, instead we will write typescript.
-
-* Plan the schema 
-* Define the schema
-* Insert Data 
-* Query Data
+Every time our application interacts with the database, it's going to use [Drizzle](https://orm.drizzle.team/docs/overview). That means we're not really going to be writing SQL, instead we will write typescript. In this section we're going to go through the initial process of setting up Drizzle in a project so that we can query data from the database and display it on a page.
 
 
 ## Plan Schema 
@@ -585,7 +580,7 @@ This would run `SELECT * FROM users` and return an array of user objects from th
 
 You can read the [SQL Select](https://orm.drizzle.team/docs/select) docs to find out more about running SELECT queries.
 
-## Async Components 
+## Async Components
 
 Now let's use this on the home page where we display a list of posts.
 
