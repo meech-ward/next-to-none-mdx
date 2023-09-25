@@ -3,39 +3,253 @@ title: "Setup Drizzle"
 ---
 
 # Drizzle
-  
-Drizzle ORM natively supports both [Neon Serverless](https://github.com/neondatabase/serverless) 
-driver with `drizzle-orm/neon-serverless` package and [`postgres`](./postgresjs) or [`pg`](./node-postgres) 
-drivers to access Neon database, as of their [official nodejs docs](https://neon.tech/docs/guides/node)
 
-<Instruction>
+Every time our application interacts with the database, it's going to use [Drizzle](https://orm.drizzle.team/docs/overview). That means we're not really going to be writing SQL, instead we will write typescript.
+
+* Plan the schema 
+* Define the schema
+* Insert Data 
+* Query Data
+
+
+## Plan Schema 
+
+It's pretty common to plan out the database schema using an ERD before we write any code. Here's a very basic ERD for our application that includes the tables for `users`, `posts`, and `media`. 
+
+<Excalidraw id="B4BuNm9VO6gBPH8blmu2" />
+
+<p></p>
+<Note>
+We're going to use `text` instead of `int`/`serial` as the data type for the users's `id`. This is going to make it easier to connect to a third party authentication provider later on. 
+</Note>
+
+## Define Schema 
+
+Now we have some sense of what the entities are, how they relate to each other, and the data types we're using. The next step is to define the schema using Data Definition Language (DDL), that's when we write a bunch of `CREATE TABLE` statements and run them against the database. 
+
+We're going to avoid writing raw SQL, and instead use TypeScript for everything. That means that any time we want to interact with the database, we're going to write TypeScript using the Drizzle library. 
+
+<Instruction ratio="1:1">
   <Instruction.Action step={1}>
-    Install `@neondatabase/serverless` to communicate with the database and `drizzle-orm` for DX. 
+    Install the `drizzle-orm` library.
   </Instruction.Action>
   
   <Instruction.Implementation>
     <Tabs>
       <Tab name='npm'>
-        ```bash copy
-        npm i drizzle-orm @neondatabase/serverless
-        npm i -D drizzle-kit
+        ```bash
+        npm i drizzle-orm
         ```
       </Tab>
       <Tab name='pnpm'>
-        ```bash copy
-        pnpm add drizzle-orm @neondatabase/serverless
+        ```bash
+        pnpm add drizzle-orm
+        ```
+      </Tab>
+      <Tab name='yarn'>
+        ```bash
+        yarn add drizzle-orm
+        ```
+      </Tab>
+      <Tab name='bun'>
+        ```bash
+        bun add drizzle-orm
+        ```
+      </Tab>
+    </Tabs>
+  </Instruction.Implementation>
+</Instruction>
+
+<Instruction ratio="1:1">
+  <Instruction.Action step={2}>
+    Create a new folder called `db` in the `src` folder.
+  </Instruction.Action>
+  <Instruction.Action step={3}>
+    Create a new folder called `schema` in the `db` folder.
+  </Instruction.Action>
+  <Instruction.Action step={4}>
+    Create `user.ts`, `post.ts`, and `media.ts` files in the `schema` folder.
+  </Instruction.Action>
+  <Instruction.Implementation>
+    <Card>
+      <FileTree focus={[{depth: 2, item: 2}, {depth: 3, item: 1}, {depth: 4, item: 1}, {depth: 4, item: 2}, {depth: 4, item: 3}]}>
+      - src
+        - app 
+        - db
+          - schema
+            - user.ts
+            - post.ts
+            - media.ts
+      </FileTree>
+    </Card>
+  </Instruction.Implementation>
+</Instruction>
+
+It's up to us how we organize our code, Drizzle doesn't have an oppinion on how we do this. We don't have to use a separate file for each entity, but this method makes sense and is easy to understand. Now we can define each of the tables within these files. 
+
+{/* Users table */}
+<Instruction ratio="1">
+  <Instruction.Action step={5}>
+    Add the following code to the `user.ts` file.
+  </Instruction.Action>
+  <Instruction.Implementation>
+    ```users.ts
+    import { text, varchar, pgTable, timestamp } from "drizzle-orm/pg-core"
+
+    export const users = pgTable("users", {
+      id: text("id").primaryKey(),
+      username: varchar("username", { length: 30 }).notNull(),
+      firstName: varchar("first_name", { length: 50 }).notNull(),
+      lastName: varchar("last_name", { length: 50 }).notNull(),
+      avatar: text("avatar").notNull(),
+      createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    })
+    ```
+  </Instruction.Implementation>
+</Instruction>
+
+<SideBySide ratio="1">
+Here is what the equivalent SQL would look like:
+
+ ```sql
+CREATE TABLE IF NOT EXISTS "users" (
+	"id" text PRIMARY KEY NOT NULL,
+	"username" varchar(30) NOT NULL,
+	"first_name" varchar(50) NOT NULL,
+	"last_name" varchar(50) NOT NULL,
+	"avatar" text NOT NULL,
+	"created_at" timestamp with time zone DEFAULT now() NOT NULL
+);
+```
+</SideBySide>
+
+{/* media table */}
+<Instruction ratio="1">
+  <Instruction.Action step={6}>
+    Add the following code to the `media.ts` file.
+  </Instruction.Action>
+  <Instruction.Implementation>
+    ```media.ts
+    import { serial, text, integer, pgTable, pgEnum, timestamp } from "drizzle-orm/pg-core"
+
+    export const mediaType = pgEnum("media_type", ["image", "video"])
+
+    export const media = pgTable("media", {
+      id: serial("id").primaryKey(),
+      type: mediaType("type").notNull(),
+      url: text("url").notNull(),
+      width: integer("width").notNull(),
+      height: integer("height").notNull(),
+      createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    })
+    ```
+  </Instruction.Implementation>
+</Instruction>
+
+This code is defining a table and a [Postgres enum](https://www.postgresql.org/docs/current/datatype-enum.html).
+
+
+<SideBySide ratio="1">
+Here is what the equivalent SQL would look like:
+
+ ```sql
+CREATE TYPE "media_type" AS ENUM('image', 'video');
+
+CREATE TABLE IF NOT EXISTS "media" (
+	"id" serial PRIMARY KEY NOT NULL,
+	"type" "media_type" NOT NULL,
+	"url" text NOT NULL,
+	"width" integer NOT NULL,
+	"height" integer NOT NULL,
+	"created_at" timestamp with time zone DEFAULT now() NOT NULL
+);
+```
+</SideBySide>
+
+{/* posts table */}
+<Instruction ratio="1">
+  <Instruction.Action step={7}>
+    Add the following code to the `posts.ts` file.
+  </Instruction.Action>
+
+  <Instruction.Implementation>
+    ```posts.ts
+    import { serial, text, timestamp, integer, pgTable, AnyPgColumn } from "drizzle-orm/pg-core"
+    import { users } from "./users"
+    import { media } from "./media"
+
+    export const posts = pgTable("posts", {
+      id: serial("id").primaryKey(),
+      userId: text("user_id").notNull().references(() => users.id),
+      mediaId: integer("media_id").references(() => media.id),
+      replyId: integer("reply_id").references((): AnyPgColumn => posts.id),
+      content: text("content").notNull(),
+      createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    })
+    ```
+  </Instruction.Implementation>
+</Instruction>
+
+This code adds foreign key constraints to the other tables. It also has a self-referencing foreign key constraint for the `replyId` column which requires us to explicitly set the return type because of TypeScript limitations.
+
+<SideBySide ratio="1">
+Here is what the equivalent SQL would look like:
+
+ ```sql
+CREATE TABLE IF NOT EXISTS "posts" (
+	"id" serial PRIMARY KEY NOT NULL,
+	"user_id" text NOT NULL,
+	"media_id" integer,
+	"reply_id" integer,
+	"content" text NOT NULL,
+	"created_at" timestamp with time zone DEFAULT now() NOT NULL
+);
+ALTER TABLE "posts" ADD CONSTRAINT "posts_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE no action ON UPDATE no action;
+ALTER TABLE "posts" ADD CONSTRAINT "posts_media_id_media_id_fk" FOREIGN KEY ("media_id") REFERENCES "media"("id") ON DELETE no action ON UPDATE no action;
+ALTER TABLE "posts" ADD CONSTRAINT "posts_reply_id_posts_id_fk" FOREIGN KEY ("reply_id") REFERENCES "posts"("id") ON DELETE no action ON UPDATE no action;
+```
+</SideBySide>
+
+
+
+### Column Types
+
+You can see all of the [column types]](https://orm.drizzle.team/docs/column-types/pg) that are available for [schema decleration](https://orm.drizzle.team/docs/sql-schema-declaration) in the [Drizzle docs](https://orm.drizzle.team/docs/column-types/pg).
+
+## Migrating/Pushing Schema
+
+We have the schema defined for our three tables, that's great, and we could start writing out some queries in TypeScript using Drizzle. However, we really need to add these tables to our Neon database before we can actually add any data or run any queries. We can do this by running a migration or pushing the schema to the database.
+
+## Drizzle Kit
+
+To run migrations, pushes, or do a bunch of other cool things, we first need to install the `drizzle-kit` library. This is the CLI companion for Drizzle.
+
+To do this, we need to use another library called `drizzle-kit` 
+
+<Instruction ratio="1:1">
+  <Instruction.Action step={8}>
+    Install `drizzle-kit` as a dev dependancy.
+  </Instruction.Action>
+  
+  <Instruction.Implementation>
+    <Tabs>
+      <Tab name='npm'>
+        ```bash
+        npm install -D drizzle-kit
+        ```
+      </Tab>
+      <Tab name='pnpm'>
+        ```bash
         pnpm add -D drizzle-kit
         ```
       </Tab>
       <Tab name='yarn'>
-        ```bash copy
-        yarn add drizzle-orm @neondatabase/serverless
+        ```bash
         yarn add -D drizzle-kit
         ```
       </Tab>
       <Tab name='bun'>
-        ```bash copy
-        bun add drizzle-orm @neondatabase/serverless
+        ```bash
         bun add -D drizzle-kit
         ```
       </Tab>
@@ -43,136 +257,11 @@ drivers to access Neon database, as of their [official nodejs docs](https://neon
   </Instruction.Implementation>
 </Instruction>
 
-With Neon Serverless package [[github](https://github.com/neondatabase/serverless), [blog post](https://blog.cloudflare.com/neon-postgres-database-from-workers/)] 
-you can access Neon database from serverless environments with no TCP available, like Cloudflare Workers, through websockets.
+We can configure Drizzle Kit using a `drizzle.config.ts` file in the root of our project. This file will be used to tell Drizzle Kit where to find our schema files, what database driver to use, and where to output the generated files.
 
-
-```index.ts copy filename="index.ts"
-import { neon, neonConfig } from '@neondatabase/serverless';
-import { drizzle } from 'drizzle-orm/neon-http';
-
-neonConfig.fetchConnectionCache = true;
-
-const sql = neon(process.env.DATABASE_URL!);
-const db = drizzle(sql);
-
-const result = await db.select().from(...);
-```
-
-Experimental connection caching
-Connection caching provides server-side connection pooling, so that a new connection does not have to be set up for each query over HTTP. You can enable it by setting fetchConnectionCache to true in the neonConfig object.
-
-
-So much more information about the serverless driver and optomizations 
-https://neon.tech/docs/serverless/serverless-driver
-
-<Note>
-These instructions assume that you will host your Next.js application in a serverless environment. Since Next.js is designed around serverless, I would recommend hosting your Next app on something like [vercel](https://vercel.com/solutions/nextjs), [netlify](https://www.netlify.com/with/nextjs/), or aws serverless using [sst](https://docs.sst.dev/start/nextjs). However, if you plan is to host your Next.js app on a "real" server, then follow the [drizzle postgres.js setup instructions](https://orm.drizzle.team/docs/quick-postgresql/postgresjs) instead. This is according to the official [Neon nodejs docs](https://neon.tech/docs/guides/node).
-</Note>
-
-## Schema 
-
-We need to define the schema for each table in the database. If we just think about the database without the context of a web application, we tend to think about ERDs and creating tables using the a database specific SQL [DDL] Data Definition Language (DDL). 
-
-
-```ts 
-export type User = {
-  id: string
-  username: string
-  firstName: string
-  lastName: string
-  avatar: string
-}
-
-export type Media = {
-  id: number
-  type: "image" | "video"
-  url: string
-  width: number
-  height: number
-}
-
-export type Post = {
-  id: number
-  user: User
-  created: string
-  content: string
-  replyId?: number
-  media?: Media
-}
-
-```
-
-<Excalidraw id="B4BuNm9VO6gBPH8blmu2" />
-
-There is no noticable performance difference between `TEXT` and `VARCHAR` in postgres. If you know the exact limit of the number of characters, and you want to add that as a constraint to your database, then use `VARCHAR`. Otherwise, use `TEXT`. I don't have any limits for my 
-
-```sql 
-CREATE TABLE users (
-  id TEXT PRIMARY KEY,
-  username VARCHAR(30) NOT NULL,
-  first_name VARCHAR(50) NOT NULL,
-  last_name VARCHAR(50) NOT NULL,
-  avatar TEXT NOT NULL
-);
-
-CREATE TABLE media (
-  id SERIAL PRIMARY KEY,
-  type TEXT NOT NULL,
-  url TEXT NOT NULL,
-  width INTEGER NOT NULL,
-  height INTEGER NOT NULL
-);
-
-CREATE TABLE posts (
-  id SERIAL PRIMARY KEY,
-  user_id TEXT NOT NULL REFERENCES users(id),
-  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  content TEXT NOT NULL,
-  reply_id INTEGER,
-  media_id INTEGER REFERENCES media(id)
-);
-```
 
 <Instruction ratio="1:1">
-  <Instruction.Action step={1}>
-    Create a new file inside of `create-post` called `page.tsx`.
-  </Instruction.Action>
-  <Instruction.Implementation>
-    <Card>
-      <FileTree focus={[{depth: 4, item: 1}]}>
-      - src
-        - app 
-          - page.tsx 
-          - create-post (`/create-post` route)
-            - page.tsx (UI)
-      </FileTree>
-    </Card>
-  </Instruction.Implementation>
-</Instruction>
-
-
-```db/schema/user.ts 
-import {sqliteTable, text, integer} from "drizzle-orm/sqlite-core";
-
-export const users = sqliteTable("users", {
-    id: text("id").primaryKey(),
-    firstName: text("first_name"),
-    lastName: text("last_name"),
-    email: text("email")
-});
-```
-
-
-## Column Types 
-
-https://orm.drizzle.team/docs/sql-schema-declaration
-https://orm.drizzle.team/docs/column-types/pg
-
-## Drizzle Kit 
-
-<Instruction ratio="1:1">
-  <Instruction.Action step={1}>
+  <Instruction.Action step={9}>
     Create a new `drizzle.config.ts` file in the root of your project (with all the other config files).
   </Instruction.Action>
   
@@ -190,9 +279,13 @@ https://orm.drizzle.team/docs/column-types/pg
 </Instruction>
 
 <Instruction>
-  <Instruction.Action step={1}>
+  <Instruction.Action step={10}>
     Add the following code to the drizzle config file:
   </Instruction.Action>
+
+  <Note>
+    If you're using `bun`, you don't need to add the `dotenv` code.
+  </Note>
   
   <Instruction.Implementation>
     ```drizzle.config.ts
@@ -207,7 +300,7 @@ https://orm.drizzle.team/docs/column-types/pg
       schema: "./src/db/schema/*",
       driver: "pg",
       dbCredentials: {
-        connectionString: process.env.DATABASE_URL!, 
+        connectionString: process.env.MIGRATION_DATABASE_URL!, 
       },
       out: "./drizzle",
     } satisfies Config
@@ -215,29 +308,314 @@ https://orm.drizzle.team/docs/column-types/pg
   </Instruction.Implementation>
 </Instruction>
 
-{/* <Instruction>
-  <Instruction.Action step={1}>
-In `tsconfig.json`, update the `compilerOptions` target to `es6` 
+All `drizzle-kit` commands we run will use this as the default configuration. It will read the schema files from the schema directory and output any generated files to the `drizzle` directory in the root of our project.
+
+Notice that we're using the `MIGRATION_DATABASE_URL` from the [neon roles](/neon-roles) section.
+
+<Instruction>
+  <Instruction.Action step={11}>
+    If you're not using bun, install `dotenv` as a dev dependancy.
+  </Instruction.Action>  
+  <Instruction.Implementation>
+    <Tabs>
+      <Tab name='npm'>
+        ```bash
+        npm install -D dotenv
+        ```
+      </Tab>
+      <Tab name='pnpm'>
+        ```bash
+        pnpm add -D dotenv
+        ```
+      </Tab>
+      <Tab name='yarn'>
+        ```bash
+        yarn add -D dotenv
+        ```
+      </Tab>
+    </Tabs>
+  </Instruction.Implementation>
+</Instruction>
+
+
+<Instruction ratio="1:1">
+  <Instruction.Action step={12}>
+    In `tsconfig.json`, update the `compilerOptions` target to `es6` 
   </Instruction.Action>
   
   <Instruction.Implementation>
 
+  ```tsconfig.json
+  // focus(3:3)
+  {
+    "compilerOptions": {
+      "target": "es6",
+  ```
+</Instruction.Implementation>
+</Instruction>
 
-```tsconfig.json
-{
-  "compilerOptions": {
-    "target": "es6",
-    ...
+Now we're ready to start using Drizzle Kit!
+
+### Migrate
+
+If you're familiar with migrations already, then you already know how this works. 
+
+Anytime you update the schema in one of those typescript files, you can generate a new migration which generates a new SQL file in the `drizzle/migrations` directory. That SQL file will contain the SQL needed to update the database to match the schema in the typescript files. Then you can run the SQL file against your database to update it.
+
+This is a really amazing feature for so many reasons, but we're going to ignore migrations for now. We will come back to this topic later, but for now there's a better option, pushing. 
+
+<Note>
+For more information on Migrations, you can take a look at the [Drizzle Kit quick start](https://orm.drizzle.team/kit-docs/quick). 
+</Note>
+
+## Push 
+
+Running a migration creates a new SQL file that we have to run against the database. This is really great in production, but when we're rapidly prototyping it can be a bit of a pain to always be generating and running new SQL files for every change we make to the database. So drizzle has a **push** feature to make prototyping and rapid development easier.
+
+
+{/* <Instruction ratio="1:1">
+  <Instruction.Action step={13}>
+    Add the following script to your `package.json` file.
+  </Instruction.Action>
+  
+  <Instruction.Implementation>
+
+  ```package.json
+  // focus(3:3)
+  {
+    "scripts": {
+      "push": "drizzle-kit push:pg"
+    }
+  }
+  ```
+</Instruction.Implementation>
+</Instruction> */}
+
+<Instruction >
+  <Instruction.Action step={13}>
+    Push the database schema to the database.
+  </Instruction.Action>
+  
+  <Instruction.Implementation>
+    <Tabs>
+      <Tab name='npm'>
+        ```bash
+        npx drizzle-kit push:pg
+        ```
+      </Tab>
+      <Tab name='pnpm'>
+        ```bash
+        pnpx drizzle-kit push:pg
+        ```
+      </Tab>
+      <Tab name='yarn'>
+        ```bash
+        yarn dlx drizzle-kit push:pg
+        ```
+      </Tab>
+      <Tab name='bun'>
+        ```bash
+        bunx drizzle-kit push:pg
+        ```
+      </Tab>
+    </Tabs>
+  </Instruction.Implementation>
+</Instruction>
+
+This will run the DDL, the `CREATE TABLE` statements, against the database and create the tables for us. You can verify this by checking out the **Tables** section in the Neon dashboard. Feel free to add some data to the tables while you're there. 
+
+## Drizzle Studio 
+
+Drizzle Studio is a GUI for Drizzle. It's a really great tool for exploring your database and creating or updating data for testing.
+
+<Instruction >
+  <Instruction.Action step={14}>
+    For Drizzle Studio to work, you first need to install `pg`.
+  </Instruction.Action>
+  <Instruction.Implementation>
+  <Tabs>
+      <Tab name='npm'>
+        ```bash
+        npm install -D pg
+        ```
+      </Tab>
+      <Tab name='pnpm'>
+        ```bash
+        pnpm add -D pg
+        ```
+      </Tab>
+      <Tab name='yarn'>
+        ```bash
+        yarn add -D pg
+        ```
+      </Tab>
+      <Tab name='bun'>
+        ```bash
+        bun add -D pg
+        ```
+      </Tab>
+    </Tabs>
+  </Instruction.Implementation>
+</Instruction>
+
+<Instruction >
+  <Instruction.Action step={15}>
+    Run `drizzle-kit studio` to start Drizzle Studio.
+  </Instruction.Action>
+  
+  <Instruction.Implementation>
+    <Tabs>
+      <Tab name='npm'>
+        ```bash
+        npx drizzle-kit studio
+        ```
+      </Tab>
+      <Tab name='pnpm'>
+        ```bash
+        pnpx drizzle-kit studio
+        ```
+      </Tab>
+      <Tab name='yarn'>
+        ```bash
+        yarn dlx drizzle-kit studio
+        ```
+      </Tab>
+      <Tab name='bun'>
+        ```bash
+        bunx drizzle-kit studio
+        ```
+      </Tab>
+    </Tabs>
+  </Instruction.Implementation>
+</Instruction>
+
+It should start running on [http://0.0.0.0:4983](http://0.0.0.0:4983). Visit that URL in your browser and make sure the three tables exist there. Feel free to add some data to the tables while you're there.
+
+## Queries 
+
+Good job making it this far. We have a database with tables in it, let's write some queries. Actually, first we need our code to be able to connect to the database, then we can write queries. 
+
+### Neon Serverless
+
+<Note>
+These instructions assume that you will host your Next.js application in a serverless environment. Since Next.js is designed around serverless, I would recommend hosting your Next app on something like [vercel](https://vercel.com/solutions/nextjs), [netlify](https://www.netlify.com/with/nextjs/), or aws serverless using [sst](https://docs.sst.dev/start/nextjs). However, if you plan is to host your Next.js app on a "real" server, then follow the [drizzle postgres.js setup instructions](https://orm.drizzle.team/docs/quick-postgresql/postgresjs) instead. This is according to the official [Neon nodejs docs](https://neon.tech/docs/guides/node).
+
+So much information about the serverless driver and optomizations: https://neon.tech/docs/serverless/serverless-driver
+</Note>
+
+
+Drizzle is responsible for translating our TypeScript code into SQL and running it, but it doesn't actually connect to the database. We need to use a database driver to connect to the neon database, and we're going to use `@neondatabase/serverless`.
+
+<Instruction>
+  <Instruction.Action step={16}>
+    Install `@neondatabase/serverless`.
+  </Instruction.Action>
+  
+  <Instruction.Implementation>
+    <Tabs>
+      <Tab name='npm'>
+        ```bash
+        npm i @neondatabase/serverless
+        ```
+      </Tab>
+      <Tab name='pnpm'>
+        ```bash
+        pnpm add @neondatabase/serverless
+        ```
+      </Tab>
+      <Tab name='yarn'>
+        ```bash
+        yarn add @neondatabase/serverless
+        ```
+      </Tab>
+      <Tab name='bun'>
+        ```bash
+        bun add @neondatabase/serverless
+        ```
+      </Tab>
+    </Tabs>
+  </Instruction.Implementation>
+</Instruction>
+
+<Instruction>
+  <Instruction.Action step={17}>
+    Create a new file called `index.ts` in the `src/db` folder.
+  </Instruction.Action>
+  <Instruction.Implementation>
+    <Card>
+      <FileTree focus={[{depth:3, item:1}]}>
+      - src
+        - app 
+        - db
+          - index.ts
+          - schema
+      </FileTree>
+    </Card>
+  </Instruction.Implementation>
+</Instruction>
+
+<Instruction>
+  <Instruction.Action step={18}>
+    Add the following code to the `src/db/index.ts` file.
+  </Instruction.Action>
+  <Instruction.Implementation>
+
+    ```src/db/index.ts.ts
+    import { neon, neonConfig } from '@neondatabase/serverless'
+    import { drizzle } from 'drizzle-orm/neon-http'
+
+    neonConfig.fetchConnectionCache = true;
+
+    const sql = neon(process.env.DATABASE_URL!);
+    export const db = drizzle(sql);
+    ```
+    </Instruction.Implementation>
+</Instruction>
+
+Now we can use the exported `db` from this file to run queries from any file in our project. All we have to do is something like this:
+
+```ts
+import { db } from '@/db'
+import { users } from '@/db/schema/users'
+
+const result = await db.select().from(users)
 ```
-</Instruction.Implementation> */}
 
+This would run `SELECT * FROM users` and return an array of user objects from the database. 
 
-Add to package.json 
+You can read the [SQL Select](https://orm.drizzle.team/docs/select) docs to find out more about running SELECT queries.
 
-```json
-"migration:generate": "drizzle-kit generate:pg"
+## Async Components 
+
+Now let's use this on the home page where we display a list of posts.
+
+<Instruction>
+  <Instruction.Action step={19}>
+    Update your `src/app/page.tsx` file to query the posts from the database.
+  </Instruction.Action>
+  <Instruction.Implementation>
+```src/app/page.tsx 
+import { db } from '@/db'
+import { posts } from '@/db/schema/posts'
+
+export default function Home() {
+  const posts = await db.select().from(posts)
+
+  console.log(posts)
+
+  ...
 ```
+  </Instruction.Implementation>
+</Instruction>
 
-```
-npm run generate
-```
+Notice that the component is now an `async` component. That's totally fine and normal. Run the app and navigate to the home page, if you check the server console, you should see an array of posts.
+
+{/* More about async components later, next up async components, then drizzle queries */}
+
+Adjust the rest of your code to grab all posts from the real database instead of the fake one. Remember to add more data to the database using [Drizzle Studio](#drizzle-studio) so that you have more than one post to display.
+
+{/* Experimental connection caching
+Connection caching provides server-side connection pooling, so that a new connection does not have to be set up for each query over HTTP. You can enable it by setting fetchConnectionCache to true in the neonConfig object. */}
+
+
+{/* There is no noticable performance difference between `TEXT` and `VARCHAR` in postgres. If you know the exact limit of the number of characters, and you want to add that as a constraint to your database, then use `VARCHAR`. Otherwise, use `TEXT`. I don't have any limits for my  */}
