@@ -127,7 +127,7 @@ Avoid looking at the source code until the you've completed the tutorial for you
   </Instruction.Implementation>
 </Instruction>
 
-<Instruction>
+<Instruction width="normal">
   <Instruction.Action>
   Open [http://localhost:3000](http://localhost:3000) in your web browser.
   </Instruction.Action>
@@ -165,12 +165,12 @@ We're using [`.tsx`](https://www.typescriptlang.org/docs/handbook/jsx.html) exte
 
 ## App Router
 
-<SideBySide ratio="1:1">
+<SideBySide ratio="1:1" width="normal">
   <ExampleCard>
     All of the application source code is inside of the `/src` directory. Everything else is configuration, tooling, or static assets that we can ignore right now.
   </ExampleCard>
   <Card>
-    <FileTree>
+    <FileTree focus={[{depth:1, item:2}, {depth:2, item:1}, {depth:3, item:1}, {depth:3, item:2}, {depth:3, item:3}]}>
     - public
     - src
       - app
@@ -189,7 +189,7 @@ We're using [`.tsx`](https://www.typescriptlang.org/docs/handbook/jsx.html) exte
 Inside of `/src` there is an `app` directory where we can setup all the **routes** for our app. This paradigm is called [**App Router**](https://nextjs.org/docs/app) and here are the rules:
 
 
-<SideBySide ratio="1:1">
+<SideBySide ratio="2:3" width="normal">
   <ExampleCard>
   - **Folders** inside of `app` are used to define routes.
   - **Files** are used to create UI.
@@ -221,7 +221,7 @@ Inside of `/src` there is an `app` directory where we can setup all the **routes
 
 Right now, there are no folders inside of `app`, so we're in the `/` route which maps to the url: [http://localhost:3000/](http://localhost:3000/). In the web browser, we see the home page which is the contents of `src/app/page.tsx`.
 
-<SideBySide ratio="1:1">
+<SideBySide ratio="1:1" width="normal">
   <ExampleCard>
   localhost:3000/
   </ExampleCard>
@@ -238,8 +238,8 @@ Right now, there are no folders inside of `app`, so we're in the `/` route which
 
 Next, we will create a new route for `localhost:3000/create-post`
 
-<Instruction step={1}>
-  <Instruction.Action>
+<Instruction ratio="1:1">
+  <Instruction.Action step={1}>
     Create a new folder inside of `app` called `create-post`.
   </Instruction.Action>
  <Instruction.Implementation>
@@ -248,20 +248,14 @@ Next, we will create a new route for `localhost:3000/create-post`
     - src
       - app 
         - page.tsx 
-        - create-post (`/create-post` route)
+        - create-post (/create-post route)
     </FileTree>
   </Card>
 </Instruction.Implementation>
 </Instruction>
 
-<SideBySide ratio="1">
-    We have now defined a new route that maps to the url:
-    ```
-    localhost:3000/create-post
-    ```
-</SideBySide>
 
-
+We have now defined a new route that maps to the url: [`localhost:3000/create-post`](http://localhost:3000/create-post)
 
 But visiting that url gives us a 404 error. That's because there's no file inside of `create-post` to generate the UI.
 
@@ -275,7 +269,7 @@ But visiting that url gives us a 404 error. That's because there's no file insid
       - src
         - app 
           - page.tsx 
-          - create-post (`/create-post` route)
+          - create-post (/create-post route)
             - page.tsx (UI)
       </FileTree>
     </Card>
@@ -302,7 +296,7 @@ But visiting that url gives us a 404 error. That's because there's no file insid
 
 
 
-Now you can visit `localhost:3000/create-post` to see the new page.
+Now you can visit [`localhost:3000/create-post`](http://localhost:3000/create-post) to see the new page.
 
 ### Dynamic Routes
 
@@ -324,7 +318,7 @@ When we eventually create a new post, we'll display a list of posts on the home 
     - src
       - app 
         - post 
-          - [id] (`/post/[id]` route)
+          - [id] (/post/[id] route)
             - page.tsx (UI)
       - ...
     </FileTree>
@@ -336,7 +330,7 @@ If we named the directory `id` instead of `[id]`, the url will be `localhost:300
 
 This means we have a route that maps to `localhost:3000/post/any-value`. Eventually we will make sure that this route only works with a valid post id, but for now any value will work.
 
-<Instruction>
+<Instruction ratio="4:7">
   <Instruction.Action step={1}>
     Add the following code to the `page.tsx` file:
   </Instruction.Action>
@@ -386,7 +380,9 @@ It is **important** to know that the name of the directory without the square br
 Please don't name the folder `[pancakes]`, but hopefully you get the point.
 
 <Instruction>
+  <Instruction.Action>
   Visit `localhost:3000/post/any-value` in your browser and change the value of `any-value` to something else. You'll see the page update with the new value.
+  </Instruction.Action>
 </Instruction>
 
 
@@ -404,20 +400,23 @@ Next has some [special file conventions](https://nextjs.org/docs/app/building-yo
 Visit a route that doesn't exist, something like [`localhost:3000/search`](http://localhost:3000/search). You'll see a very generic Next.js 404 page. It's really nice that Next gives us a 404 html page and doesn't fail or error out in a different way, however, we might want our own 404 page that we can customize and style.
 
 <Instruction>
-  Create a new file inside of `app` called `not-found.tsx` and add the following
-  content:
+  <Instruction.Action step={1}>
+  Create a new file inside of `app` called `not-found.tsx` and add the following content:
+  </Instruction.Action>
+  <Instruction.Implementation>
+  ```not-found.tsx
+  export default function NotFound() {
+    return (
+      <main className="text-center mt-10">
+        <h1>404</h1>
+        <p>A custom not found page</p>
+      </main>
+    );
+  }
+  ```
+  </Instruction.Implementation>
 </Instruction>
 
-```tsx
-export default function NotFound() {
-  return (
-    <main className="text-center mt-10">
-      <h1>404</h1>
-      <p>A custom not found page</p>
-    </main>
-  );
-}
-```
 
 Now visiting a URL that doesn't exist will show our custom not-found page.
 
@@ -427,7 +426,8 @@ We can add a not-found page to any route. For example, we could add a `not-found
 
 The app directory came already setup with a file called `app.tsx` and a file called `layout.tsx`. Let's take a look at the layout file.
 
-```tsx
+<div>
+```layout.tsx
 import "./globals.css"; // styles for tailwind
 import type { Metadata } from "next"; // meta data
 import { Inter } from "next/font/google"; // font
@@ -454,12 +454,16 @@ export default function RootLayout({
   );
 }
 ```
+</div>
 
 The main thing we're going to focus on right now is the `RootLayout` function at the bottom. This file also contains the default [tailwind styles](https://nextjs.org/docs/app/building-your-application/styling/tailwind-css), an imported [font](https://nextjs.org/docs/pages/building-your-application/optimizing/fonts), and some [meta data] (https://nextjs.org/docs/app/building-your-application/optimizing/metadata). We'll address these things later on, for now just look at the `RootLayout`.
 
 This is the [`Root Layout`](https://nextjs.org/docs/app/building-your-application/routing/pages-and-layouts#root-layout-required) and it is a required file and function in the **root** of your Next app. This layout defines UI that is shared between all of the pages, so it must define the `<html>` and `<body>` tags. It's also responsible for rendering the pages using the `children` prop.
 
+<SideBySide ratio="3:5" width="normal">
+<Card>
 At a bare minimum, the function would look like this:
+</Card>
 
 ```tsx
 export default function RootLayout({
@@ -476,34 +480,38 @@ export default function RootLayout({
   )
 }
 ```
+</SideBySide>
 
 We don't add a `<head>` tag because next manages that for us with the use of `Metadata`, but we are responsible for adding in the html and body tags. `{children}` will be the current page that is being rendered, and is currently the only thing that changes when we visit a different page.
 
 <Instruction>
+  <Instruction.Action step={1}>
   Update the `RootLayout` to include a *placeholder* for a nav bar:
+  </Instruction.Action>
+  <Instruction.Implementation>
+
+  ```layout.tsx
+  export default function RootLayout({
+    children,
+  }: {
+    children: React.ReactNode
+  }) {
+    return (
+      <html lang="en">
+        <body className={inter.className}>
+
+          <nav className="text-lg text-center">
+            This is going to be the site navigation
+          </nav>
+
+          {children}
+        </body>
+      </html>
+    )
+  }
+  ```
+  </Instruction.Implementation>
 </Instruction>
-
-{/* prettier-ignore */}
-```tsx
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode
-}) {
-  return (
-    <html lang="en">
-      <body className={inter.className}>
-
-        <nav className="text-lg text-center">
-          This is going to be the site navigation
-        </nav>
-
-        {children}
-      </body>
-    </html>
-  )
-}
-```
 
 Now try navigating between the different pages [home](http://localhost:3000/), [/create-post](http://localhost:3000/create-post), [/post/123](http://localhost:3000/post/123). Notice how the layout code is always the same, but the page changes.
 
@@ -516,10 +524,12 @@ Just like with the `not-found.tsx` file, you can also include a `layout.tsx` fil
 We've only looked at the special files that Next uses to render UI, but we can also create our own components and use them in our pages.
 
 <Instruction>
+  <Instruction.Action step={1}>
   Create a new file `/src/app/nav-bar.tsx` with the following content:
-</Instruction>
+</Instruction.Action>
+<Instruction.Implementation>
 
-```tsx
+```src/app/nav-bar.tsx
 export default function NavBar() {
   return (
     <nav className="text-lg text-center">
@@ -528,13 +538,16 @@ export default function NavBar() {
   );
 }
 ```
-
-<Instruction>
-  Update the `RootLayout` to use the new `NavBar` component:
+</Instruction.Implementation>
 </Instruction>
 
-{/* prettier-ignore */}
-```tsx
+<Instruction>
+  <Instruction.Action step={1}>
+  Update the `RootLayout` to use the new `NavBar` component:
+  </Instruction.Action>
+<Instruction.Implementation>
+
+```layout.tsx
 import NavBar from "./nav-bar"
 
 export default function RootLayout({
@@ -554,6 +567,8 @@ export default function RootLayout({
   )
 }
 ```
+</Instruction.Implementation>
+</Instruction>
 
 The UI of the site has not changed, we've just refactored the nav bar code into it's own file. As our code grows, refactoring code into smaller components will help us keep our code organized and easier to maintain.
 
@@ -562,10 +577,10 @@ As long as the name of the file, `nav-bar.tsx` in this case, doesn't conflict wi
 ### Link
 
 <Instruction>
-  Update the `NavBar` component to include links to the home and create post
-  pages:
-</Instruction>
-
+  <Instruction.Action step={1}>
+  Update the `NavBar` component to include links to the home and create post pages:
+  </Instruction.Action>
+<Instruction.Implementation>
 ```tsx
 import Link from "next/link";
 
@@ -584,6 +599,8 @@ export default function NavBar() {
   );
 }
 ```
+</Instruction.Implementation>
+</Instruction>
 
 Now we are able to more easily navigate between the pages. Notice that we're using `Link` instead of `a` tags. This is because Next has a special `Link` component that we can use that enables Next to do some optimizations like [prefetch](https://nextjs.org/docs/app/building-your-application/routing/linking-and-navigating#1-prefetching) and client-side navigation between routes.
 

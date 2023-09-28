@@ -56,26 +56,20 @@ Before we create these new roles, we need to be able to generate secure password
   <Tab name="node">
     ```js
    import crypto from 'crypto'
-   const password = crypto.randomBytes(16).toString('base64').replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+   const password = crypto.randomBytes(16).toString('base64url')
    console.log(password);
    ```
   </Tab>
   <Tab name="browser js">
     ```js
-   function generateUrlSafePassword(length = 16) {
-   const array = new Uint8Array(length);
-   window.crypto.getRandomValues(array);å
-
-   const base64 = btoa(String.fromCharCode(...array))
-      .replace(/\+/g, '-') // Replace '+' with '-'
-      .replace(/\//g, '_') // Replace '/' with '_'
-      .replace(/=+$/, ''); // Remove '=' at the end
-   
-   return base64;
+   function generatePassword() {
+      const bytes = new Uint8Array(16);
+      window.crypto.getRandomValues(bytes);
+      const base64 = btoa(String.fromCharCode(...bytes));
+      return base64.replace('+', '-').replace('/', '_').replace(/=+$/, '');
    }
 
-   const password = generateUrlSafePassword();
-   console.log(password);
+   console.log(generatePassword());
    ```
   </Tab>
   <Tab name="python">

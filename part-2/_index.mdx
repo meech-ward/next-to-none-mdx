@@ -17,28 +17,26 @@ nextPostSlug: "naming-tsx"
 
 In this part, we will learn how to setup our database schema
 
-## Drizzle 
-
-Why drizzle?
 
 ## Database
 
-Database as a service?
-Which database as a service?
+* Database as a service?
+* Which database as a service?
+  * vercel postgres
+  * neon 
+  * planet scale
+  * turso 
 
-* vercel postgres
-* neon 
-* planet scale
-* turso 
 
+## Drizzle 
 
-```
+* Why drizzle?
+* How Drizzle?
+* .env in next.js 
 
-export const users = sqliteTable("users", {
-    id: text("id").primaryKey(),
-    firstName: text("first_name"),
-    lastName: text("last_name"),
-    email: text("email")
-});
+## Async components 
 
-```
+caching, async, requests etc. 
+
+## Server Actions 
+

@@ -138,14 +138,7 @@ CREATE TABLE IF NOT EXISTS "users" (
       createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
     })
     ```
-  </Instruction.Implementation>
-</Instruction>
-
-This code is defining a table and a [Postgres enum](https://www.postgresql.org/docs/current/datatype-enum.html).
-
-
-<SideBySide ratio="1">
-Here is what the equivalent SQL would look like:
+    {/* Here is what the equivalent SQL would look like: */}
 
  ```sql
 CREATE TYPE "media_type" AS ENUM('image', 'video');
@@ -159,6 +152,14 @@ CREATE TABLE IF NOT EXISTS "media" (
 	"created_at" timestamp with time zone DEFAULT now() NOT NULL
 );
 ```
+  </Instruction.Implementation>
+</Instruction>
+
+This code is defining a table and a [Postgres enum](https://www.postgresql.org/docs/current/datatype-enum.html).
+
+
+<SideBySide ratio="1">
+
 </SideBySide>
 
 {/* posts table */}
@@ -346,7 +347,7 @@ Notice that we're using the `MIGRATION_DATABASE_URL` from the [neon roles](/neon
     "compilerOptions": {
       "target": "es6",
   ```
-</Instruction.Implementation>
+  </Instruction.Implementation>
 </Instruction>
 
 Now we're ready to start using Drizzle Kit!
