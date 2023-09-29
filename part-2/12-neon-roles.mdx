@@ -103,8 +103,8 @@ Run this code to generate a new role for the migrations:
 -- Create a new role for migrations
 CREATE ROLE migration_role WITH LOGIN PASSWORD 'your_password_here';
 
--- Grant permissions on the "neon" database
-GRANT ALL PRIVILEGES ON DATABASE "neon" TO migration_role;
+-- Grant permissions on the "neondb" database
+GRANT ALL PRIVILEGES ON DATABASE "neondb" TO migration_role;
 
 -- Grant usage on the "public" schema
 GRANT USAGE, CREATE ON SCHEMA public TO migration_role;
@@ -140,7 +140,7 @@ Run this code to generate a new role for the application CRUD operations:
 -- Create a new role for the application
 CREATE ROLE app_role WITH LOGIN PASSWORD 'your_password_here';
 
--- Grant permissions on the "neon" database
+-- Grant permissions on the "neondb" database
 GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA public TO app_role;
 ```
 </Instruction.Implementation>
