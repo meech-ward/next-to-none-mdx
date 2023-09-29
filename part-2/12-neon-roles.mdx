@@ -115,7 +115,7 @@ GRANT USAGE, CREATE ON SCHEMA public TO migration_role;
 Your migration role can connect to the database using the following connection string as long as you replace `<PGHOST>` with the value from the **Connection Details** section of the [Neon Console](https://console.neon.tech/):
 
 ```
-postgres://migration_role:your_password_here@<PGHOST>/neon
+postgres://migration_role:your_password_here@<PGHOST>/neondb
 ```
 
 <Instruction ratio="1">
@@ -124,7 +124,7 @@ Add this to your `.env.local` file as `MIGRATION_DATABASE_URL`.
 </Instruction.Action>
 <Instruction.Implementation>
 ```sh
-MIGRATION_DATABASE_URL=postgres://migration_role:your_password_here@<PGHOST>/neon
+MIGRATION_DATABASE_URL=postgres://migration_role:your_password_here@<PGHOST>/neondb
 ```
 </Instruction.Implementation>
 </Instruction>
@@ -149,7 +149,7 @@ GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA public TO app_role;
 Your application role can connect to the database using the following connection string as long as you replace `<PGHOST>` with the value from the **Connection Details** section of the [Neon Console](https://console.neon.tech/):
 
 ```
-postgres://app_role:your_password_here@<PGHOST>/neon
+postgres://app_role:your_password_here@<PGHOST>/neondb
 ```
 
 <Instruction ratio="1">
@@ -158,7 +158,7 @@ Add this to your `.env.local` file as `DATABASE_URL`.
 </Instruction.Action>
 <Instruction.Implementation>
 ```sh
-DATABASE_URL=postgres://app_role:your_password_here@<PGHOST>/neon
+DATABASE_URL=postgres://app_role:your_password_here@<PGHOST>/neondb
 ```
 </Instruction.Implementation>
 </Instruction>
@@ -173,8 +173,8 @@ Add `?sslmode=verify-full` to the end of the `MIGRATION_DATABASE_URL` connection
 <Instruction.Implementation>
 ```sh
 #focus(1:1)
-MIGRATION_DATABASE_URL=postgres://migration_role:your_password_here@<PGHOST>/neon?sslmode=verify-full
-DATABASE_URL=postgres://app_role:your_password_here@<PGHOST>/neon
+MIGRATION_DATABASE_URL=postgres://migration_role:your_password_here@<PGHOST>/neondb?sslmode=verify-full
+DATABASE_URL=postgres://app_role:your_password_here@<PGHOST>/neondb
 ```
 </Instruction.Implementation>
 </Instruction>
