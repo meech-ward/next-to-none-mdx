@@ -88,8 +88,9 @@ It's up to us how we organize our code, Drizzle doesn't have an oppinion on how 
     Add the following code to the `user.ts` file.
   </Instruction.Action>
   <Instruction.Implementation>
+  <CodeWithOutput>
     ```users.ts
-    import { text, varchar, pgTable, timestamp } from "drizzle-orm/pg-core"
+    import { pgTable, text, varchar, timestamp } from "drizzle-orm/pg-core"
 
     export const users = pgTable("users", {
       id: text("id").primaryKey(),
@@ -100,21 +101,115 @@ It's up to us how we organize our code, Drizzle doesn't have an oppinion on how 
       createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
     })
     ```
+    ```sql
+    CREATE TABLE IF NOT EXISTS "users" (
+      "id" text PRIMARY KEY NOT NULL,
+      "username" varchar(30) NOT NULL,
+      "first_name" varchar(50) NOT NULL,
+      "last_name" varchar(50) NOT NULL,
+      "avatar" text NOT NULL,
+      "created_at" timestamp with time zone DEFAULT now() NOT NULL
+    );
+    ```
+    </CodeWithOutput>
   </Instruction.Implementation>
 </Instruction>
 
-<SideBySide ratio="1">
-Here is what the equivalent SQL would look like:
+The Drizzle TypeScript we've written here is kind of similar to SQL we would write to define the table, and you can click the <CodeButtonSVG.TopBottomFilledBottom inline /> button to see the SQL that Drizzle generates from this TypeScript. We never really have to think about `CREATE` or `ALTER` statements though, we just define the schema in TypeScript and Drizzle takes care of everything else for us.
 
- ```sql
-CREATE TABLE IF NOT EXISTS "users" (
-	"id" text PRIMARY KEY NOT NULL,
-	"username" varchar(30) NOT NULL,
-	"first_name" varchar(50) NOT NULL,
-	"last_name" varchar(50) NOT NULL,
-	"avatar" text NOT NULL,
-	"created_at" timestamp with time zone DEFAULT now() NOT NULL
-);
+Let's break down the drizzle code a bit.
+
+
+
+<SideBySide ratio="2:3">
+Use the `pgTable` function to define a Postgres table. The first argument is the name of the table as it will appear in postgres, and the second argument is an object that defines the columns. 
+
+```ts
+import { pgTable } from "drizzle-orm/pg-core"
+const users = pgTable("users", {
+  // All columns here
+})
+```
+</SideBySide>
+
+<SideBySide ratio="1:1">
+<SideBySideBlock>
+Drizzle provides a set of functions that map to PostgreSQL column types. 
+
+These need to be imported from `drizzle-orm/pg-core`.
+</SideBySideBlock>
+```ts
+// focus(2:4)
+// focus(8:10)
+import { 
+  text, 
+  varchar, 
+  timestamp 
+} from "drizzle-orm/pg-core"
+```
+</SideBySide>
+
+<SideBySide ratio="3:5">
+Use these functions to define each column as a property on the table object.
+
+```ts
+// focus(2:4)
+export const users = pgTable("users", {
+  id: text("id").primaryKey(),
+  username: varchar("username", { length: 30 }).notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  // ...
+})
+```
+</SideBySide>
+
+
+<SideBySide center>
+<SideBySideBlock>
+Each of these functions takes two arguments:
+
+1. The name of the column as it will appear in the PostgreSQL table.
+2. An optional object that specifies additional column constraints or properties.
+</SideBySideBlock>
+```ts
+// focus(2:3)
+varchar(
+  "username", // 1
+  { length: 30 } // 2
+)
+```
+</SideBySide>
+
+<SideBySide>
+Constraints and defaults can then be chained onto the end using methods like `.notNull()` and `default()`.
+```ts
+// focus(2:3)
+timestamp("created_at", { withTimezone: true })
+  .notNull()
+  .defaultNow()
+```
+</SideBySide>
+
+
+
+You might have noticed that we use camelCase for the property names in TypeScript  and snake_case for the column names in Postgres.
+
+<Card center>
+createdAt -> created_at
+
+firstName -> first_name
+</Card>
+
+This is a common practice to adhere to the naming conventions of both languages. Drizzle takes care of mapping these for us.
+
+<SideBySide ratio="1:1" width="normal">
+```query.ts 
+db.select().from(users)
+  .where(eq(users.firstName, "Sam"))
+```
+```query.sql 
+SELECT * FROM users 
+WHERE users.first_name = 'Sam';
 ```
 </SideBySide>
 
@@ -124,6 +219,7 @@ CREATE TABLE IF NOT EXISTS "users" (
     Add the following code to the `media.ts` file.
   </Instruction.Action>
   <Instruction.Implementation>
+    <CodeWithOutput>
     ```media.ts
     import { serial, text, integer, pgTable, pgEnum, timestamp } from "drizzle-orm/pg-core"
 
@@ -138,28 +234,36 @@ CREATE TABLE IF NOT EXISTS "users" (
       createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
     })
     ```
-    {/* Here is what the equivalent SQL would look like: */}
+    ```sql
+      CREATE TYPE "media_type" AS ENUM('image', 'video');
 
- ```sql
-CREATE TYPE "media_type" AS ENUM('image', 'video');
-
-CREATE TABLE IF NOT EXISTS "media" (
-	"id" serial PRIMARY KEY NOT NULL,
-	"type" "media_type" NOT NULL,
-	"url" text NOT NULL,
-	"width" integer NOT NULL,
-	"height" integer NOT NULL,
-	"created_at" timestamp with time zone DEFAULT now() NOT NULL
-);
-```
+      CREATE TABLE IF NOT EXISTS "media" (
+        "id" serial PRIMARY KEY NOT NULL,
+        "type" "media_type" NOT NULL,
+        "url" text NOT NULL,
+        "width" integer NOT NULL,
+        "height" integer NOT NULL,
+        "created_at" timestamp with time zone DEFAULT now() NOT NULL
+      );
+      ```
+    </CodeWithOutput>
   </Instruction.Implementation>
 </Instruction>
 
-This code is defining a table and a [Postgres enum](https://www.postgresql.org/docs/current/datatype-enum.html).
+<SideBySide ratio="3:5">
+`pgEnum` is used to define a [Postgres enum](https://www.postgresql.org/docs/current/datatype-enum.html).
+Then we can use it just like any other type.
+```ts
+// focus(1:1)
+// focus(5:5)
+const mediaType = pgEnum("media_type", ["image", "video"])
 
-
-<SideBySide ratio="1">
-
+const media = pgTable("media", {
+  id: serial("id").primaryKey(),
+  type: mediaType("type").notNull(),
+  // ...
+})
+```
 </SideBySide>
 
 {/* posts table */}
@@ -167,8 +271,8 @@ This code is defining a table and a [Postgres enum](https://www.postgresql.org/d
   <Instruction.Action step={7}>
     Add the following code to the `posts.ts` file.
   </Instruction.Action>
-
   <Instruction.Implementation>
+    <CodeWithOutput>
     ```posts.ts
     import { serial, text, timestamp, integer, pgTable, AnyPgColumn } from "drizzle-orm/pg-core"
     import { users } from "./users"
@@ -183,44 +287,67 @@ This code is defining a table and a [Postgres enum](https://www.postgresql.org/d
       createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
     })
     ```
+    ```sql
+      CREATE TABLE IF NOT EXISTS "posts" (
+        "id" serial PRIMARY KEY NOT NULL,
+        "user_id" text NOT NULL,
+        "media_id" integer,
+        "reply_id" integer,
+        "content" text NOT NULL,
+        "created_at" timestamp with time zone DEFAULT now() NOT NULL
+      );
+      ALTER TABLE "posts" ADD CONSTRAINT "posts_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE no action ON UPDATE no action;
+      ALTER TABLE "posts" ADD CONSTRAINT "posts_media_id_media_id_fk" FOREIGN KEY ("media_id") REFERENCES "media"("id") ON DELETE no action ON UPDATE no action;
+      ALTER TABLE "posts" ADD CONSTRAINT "posts_reply_id_posts_id_fk" FOREIGN KEY ("reply_id") REFERENCES "posts"("id") ON DELETE no action ON UPDATE no action;
+    ```
+    </CodeWithOutput>
   </Instruction.Implementation>
 </Instruction>
 
-This code adds foreign key constraints to the other tables. It also has a self-referencing foreign key constraint for the `replyId` column which requires us to explicitly set the return type because of TypeScript limitations.
+<SideBySide ratio="3:5">
+`import` another table to reference it in the constaint.
 
-<SideBySide ratio="1">
-Here is what the equivalent SQL would look like:
+Chaining a `references()` function will add a foreign key constraint.
+```ts
+// focus(1:2)
+// focus(6:7)
+import { users } from "./users"
+import { media } from "./media"
 
- ```sql
-CREATE TABLE IF NOT EXISTS "posts" (
-	"id" serial PRIMARY KEY NOT NULL,
-	"user_id" text NOT NULL,
-	"media_id" integer,
-	"reply_id" integer,
-	"content" text NOT NULL,
-	"created_at" timestamp with time zone DEFAULT now() NOT NULL
-);
-ALTER TABLE "posts" ADD CONSTRAINT "posts_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE no action ON UPDATE no action;
-ALTER TABLE "posts" ADD CONSTRAINT "posts_media_id_media_id_fk" FOREIGN KEY ("media_id") REFERENCES "media"("id") ON DELETE no action ON UPDATE no action;
-ALTER TABLE "posts" ADD CONSTRAINT "posts_reply_id_posts_id_fk" FOREIGN KEY ("reply_id") REFERENCES "posts"("id") ON DELETE no action ON UPDATE no action;
+export const posts = pgTable("posts", {
+   id: serial("id").primaryKey(),
+   userId: text("user_id").notNull().references(() => users.id),
+   mediaId: integer("media_id").references(() => media.id),
+   // ...
+})
 ```
 </SideBySide>
 
-
+<SideBySide ratio="3:5">
+A self-referencing foreign key constraint requires us to explicitly set the return type because of TypeScript limitations.
+```ts 
+integer("reply_id").references((): AnyPgColumn => posts.id),
+```
+</SideBySide>
 
 ### Column Types
 
-You can see all of the [column types]](https://orm.drizzle.team/docs/column-types/pg) that are available for [schema decleration](https://orm.drizzle.team/docs/sql-schema-declaration) in the [Drizzle docs](https://orm.drizzle.team/docs/column-types/pg).
+You can see all of the [column types](https://orm.drizzle.team/docs/column-types/pg) that are available for [schema decleration](https://orm.drizzle.team/docs/sql-schema-declaration) in the [Drizzle docs](https://orm.drizzle.team/docs/column-types/pg).
 
 ## Migrating/Pushing Schema
 
-We have the schema defined for our three tables, that's great, and we could start writing out some queries in TypeScript using Drizzle. However, we really need to add these tables to our Neon database before we can actually add any data or run any queries. We can do this by running a migration or pushing the schema to the database.
+The schema is now defined for our three tables, that's great! We could even use these to start writing out some type safe queries in TypeScript, however, we should probably add these tables to our Neon database before we do anything else. That way we can actually add some data and run some queries. 
+
+To run the schema against the database we can do one of two things:
+
+* **Migrate**: Generate a migration, which creates sql files, then run those files against the database. 
+* **Push**: Apply the shema directly to the database without creating migration files. 
+
+Either way, we're going to need Drizzle Kit.
 
 ## Drizzle Kit
 
 To run migrations, pushes, or do a bunch of other cool things, we first need to install the `drizzle-kit` library. This is the CLI companion for Drizzle.
-
-To do this, we need to use another library called `drizzle-kit` 
 
 <Instruction ratio="1:1">
   <Instruction.Action step={8}>
@@ -253,8 +380,7 @@ To do this, we need to use another library called `drizzle-kit`
   </Instruction.Implementation>
 </Instruction>
 
-We can configure Drizzle Kit using a `drizzle.config.ts` file in the root of our project. This file will be used to tell Drizzle Kit where to find our schema files, what database driver to use, and where to output the generated files.
-
+To configure Drizzle Kit, we can add a `drizzle.config.ts` file in the root of the project. This file will be used to tell Drizzle Kit where to find the schema files, what database driver to use, and where to output the generated files.
 
 <Instruction ratio="1:1">
   <Instruction.Action step={9}>
@@ -304,13 +430,15 @@ We can configure Drizzle Kit using a `drizzle.config.ts` file in the root of our
   </Instruction.Implementation>
 </Instruction>
 
-All `drizzle-kit` commands we run will use this as the default configuration. It will read the schema files from the schema directory and output any generated files to the `drizzle` directory in the root of our project.
-
 Notice that we're using the `MIGRATION_DATABASE_URL` from the [neon roles](/neon-roles) section.
+
+All `drizzle-kit` commands will use this as the default configuration. It will read the schema files from the schema directory and output any generated files to the `drizzle` directory in the root of the project. 
+
+It won't need to generate any files for us yet, so it won't actually create a `./drizzle` directory yet, but later we'll use it to generate migration files.
 
 <Instruction>
   <Instruction.Action step={11}>
-    If you're not using bun, install `dotenv` as a dev dependancy.
+    Install `dotenv` as a dev dependancy. Only do this if you're **not** using bun.
   </Instruction.Action>  
   <Instruction.Implementation>
     <Tabs>
@@ -346,6 +474,9 @@ Notice that we're using the `MIGRATION_DATABASE_URL` from the [neon roles](/neon
   {
     "compilerOptions": {
       "target": "es6",
+      // ...
+    }
+  }
   ```
   </Instruction.Implementation>
 </Instruction>
