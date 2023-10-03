@@ -607,7 +607,17 @@ Drizzle Studio is a GUI for Drizzle. It's a really great tool for exploring your
   </Instruction.Implementation>
 </Instruction>
 
-It should start running on [http://127.0.0.1:4983](http://127.0.0.1:4983). Visit that URL in your browser and make sure the three tables exist there. Feel free to add some data to the tables while you're there.
+It should start running on [http://127.0.0.1:4983](http://127.0.0.1:4983). Visit that URL in your browser and make sure the three tables exist there. 
+
+<Instruction >
+  <Instruction.Action step={16}>
+    Create a new fake user for yourself. Here's a placeholder image for a user avatar: "https://www.gravatar.com/avatar/?d=mp".
+
+    Create a few posts for yourself. Remember that `user_id` and `content` are the only required fields that you **must** provide values for.
+  </Instruction.Action>
+</Instruction>
+
+Feel free to add more data to the tables while you're there, just make sure you have at least one user and a few posts.
 
 ## Drizzle and Next
 
@@ -627,7 +637,7 @@ So much information about the serverless driver and optomizations: https://neon.
 Drizzle is responsible for translating our TypeScript code into SQL and running it, but it doesn't actually connect to the database. We need to use a database driver to connect to the neon database, and we're going to use `@neondatabase/serverless`.
 
 <Instruction>
-  <Instruction.Action step={16}>
+  <Instruction.Action step={17}>
     Install `@neondatabase/serverless`.
   </Instruction.Action>
   
@@ -658,13 +668,13 @@ Drizzle is responsible for translating our TypeScript code into SQL and running 
 </Instruction>
 
 <Instruction>
-  <Instruction.Action step={17}>
+  <Instruction.Action step={18}>
     Create a new file called `index.ts` in the `src/db` folder.
   </Instruction.Action>
   <Instruction.Implementation>
     <Card>
       <FileTree focus={[{depth:3, item:1}]}>
-      - src
+      - src    
         - app 
         - db
           - index.ts
@@ -675,7 +685,7 @@ Drizzle is responsible for translating our TypeScript code into SQL and running 
 </Instruction>
 
 <Instruction>
-  <Instruction.Action step={18}>
+  <Instruction.Action step={19}>
     Add the following code to the `src/db/index.ts` file.
   </Instruction.Action>
   <Instruction.Implementation>
@@ -713,7 +723,7 @@ You can read the [Drizzle Queries](https://orm.drizzle.team/docs/rqb) docs to se
 Now let's use this on the home page where we display a list of posts.
 
 <Instruction>
-  <Instruction.Action step={19}>
+  <Instruction.Action step={20}>
     Update your `src/app/page.tsx` file to query the posts from the database.
   </Instruction.Action>
   <Instruction.Implementation>
