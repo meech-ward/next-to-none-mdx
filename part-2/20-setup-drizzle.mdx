@@ -729,10 +729,10 @@ Now let's use this on the home page where we display a list of posts.
   <Instruction.Implementation>
 ```src/app/page.tsx 
 import { db } from '@/db'
-import { posts } from '@/db/schema/posts'
+import { posts as postsTable } from '@/db/schema/posts'
 
-export default function Home() {
-  const posts = await db.select().from(posts)
+export default async function Home() {
+  const posts = await db.select().from(postsTable)
 
   console.log(posts)
 
