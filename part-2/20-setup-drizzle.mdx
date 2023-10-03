@@ -63,7 +63,7 @@ We're going to avoid writing raw SQL, and instead use TypeScript for everything.
     Create a new folder called `schema` in the `db` folder.
   </Instruction.Action>
   <Instruction.Action step={4}>
-    Create `user.ts`, `post.ts`, and `media.ts` files in the `schema` folder.
+    Create `users.ts`, `posts.ts`, and `media.ts` files in the `schema` folder.
   </Instruction.Action>
   <Instruction.Implementation>
     <Card>
@@ -72,8 +72,8 @@ We're going to avoid writing raw SQL, and instead use TypeScript for everything.
         - app 
         - db
           - schema
-            - user.ts
-            - post.ts
+            - users.ts
+            - posts.ts
             - media.ts
       </FileTree>
     </Card>
@@ -82,10 +82,11 @@ We're going to avoid writing raw SQL, and instead use TypeScript for everything.
 
 It's up to us how we organize our code, Drizzle doesn't have an oppinion on how we do this. We don't have to use a separate file for each entity, but this method makes sense and is easy to understand. Now we can define each of the tables within these files. 
 
-{/* Users table */}
+### `users.ts`
+
 <Instruction ratio="1">
   <Instruction.Action step={5}>
-    Add the following code to the `user.ts` file.
+    Add the following code to the `users.ts` file.
   </Instruction.Action>
   <Instruction.Implementation>
   <CodeWithOutput>
@@ -118,7 +119,6 @@ It's up to us how we organize our code, Drizzle doesn't have an oppinion on how 
 The Drizzle TypeScript we've written here is kind of similar to SQL we would write to define the table, and you can click the <CodeButtonSVG.TopBottomFilledBottom inline /> button to see the SQL that Drizzle generates from this TypeScript. We never really have to think about `CREATE` or `ALTER` statements though, we just define the schema in TypeScript and Drizzle takes care of everything else for us.
 
 Let's break down the drizzle code a bit.
-
 
 
 <SideBySide ratio="2:3">
@@ -213,7 +213,8 @@ WHERE users.first_name = 'Sam';
 ```
 </SideBySide>
 
-{/* media table */}
+### `media.ts`
+
 <Instruction ratio="1">
   <Instruction.Action step={6}>
     Add the following code to the `media.ts` file.
@@ -266,7 +267,8 @@ const media = pgTable("media", {
 ```
 </SideBySide>
 
-{/* posts table */}
+### `posts.ts`
+
 <Instruction ratio="1">
   <Instruction.Action step={7}>
     Add the following code to the `posts.ts` file.
@@ -347,7 +349,15 @@ Either way, we're going to need Drizzle Kit.
 
 ## Drizzle Kit
 
-To run migrations, pushes, or do a bunch of other cool things, we first need to install the `drizzle-kit` library. This is the CLI companion for Drizzle.
+To run migrations, pushes, or do a bunch of other cool things, we can use the `drizzle-kit` library. 
+
+```sh 
+drizzle-kit push:pg # Update Database Schema
+drizzle-kit generate:pg # Generate migration files from the database schema
+drizzle-kit studio # Start Drizzle Studio
+```
+
+This is the CLI companion for Drizzle.
 
 <Instruction ratio="1:1">
   <Instruction.Action step={8}>
@@ -380,7 +390,7 @@ To run migrations, pushes, or do a bunch of other cool things, we first need to 
   </Instruction.Implementation>
 </Instruction>
 
-To configure Drizzle Kit, we can add a `drizzle.config.ts` file in the root of the project. This file will be used to tell Drizzle Kit where to find the schema files, what database driver to use, and where to output the generated files.
+All of the `drizzle-kit` commands use a `drizzle.config.ts` file in the root of the project. This file tells Drizzle Kit where to find the schema files, what database driver to use, and where to output the generated files.
 
 <Instruction ratio="1:1">
   <Instruction.Action step={9}>
@@ -430,11 +440,9 @@ To configure Drizzle Kit, we can add a `drizzle.config.ts` file in the root of t
   </Instruction.Implementation>
 </Instruction>
 
-Notice that we're using the `MIGRATION_DATABASE_URL` from the [neon roles](/neon-roles) section.
+Notice that we're using the `MIGRATION_DATABASE_URL` from the [neon roles](/neon-roles) section. This url will be used for migrations, pushes, and drizzle studio. 
 
-All `drizzle-kit` commands will use this as the default configuration. It will read the schema files from the schema directory and output any generated files to the `drizzle` directory in the root of the project. 
-
-It won't need to generate any files for us yet, so it won't actually create a `./drizzle` directory yet, but later we'll use it to generate migration files.
+We won't generate any migration files right now, but when we do, they will be generated in the `./drizzle` directory.
 
 <Instruction>
   <Instruction.Action step={11}>
@@ -487,7 +495,7 @@ Now we're ready to start using Drizzle Kit!
 
 If you're familiar with migrations already, then you already know how this works. 
 
-Anytime you update the schema in one of those typescript files, you can generate a new migration which generates a new SQL file in the `drizzle/migrations` directory. That SQL file will contain the SQL needed to update the database to match the schema in the typescript files. Then you can run the SQL file against your database to update it.
+Anytime you update the schema in one of those typescript files, you can generate a new migration which generates a new SQL file in the `./drizzle/migrations` directory. That SQL file will contain the SQL needed to update the database to match the schema in the typescript files. Then you can run the SQL file against your database to update it.
 
 This is a really amazing feature for so many reasons, but we're going to ignore migrations for now. We will come back to this topic later, but for now there's a better option, pushing. 
 
@@ -495,28 +503,9 @@ This is a really amazing feature for so many reasons, but we're going to ignore 
 For more information on Migrations, you can take a look at the [Drizzle Kit quick start](https://orm.drizzle.team/kit-docs/quick). 
 </Note>
 
-## Push 
+### Push 
 
-Running a migration creates a new SQL file that we have to run against the database. This is really great in production, but when we're rapidly prototyping it can be a bit of a pain to always be generating and running new SQL files for every change we make to the database. So drizzle has a **push** feature to make prototyping and rapid development easier.
-
-
-{/* <Instruction ratio="1:1">
-  <Instruction.Action step={13}>
-    Add the following script to your `package.json` file.
-  </Instruction.Action>
-  
-  <Instruction.Implementation>
-
-  ```package.json
-  // focus(3:3)
-  {
-    "scripts": {
-      "push": "drizzle-kit push:pg"
-    }
-  }
-  ```
-</Instruction.Implementation>
-</Instruction> */}
+Running a migration creates a new SQL file that we have to run against the database. This is really great in production, but when we're rapidly prototyping it can be a bit of a pain to always be generating and running new SQL files for every little change we make to the database. So drizzle has a **push** feature to make prototyping and rapid development easier.
 
 <Instruction >
   <Instruction.Action step={13}>
@@ -551,13 +540,15 @@ Running a migration creates a new SQL file that we have to run against the datab
 
 This will run the DDL, the `CREATE TABLE` statements, against the database and create the tables for us. You can verify this by checking out the **Tables** section in the Neon dashboard. Feel free to add some data to the tables while you're there. 
 
+If we need to make a change to the schema, we can just update the TypeScript files and run `drizzle-kit push:pg` again. Drizzle will handle the `ALTER TABLE` statements, we only need to worry about the structure of the schema.
+
 ## Drizzle Studio 
 
 Drizzle Studio is a GUI for Drizzle. It's a really great tool for exploring your database and creating or updating data for testing.
 
 <Instruction >
   <Instruction.Action step={14}>
-    For Drizzle Studio to work, you first need to install `pg`.
+    For Drizzle Studio to work with Postgres, we first need to install `pg`.
   </Instruction.Action>
   <Instruction.Implementation>
   <Tabs>
@@ -616,13 +607,15 @@ Drizzle Studio is a GUI for Drizzle. It's a really great tool for exploring your
   </Instruction.Implementation>
 </Instruction>
 
-It should start running on [http://0.0.0.0:4983](http://0.0.0.0:4983). Visit that URL in your browser and make sure the three tables exist there. Feel free to add some data to the tables while you're there.
+It should start running on [http://127.0.0.1:4983](http://127.0.0.1:4983). Visit that URL in your browser and make sure the three tables exist there. Feel free to add some data to the tables while you're there.
 
-## Queries 
+## Drizzle and Next
 
-Good job making it this far. We have a database with tables in it, let's write some queries. Actually, first we need our code to be able to connect to the database, then we can write queries. 
+Good job making it this far. We have a database with tables in it, let's write some queries. 
 
-### Neon Serverless
+Actually, first we need our next app to be able to connect to the database, then we can write and run queries. 
+
+### Neon Serverless & Drizzle ORM
 
 <Note>
 These instructions assume that you will host your Next.js application in a serverless environment. Since Next.js is designed around serverless, I would recommend hosting your Next app on something like [vercel](https://vercel.com/solutions/nextjs), [netlify](https://www.netlify.com/with/nextjs/), or aws serverless using [sst](https://docs.sst.dev/start/nextjs). However, if you plan is to host your Next.js app on a "real" server, then follow the [drizzle postgres.js setup instructions](https://orm.drizzle.team/docs/quick-postgresql/postgresjs) instead. This is according to the official [Neon nodejs docs](https://neon.tech/docs/guides/node).
@@ -699,18 +692,21 @@ Drizzle is responsible for translating our TypeScript code into SQL and running 
     </Instruction.Implementation>
 </Instruction>
 
-Now we can use the exported `db` from this file to run queries from any file in our project. All we have to do is something like this:
+### Queries
+
+All database interactions will happen through the `db` object. We just need to import the `db` object and any tables we want to query from, then we can run queries like this:
 
 ```ts
 import { db } from '@/db'
 import { users } from '@/db/schema/users'
 
-const result = await db.select().from(users)
+const users = await db.select().from(users) // get all users
+await db.insert(users).values({ name: 'Sam' }) // create a new user
+await db.update(users).set({ name: 'saM' }).where(eq(users.name, "Sam")) // update a user
+await db.delete(users).where(eq(users.name, 'saM')) // delete a user
 ```
 
-This would run `SELECT * FROM users` and return an array of user objects from the database. 
-
-You can read the [SQL Select](https://orm.drizzle.team/docs/select) docs to find out more about running SELECT queries.
+You can read the [Drizzle Queries](https://orm.drizzle.team/docs/rqb) docs to see more examples of queries.
 
 ## Async Components
 
@@ -730,7 +726,8 @@ export default function Home() {
 
   console.log(posts)
 
-  ...
+  // ...
+}
 ```
   </Instruction.Implementation>
 </Instruction>
@@ -740,6 +737,8 @@ Notice that the component is now an `async` component. That's totally fine and n
 {/* More about async components later, next up async components, then drizzle queries */}
 
 Adjust the rest of your code to grab all posts from the real database instead of the fake one. Remember to add more data to the database using [Drizzle Studio](#drizzle-studio) so that you have more than one post to display.
+
+Don't worry about creating or updating any data for now, just focus on reading data from the database. We'll come back to creating and updating data later.
 
 {/* Experimental connection caching
 Connection caching provides server-side connection pooling, so that a new connection does not have to be set up for each query over HTTP. You can enable it by setting fetchConnectionCache to true in the neonConfig object. */}
