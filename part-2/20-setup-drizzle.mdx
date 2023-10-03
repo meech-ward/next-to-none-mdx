@@ -336,6 +336,87 @@ integer("reply_id").references((): AnyPgColumn => posts.id),
 
 You can see all of the [column types](https://orm.drizzle.team/docs/column-types/pg) that are available for [schema decleration](https://orm.drizzle.team/docs/sql-schema-declaration) in the [Drizzle docs](https://orm.drizzle.team/docs/column-types/pg).
 
+### Table TypeScript Types 
+
+At some point it's going to be necessary to have TypeScript types that represent theses entities. You might already imagine a type for the users table that looks something like this:
+
+```ts
+type User = {
+    id: string;
+    username: string;
+    firstName: string;
+    lastName: string;
+    avatar: string;
+    createdAt: Date;
+}
+
+```
+
+Fortunatly for us, Drizzle has some convenient table model type inference properties that we can use: 
+
+<SideBySide ratio="3:5">
+`$inferSelect` will give us a type that represents the object we will receive when making a select statement.
+<CodeWithOutput>
+```users.ts
+type User = typeof users.$inferSelect
+```
+```ts
+// return type when queried
+type User = {
+  id: string;
+  username: string;
+  firstName: string;
+  lastName: string;
+  avatar: string;
+  createdAt: Date;
+};
+```
+</CodeWithOutput>
+</SideBySide>
+<SideBySide ratio="3:5">
+`$inferInsert` will give us a type that represents the object we will insert into the table.
+<CodeWithOutput>
+```users.ts
+type NewUser = typeof users.$inferInsert
+```
+```ts
+// insert type
+type NewUser = {
+  id: string;
+  username: string;
+  firstName: string;
+  lastName: string;
+  avatar: string;
+  createdAt?: Date | undefined;
+};
+```
+</CodeWithOutput>
+</SideBySide>
+
+<Instruction>
+
+<Instruction.Action step={8}>
+  export the `User` and `NewUser` types from the `users.ts` file.
+</Instruction.Action>
+<Instruction.Action step={9}>
+  Do this for the other tables as well.
+</Instruction.Action>
+<Instruction.Implementation>
+```users.ts
+// focus(7:8)
+import { text, varchar, pgTable, timestamp } from "drizzle-orm/pg-core"
+
+export const users = pgTable("users", {
+  // ...
+})
+
+export type User = typeof users.$inferSelect
+export type NewUser = typeof users.$inferInsert
+
+```
+</Instruction.Implementation>
+</Instruction>
+
 ## Migrating/Pushing Schema
 
 The schema is now defined for our three tables, that's great! We could even use these to start writing out some type safe queries in TypeScript, however, we should probably add these tables to our Neon database before we do anything else. That way we can actually add some data and run some queries. 
@@ -360,7 +441,7 @@ drizzle-kit studio # Start Drizzle Studio
 This is the CLI companion for Drizzle.
 
 <Instruction ratio="1:1">
-  <Instruction.Action step={8}>
+  <Instruction.Action step={10}>
     Install `drizzle-kit` as a dev dependancy.
   </Instruction.Action>
   
@@ -393,7 +474,7 @@ This is the CLI companion for Drizzle.
 All of the `drizzle-kit` commands use a `drizzle.config.ts` file in the root of the project. This file tells Drizzle Kit where to find the schema files, what database driver to use, and where to output the generated files.
 
 <Instruction ratio="1:1">
-  <Instruction.Action step={9}>
+  <Instruction.Action step={11}>
     Create a new `drizzle.config.ts` file in the root of your project (with all the other config files).
   </Instruction.Action>
   
@@ -411,7 +492,7 @@ All of the `drizzle-kit` commands use a `drizzle.config.ts` file in the root of 
 </Instruction>
 
 <Instruction>
-  <Instruction.Action step={10}>
+  <Instruction.Action step={12}>
     Add the following code to the drizzle config file:
   </Instruction.Action>
 
@@ -445,7 +526,7 @@ Notice that we're using the `MIGRATION_DATABASE_URL` from the [neon roles](/neon
 We won't generate any migration files right now, but when we do, they will be generated in the `./drizzle` directory.
 
 <Instruction>
-  <Instruction.Action step={11}>
+  <Instruction.Action step={13}>
     Install `dotenv` as a dev dependancy. Only do this if you're **not** using bun.
   </Instruction.Action>  
   <Instruction.Implementation>
@@ -471,7 +552,7 @@ We won't generate any migration files right now, but when we do, they will be ge
 
 
 <Instruction ratio="1:1">
-  <Instruction.Action step={12}>
+  <Instruction.Action step={14}>
     In `tsconfig.json`, update the `compilerOptions` target to `es6` 
   </Instruction.Action>
   
@@ -508,7 +589,7 @@ For more information on Migrations, you can take a look at the [Drizzle Kit quic
 Running a migration creates a new SQL file that we have to run against the database. This is really great in production, but when we're rapidly prototyping it can be a bit of a pain to always be generating and running new SQL files for every little change we make to the database. So drizzle has a **push** feature to make prototyping and rapid development easier.
 
 <Instruction >
-  <Instruction.Action step={13}>
+  <Instruction.Action step={15}>
     Push the database schema to the database.
   </Instruction.Action>
   
@@ -547,7 +628,7 @@ If we need to make a change to the schema, we can just update the TypeScript fil
 Drizzle Studio is a GUI for Drizzle. It's a really great tool for exploring your database and creating or updating data for testing.
 
 <Instruction >
-  <Instruction.Action step={14}>
+  <Instruction.Action step={16}>
     For Drizzle Studio to work with Postgres, we first need to install `pg`.
   </Instruction.Action>
   <Instruction.Implementation>
@@ -577,7 +658,7 @@ Drizzle Studio is a GUI for Drizzle. It's a really great tool for exploring your
 </Instruction>
 
 <Instruction >
-  <Instruction.Action step={15}>
+  <Instruction.Action step={17}>
     Run `drizzle-kit studio` to start Drizzle Studio.
   </Instruction.Action>
   
@@ -610,7 +691,7 @@ Drizzle Studio is a GUI for Drizzle. It's a really great tool for exploring your
 It should start running on [http://127.0.0.1:4983](http://127.0.0.1:4983). Visit that URL in your browser and make sure the three tables exist there. 
 
 <Instruction >
-  <Instruction.Action step={16}>
+  <Instruction.Action step={18}>
     Create a new fake user for yourself. Here's a placeholder image for a user avatar: "https://www.gravatar.com/avatar/?d=mp".
 
     Create a few posts for yourself. Remember that `user_id` and `content` are the only required fields that you **must** provide values for.
@@ -637,7 +718,7 @@ So much information about the serverless driver and optomizations: https://neon.
 Drizzle is responsible for translating our TypeScript code into SQL and running it, but it doesn't actually connect to the database. We need to use a database driver to connect to the neon database, and we're going to use `@neondatabase/serverless`.
 
 <Instruction>
-  <Instruction.Action step={17}>
+  <Instruction.Action step={19}>
     Install `@neondatabase/serverless`.
   </Instruction.Action>
   
@@ -668,7 +749,7 @@ Drizzle is responsible for translating our TypeScript code into SQL and running 
 </Instruction>
 
 <Instruction>
-  <Instruction.Action step={18}>
+  <Instruction.Action step={20}>
     Create a new file called `index.ts` in the `src/db` folder.
   </Instruction.Action>
   <Instruction.Implementation>
@@ -685,7 +766,7 @@ Drizzle is responsible for translating our TypeScript code into SQL and running 
 </Instruction>
 
 <Instruction>
-  <Instruction.Action step={19}>
+  <Instruction.Action step={21}>
     Add the following code to the `src/db/index.ts` file.
   </Instruction.Action>
   <Instruction.Implementation>
@@ -723,7 +804,7 @@ You can read the [Drizzle Queries](https://orm.drizzle.team/docs/rqb) docs to se
 Now let's use this on the home page where we display a list of posts.
 
 <Instruction>
-  <Instruction.Action step={20}>
+  <Instruction.Action step={22}>
     Update your `src/app/page.tsx` file to query the posts from the database.
   </Instruction.Action>
   <Instruction.Implementation>

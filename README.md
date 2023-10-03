@@ -116,3 +116,32 @@ Return a single root element, div or empty tag `<>`
   </Instruction.Implementation>
 </Instruction>
 ```
+
+## Code
+
+```mdx
+<CodeWithOutput>
+  ```users.ts
+  import { pgTable, text, varchar, timestamp } from "drizzle-orm/pg-core"
+
+  export const users = pgTable("users", {
+    id: text("id").primaryKey(),
+    username: varchar("username", { length: 30 }).notNull(),
+    firstName: varchar("first_name", { length: 50 }).notNull(),
+    lastName: varchar("last_name", { length: 50 }).notNull(),
+    avatar: text("avatar").notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  })
+  ```
+  ```sql
+  CREATE TABLE IF NOT EXISTS "users" (
+    "id" text PRIMARY KEY NOT NULL,
+    "username" varchar(30) NOT NULL,
+    "first_name" varchar(50) NOT NULL,
+    "last_name" varchar(50) NOT NULL,
+    "avatar" text NOT NULL,
+    "created_at" timestamp with time zone DEFAULT now() NOT NULL
+  );
+  ```
+</CodeWithOutput>
+```
