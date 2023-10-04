@@ -25,19 +25,41 @@ All properties that are passed into a component are passed in as a single object
 Remember that the following three examples are equivalent:
 
 ```jsx
-export default function Joke({ rating = 0, joke }) {
+export default function Joke({ rating = 0, joke }: { rating: number, joke: string }) {
+  // ...
+}
 ```
 
 ```jsx
-export default function Joke(props) {
+export default function Joke(props: { rating: number, joke: string }) {
   let { rating = 0, joke } = props
+  // ...
+}
 ```
 
 
 ```jsx
-export default function Joke(props) {
+export default function Joke(props: { rating: number, joke: string }) {
   let rating = props.rating || 0
   let joke = props.joke
+  // ...
+}
+```
+
+## Prop Types
+
+The following two examples are equivalent. You can create the prop types as a separate type or inline.
+
+```jsx
+type JokeProps = {
+  rating?: number
+  joke: string
+}
+export default function Joke({ rating = 0, joke }: JokeProps) {
+```
+
+```tsx 
+export default function Joke({ rating = 0, joke }: { rating: number, joke: string }) {
 ```
 
 
