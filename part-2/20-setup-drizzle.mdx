@@ -2,7 +2,7 @@
 title: "Setup Drizzle"
 ---
 
-# Drizzle
+# Setup Drizzle
 
 Every time our application interacts with the database, it's going to use [Drizzle](https://orm.drizzle.team/docs/overview). That means we're not really going to be writing SQL, instead we will write typescript. In this section we're going to go through the initial process of setting up Drizzle in a project so that we can query data from the database and display it on a page.
 
@@ -95,7 +95,7 @@ It's up to us how we organize our code, Drizzle doesn't have an oppinion on how 
 
     export const users = pgTable("users", {
       id: text("id").primaryKey(),
-      username: varchar("username", { length: 30 }).notNull(),
+      username: varchar("username", { length: 30 }).notNull().unique(),
       firstName: varchar("first_name", { length: 50 }).notNull(),
       lastName: varchar("last_name", { length: 50 }).notNull(),
       avatar: text("avatar").notNull(),
@@ -109,7 +109,8 @@ It's up to us how we organize our code, Drizzle doesn't have an oppinion on how 
       "first_name" varchar(50) NOT NULL,
       "last_name" varchar(50) NOT NULL,
       "avatar" text NOT NULL,
-      "created_at" timestamp with time zone DEFAULT now() NOT NULL
+      "created_at" timestamp with time zone DEFAULT now() NOT NULL,
+      CONSTRAINT "users_username_unique" UNIQUE("username")
     );
     ```
     </CodeWithOutput>
@@ -156,8 +157,8 @@ Use these functions to define each column as a property on the table object.
 // focus(2:4)
 export const users = pgTable("users", {
   id: text("id").primaryKey(),
-  username: varchar("username", { length: 30 }).notNull(),
-  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  username: varchar("username", { length: 30 }),
+  createdAt: timestamp("created_at", { withTimezone: true }),
   // ...
 })
 ```
@@ -191,7 +192,6 @@ timestamp("created_at", { withTimezone: true })
 </SideBySide>
 
 
-
 You might have noticed that we use camelCase for the property names in TypeScript  and snake_case for the column names in Postgres.
 
 <Card center>
@@ -212,6 +212,10 @@ SELECT * FROM users
 WHERE users.first_name = 'Sam';
 ```
 </SideBySide>
+
+<Note>
+The unique index on user.username is case sensitive. This means that "Sam" and "sam" are two different usernames. Make sure you handle this in your application however you see fit. For example, you could make the username lowercase before inserting it into the database.
+</Note>
 
 ### `media.ts`
 
@@ -775,8 +779,6 @@ Drizzle is responsible for translating our TypeScript code into SQL and running 
     import { neon, neonConfig } from '@neondatabase/serverless'
     import { drizzle } from 'drizzle-orm/neon-http'
 
-    neonConfig.fetchConnectionCache = true;
-
     const sql = neon(process.env.DATABASE_URL!);
     export const db = drizzle(sql);
     ```
@@ -797,7 +799,7 @@ await db.update(users).set({ name: 'saM' }).where(eq(users.name, "Sam")) // upda
 await db.delete(users).where(eq(users.name, 'saM')) // delete a user
 ```
 
-You can read the [Drizzle Queries](https://orm.drizzle.team/docs/rqb) docs to see more examples of queries.
+You can read the [Drizzle Docs](https://orm.drizzle.team/docs/select) docs to see more examples of queries.
 
 ## Async Components
 
@@ -823,7 +825,26 @@ export default async function Home() {
   </Instruction.Implementation>
 </Instruction>
 
-Notice that the component is now an `async` component. That's totally fine and normal. Run the app and navigate to the home page, if you check the server console, you should see an array of posts.
+Notice that the component is now an `async` component. That's totally fine and normal. 
+
+The posts coming back from the database don't contain any user or media information, so you might need to comment out some of your JSX to get this to run.
+
+Run the app and navigate to the home page, if you check the server console, you should see an array of posts. It should look something like this:
+
+```js
+[
+  {
+    id: 1,
+    userId: 'user-1',
+    mediaId: null,
+    replyId: null,
+    content: 'This is a test post'
+  },
+  // ...
+]
+```
+
+This is a great start, but we really need to be able to get the user and media information for each post, so we need to join the tables together...
 
 {/* More about async components later, next up async components, then drizzle queries */}
 
