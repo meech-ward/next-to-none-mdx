@@ -142,6 +142,16 @@ CREATE ROLE app_role WITH LOGIN PASSWORD 'your_password_here';
 
 -- Grant permissions on the "neondb" database
 GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA public TO app_role;
+GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA public TO app_role;
+
+-- Set default privileges for future tables
+ALTER DEFAULT PRIVILEGES FOR ROLE migration_role IN SCHEMA public
+GRANT SELECT, INSERT, UPDATE, DELETE ON TABLES TO app_role;
+
+-- Set default privileges for future sequences
+ALTER DEFAULT PRIVILEGES FOR ROLE migration_role IN SCHEMA public
+GRANT USAGE, SELECT ON SEQUENCES TO app_role;
+
 ```
 </Instruction.Implementation>
 </Instruction>
