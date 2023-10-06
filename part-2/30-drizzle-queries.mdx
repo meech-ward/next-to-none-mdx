@@ -1,0 +1,355 @@
+---
+title: "Drizzle Queries"
+---
+
+# Drizzle Queries
+
+
+## db/index.ts
+
+```ts 
+export * from 'drizzle-orm'
+```
+
+```ts
+export const db = drizzle(sql, { logger: true });
+```
+
+
+const result = await db.select().from(users).leftJoin(pets, eq(users.id, pets.ownerId))
+
+
+---
+
+### Select 
+
+
+<CodeWithOutput>
+```query.ts
+import { db, eq } from "@/db"
+import { posts as postsTable } from "@/db/schema/posts"
+
+const posts = await db.select().from(postsTable)
+```
+```sql
+select "id", "user_id", "media_id", "reply_id", "content", "created_at" 
+from "posts"
+```
+</CodeWithOutput>
+
+```ts
+// posts: Post[]
+[
+  {
+    id: 1,
+    userId: 'user-1',
+    mediaId: 1,
+    replyId: null,
+    content: 'This is a test post'
+  },
+  // ...
+]
+```
+
+
+### Inner Join 
+
+
+<CodeWithOutput>
+```query.ts
+import { db, eq } from "@/db"
+import { posts as postsTable } from "@/db/schema/posts"
+import { users as usersTable } from "@/db/schema/users"
+
+const posts = await db
+    .select()
+    .from(postsTable)
+    .innerJoin(usersTable, eq(usersTable.id, postsTable.userId))
+```
+```sql
+select
+  "posts"."id",
+  "posts"."user_id",
+  "posts"."media_id",
+  "posts"."reply_id",
+  "posts"."content",
+  "posts"."created_at",
+  "users"."id",
+  "users"."username",
+  "users"."first_name",
+  "users"."last_name",
+  "users"."avatar",
+  "users"."created_at"
+from
+  "posts"
+  inner join "users" 
+  on "users"."id" = "posts"."user_id"
+```
+</CodeWithOutput>
+
+
+```ts 
+// posts: {posts: Post, users: User}[]
+[
+  {
+    posts: {
+      id: 1,
+      userId: 'user-1',
+      mediaId: 1,
+      replyId: null,
+      content: 'This is a test post',
+    },
+    users: {
+      id: 'user-1',
+      username: 'saM',
+      firstName: 'Sam',
+      lastName: 'Meech',
+      avatar: 'https://www.gravatar.com/avatar/?d=mp',
+    }
+  },
+  // ...
+]
+```
+
+This is pretty nice. I like that it's not just one huge object, it's separated out. But we can see that isn't done in the query, so it's queried into a single object then separated out in JS.
+
+### Left Join
+
+We'll add a left join for media since not all posts have media.
+
+
+<CodeWithOutput>
+```query.ts
+import { db, eq } from "@/db"
+import { posts as postsTable } from "@/db/schema/posts"
+import { users as usersTable } from "@/db/schema/users"
+import { media as mediaTable } from "@/db/schema/media"
+
+const posts = await db
+    .select()
+    .from(postsTable)
+    .innerJoin(usersTable, eq(usersTable.id, postsTable.userId))
+    .leftJoin(mediaTable, eq(mediaTable.id, postsTable.mediaId))
+```
+```sql
+select
+  "posts"."id",
+  "posts"."user_id",
+  "posts"."media_id",
+  "posts"."reply_id",
+  "posts"."content",
+  "posts"."created_at",
+  "users"."id",
+  "users"."username",
+  "users"."first_name",
+  "users"."last_name",
+  "users"."avatar",
+  "users"."created_at",
+  "media"."id",
+  "media"."type",
+  "media"."url",
+  "media"."width",
+  "media"."height",
+  "media"."created_at"
+from
+  "posts"
+  inner join "users" on "users"."id" = "posts"."user_id"
+  inner join "media" on "media"."id" = "posts"."media_id"
+```
+</CodeWithOutput>
+
+
+```ts 
+// posts: {posts: Post, users: User, media: Media?}[]
+[
+  {
+    posts: {
+      // ...
+    },
+    users: {
+      // ...
+    },
+    media: {
+      // ...
+    }
+  }
+]
+```
+
+### Customize the Return Object
+
+<CodeWithOutput>
+```query.ts
+import { db, eq } from "@/db"
+
+import { posts as postsTable } from "@/db/schema/posts"
+import { users as usersTable } from "@/db/schema/users"
+import { media as mediaTable } from "@/db/schema/media"
+
+const posts = await db
+.select({
+  id: postsTable.id,
+  content: postsTable.content,
+  createdAt: postsTable.createdAt,
+  user: {
+    id: usersTable.id,
+    username: usersTable.username,
+    avatar: usersTable.avatar,
+  },
+  media: {
+    id: mediaTable.id,
+    type: mediaTable.type,
+    url: mediaTable.url,
+    width: mediaTable.width,
+    height: mediaTable.height,
+  },
+})
+.from(postsTable)
+.innerJoin(usersTable, eq(usersTable.id, postsTable.userId))
+.leftJoin(mediaTable, eq(mediaTable.id, postsTable.mediaId))
+```
+
+```sql 
+select
+  "posts"."id",
+  "posts"."content",
+  "posts"."created_at",
+  "users"."id",
+  "users"."username",
+  "users"."avatar",
+  "media"."id",
+  "media"."type",
+  "media"."url",
+  "media"."width",
+  "media"."height"
+from
+  "posts"
+  inner join "users" on "users"."id" = "posts"."user_id"
+  left join "media" on "media"."id" = "posts"."media_id";
+```
+</CodeWithOutput>
+
+<SideBySide ratio="3:5">
+```ts 
+type Result = {
+  id: number;
+  content: string;
+  createdAt: Date;
+  user: {
+    id: string;
+    username: string;
+    avatar: string;
+  };
+  media: {
+    id: number;
+    type: string;
+    url: string;
+    width: number;
+    height: number;
+  } | null;
+};
+```
+
+```ts
+// posts: Result[]
+[
+  {
+    id: 1,
+    content: 'This is a test post',
+    createdAt: 2023-10-03T21:14:44.879Z,
+    user: {
+      id: 'user-1',
+      username: 'saM',
+      avatar: 'https://www.gravatar.com/avatar/?d=mp'
+    },
+    media: {
+      id: 1,
+      type: 'image',
+      url: 'https://cdn.discordapp.com/attachments/...',
+      width: 500,
+      height: 500
+    }
+  },
+  // ...
+]
+```
+</SideBySide>
+
+### Pepared 
+
+Create a new file `db/queries/postFeed.ts`
+
+```ts
+import { db, eq } from "@/db"
+
+import { posts as postsTable } from "@/db/schema/posts"
+import { users as usersTable } from "@/db/schema/users"
+import { media as mediaTable } from "@/db/schema/media"
+
+export const query = db
+.select({
+  id: postsTable.id,
+  content: postsTable.content,
+  createdAt: postsTable.createdAt,
+  user: {
+    id: usersTable.id,
+    username: usersTable.username,
+    avatar: usersTable.avatar,
+  },
+  media: {
+    id: mediaTable.id,
+    type: mediaTable.type,
+    url: mediaTable.url,
+    width: mediaTable.width,
+    height: mediaTable.height,
+  },
+})
+.from(postsTable)
+.innerJoin(usersTable, eq(usersTable.id, postsTable.userId))
+.leftJoin(mediaTable, eq(mediaTable.id, postsTable.mediaId))
+.prepare("select_posts_for_feed")
+
+export type Result = Awaited<ReturnType<typeof query.execute>>[0];
+```
+
+
+```page.tsx 
+import FeedPost from "@/components/feed-post"
+
+import { query } from "@/db/queries/postsFeed"
+
+export default async function Home() {
+
+  const posts = await query.execute()
+  
+  return (
+    <div className="flex flex-col divide-y">
+      {posts.map((post) => (
+        <FeedPost key={post.id} post={post} />
+      ))}
+    </div>
+  )
+};
+```
+
+```feed-post.tsx
+import { type Result as Post } from "@/db/queries/postsFeed"
+
+export default function FeedPost({ post }: { post: Post }) {
+  // ...
+}
+```
+
+
+### Return Type 
+
+* `Awaited` is a type utility that unwraps a Promise type. It's used here to determine the structure of the data returned by the execute method of the prepared object.
+* `ReturnType<typeof prepared.execute>` gets the return type of the execute method, which is expected to be a Promise (due to asynchronous database operations).
+* By appending `[0]`, we're extracting the type of a single element from the returned array. This gives us the structure of a single record.
+
+
+## Relational Queries
+
+They're kind of cool, they're prisma queries but more performant.
+
+https://orm.drizzle.team/docs/rqb

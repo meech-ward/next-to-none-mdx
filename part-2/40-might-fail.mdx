@@ -1,0 +1,73 @@
+---
+title: "Might Fail"
+---
+
+# Might Fail 
+
+
+[https://www.npmjs.com/package/might-fail](https://www.npmjs.com/package/might-fail)
+
+<SideBySide width="extended-3xl">
+<SideBySideBlock>
+try/catch 
+
+```profile/page.tsx
+async function Profile({ params }: ProfileProps) {
+
+  let user: User | undefined
+
+  try {
+    user = await db
+      .select()
+      .from(usersTable)
+      .where(eq(usersTable.username, params.username))
+      .then((result) => result[0])
+  } catch (e: any) {
+    console.error(error)
+    return (<div>error connecting to database</div>)
+  }
+  
+  if (!user) {
+    notFound()
+  }
+
+  return (
+    <>
+    // ...
+    </>
+  )
+}
+```
+</SideBySideBlock>
+<SideBySideBlock>
+mightFail
+
+```profile/page.tsx
+async function Profile({ params }: ProfileProps) {
+
+  const { result: user, error: userError } = await mightFail(
+    db
+      .select()
+      .from(usersTable)
+      .where(eq(usersTable.username, params.username))
+      .then((result) => result[0])
+  )
+
+  if (userError) {
+    console.error(userError)
+    return <div>error connecting to database</div>
+  }
+
+  if (!user) {
+    notFound()
+  }
+
+  return (
+    <>
+    // ...
+    </>
+  )
+}
+```
+</SideBySideBlock>
+</SideBySide>
