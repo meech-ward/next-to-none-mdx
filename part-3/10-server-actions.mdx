@@ -164,18 +164,72 @@ export default function CreatePost() {
 </Instruction.Implementation>
 </Instruction>
 
+<Note>
+Server Actions are really new and still considered experimental.
+</Note>
+
+<Instruction>
+<Instruction.Action step={3}>
+Enable Server Actions in your next.config.js file:
+</Instruction.Action>
+
+<Instruction.Implementation>
+```next.config.js
+// focus(2:4)
+module.exports = {
+  experimental: {
+    serverActions: true,
+  },
+}
+```
+</Instruction.Implementation>
+</Instruction>
+
+
+
 Now if you submit the form, you should see the console log in the server console. Submitting the form sends the form data in a POST request to an endpoint that next.js setup for us automatically. 
 
 
-<SideBySide>
-If we setup a function with `"use server"` at the top, we are telling next.js 
-{/* ```ts 
+<SideBySide ratio="3:5">
+Server actions must be defined with `"use server"` at the top of the function or the top of the file in which it's defined. 
+```ts 
+// focus(2:2)
+async function handleCreatePost(data: FormData) {
+  "use server"
+}
+```
+</SideBySide>
+<SideBySide ratio="3:5">
+Since this function will receive data from a form, it's first argument must be of type [`FormData`](https://developer.mozilla.org/en-US/docs/Web/API/FormData/Using_FormData_Objects) and we can use the [`FormData`](https://developer.mozilla.org/en-US/docs/Web/API/FormData/Using_FormData_Objects) API. 
+```ts
+// focus(1:1)
+// focus(3:3)
 async function handleCreatePost(data: FormData) {
   "use server"
   const content = data.get("content") 
-  console.log("Create new post", content)
 }
 ```
+</SideBySide>
+
+<SideBySide ratio="3:5">
+We can then pass the server action to a form's action prop. Then next.js will automatically handle the form submission for us. It creates an HTTP endpoint and makes sure the form data is sent to that endpoint. 
+```ts
+// focus(4:4)
+export default function CreatePost() {
+  return (
+    <main className="text-center mt-10">
+      <form action={handleCreatePost}>
+      ...
+      </form>
+    </main>
+  )
+}
+```
+</SideBySide>
+
+This works with or without client side JS.
+
+{/* 
 
 ```tsx 
 import CreatePostForm from "@/components/create-post-form"
