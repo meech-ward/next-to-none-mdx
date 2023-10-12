@@ -108,6 +108,9 @@ GRANT ALL PRIVILEGES ON DATABASE "neondb" TO migration_role;
 
 -- Grant usage on the "public" schema
 GRANT USAGE, CREATE ON SCHEMA public TO migration_role;
+
+-- Become a member of migration_role
+GRANT migration_role TO current_user;
 ```
 </Instruction.Implementation>
 </Instruction>
@@ -117,6 +120,8 @@ Your migration role can connect to the database using the following connection s
 ```
 postgres://migration_role:your_password_here@<PGHOST>/neondb
 ```
+
+`<PGHost>` should be something like `ep-rough-sunset-123456.us-west-2.aws.neon.tech`
 
 <Instruction ratio="1">
 <Instruction.Action step={2}>
@@ -151,7 +156,6 @@ GRANT SELECT, INSERT, UPDATE, DELETE ON TABLES TO app_role;
 -- Set default privileges for future sequences
 ALTER DEFAULT PRIVILEGES FOR ROLE migration_role IN SCHEMA public
 GRANT USAGE, SELECT ON SEQUENCES TO app_role;
-
 ```
 </Instruction.Implementation>
 </Instruction>
@@ -205,10 +209,10 @@ When we're performing migrations, we might connect to the database from a *stand
 You don't need to run any of this code right now, but it's here as a reference for *if* you need it in the future.
 </Note>
 
-If you've already performed a migration and need to create a new user to perform migrations, first delete the `migration_user`, then create a new one using the same [migration code][#migration-role] code as above. Then grant permission to the `drizzle` schema **and** transfer ownership of all tables to the new user. 
+If you've already performed a migration and need to create a new role to perform migrations, first delete the `migration_role`, then create a new one using the same [migration code][#migration-role] code as above. Then grant permission to the `drizzle` schema **and** transfer ownership of all tables to the new role. 
 
 ```sql 
-GRANT USAGE, CREATE ON SCHEMA public TO migration_user2;
+GRANT USAGE, CREATE ON SCHEMA public TO migration_role2;
 
 DO $$ 
 DECLARE 
@@ -219,6 +223,14 @@ BEGIN
       EXECUTE 'ALTER TABLE ' || table_name || ' OWNER TO migration_user2;';
    END LOOP;
 END $$;
+
+-- Set default privileges for future tables
+ALTER DEFAULT PRIVILEGES FOR ROLE migration_role2 IN SCHEMA public
+GRANT SELECT, INSERT, UPDATE, DELETE ON TABLES TO app_role;
+
+-- Set default privileges for future sequences
+ALTER DEFAULT PRIVILEGES FOR ROLE migration_role2 IN SCHEMA public
+GRANT USAGE, SELECT ON SEQUENCES TO app_role;
 ```
 
 {/* ```sql
