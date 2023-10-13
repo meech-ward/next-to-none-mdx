@@ -388,3 +388,65 @@ export default function JokeForm({ onAddJoke }: Props) {
 ```
 
 </CodeTabs>
+
+## useEffect 
+
+<YouTube videoId="c8R4Cba7PPY">
+
+ 
+## [Components must be pure](https://beta.reactjs.org/learn/keeping-components-pure#side-effects-unintended-consequences)
+
+In React, components are functions that take input data and return output markup. It's important to keep the component function focused on rendering and not interacting with external systems like network requests or updating the window object. Any interaction with external systems is considered a side effect.
+
+```jsx
+if (images.length === 0) {
+  return 'No memes'
+}
+```
+
+This code inside of a components is absolutely fine because the logic here is only accessing state that exists within the component, and only returning markup that will be rendered to the dom. There is no interaction with an external system.
+
+But what about this code:
+
+```jsx
+// Bad because it's in the top level of the component and is executed as part of the component rendering
+document.title = `You have ${images.length} memes`
+```
+
+This code interacts with an external system, the document, and is considered a side effect. To avoid running side effect code in the component function, we can create a function that causes side effects and call it later, such as when a user clicks a button. 
+
+```jsx
+// Good because it's inside a function that isn't executed as part of the component rendering
+const updateDocumentTitle = () => {
+  document.title = `You have ${images.length} memes`
+}
+
+return (
+  // ...
+  <button onClick={updateDocumentTitle}>
+```
+
+**Event listeners**, like `onClick` or `onSubmit`, are a great place to run side effects because they are triggered by user interaction and not part of the component rendering. And this is usually where you want to start with side effects. Add an event listener.
+
+But if I refresh the page, we can see that the window's title isn't right, it should say 0 memes, or if I had some initial data in the images array, then it should say however many images i have. Basically, I don't want this side effect to be triggered by an user event. I want this side effect to be triggered by a state update.
+
+## useEffect
+
+I want this side effect to be in sync with the state of my component. And this is where the `useEffect` hook comes in.
+
+We use `useEffect` by importing it, then calling it inside of the component function. And we pass it a function and run any side effect code. And now everything just works, like magic. Teact will run the useEffect function after the component is rendered. 
+
+```jsx
+useEffect(() => {
+  document.title = `You have ${images.length} memes`
+})
+```
+
+`useEffect` will let you run some code after rendering so that you can synchronize your component with some system outside of React.
+
+So that's the basic idea of `useEffect`. It's a hook that lets you run some code after the component is rendered to synchronize your component and it's state with some system outside of React.
+Rendering the UI is driven by props and state, and is guaranteed to be consistent with them, but side effects are not. `useEffect` is for side effects, not for rendering the UI. **It's important to keep that in mind.**
+
+## More React Content
+
+If you want to learn more about using React for client side SPAs, then check out my full playlist on React: [https://www.sammeechward.com/playlists/all-you-need-to-know-about-react-js](https://www.sammeechward.com/playlists/all-you-need-to-know-about-react-js)
