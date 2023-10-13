@@ -5,7 +5,7 @@ title: Server Actions
 
 # Server Actions 
 
-<Instruction>
+<Instruction ratio="1">
 <Instruction.Action step={1}>
 Make sure you create post page has some sort of form in it that allows you to create a post. 
 
@@ -126,13 +126,13 @@ Either way, we need to create some sort of server side endpoint that can handle 
 
 There's a lot of useless questions that come up when trying to implment some sort of backend endpoint. Let's think about what we actually need:
 
-* Code runs on a server with the ability to connect to the database 
-* Setting up the code and running this server side code is easy. Not too many questions to ask or decisions to make. 
-* Maybe we it could be done using a client side JS fetch request, or fall back to a standard form POST request if JS is disabled. That could be a nice feature. 
+* Submitting the form should run some code on a server with the ability to connect to the database 
+* Writing the code and manually testing it should be easy. Not too many questions to ask or decisions to make. 
+* Maybe it could be done using a client side JS fetch request, or fall back to a standard form POST request if JS is disabled. That could be a nice feature. 
 * Type safety would be nice so we don't accidentally pass the incorrect data from client to server.
 
 
-## Server Actions
+## Next.js Server Actions
 
 In Next.js, we have the ability to use something called [server actions](https://nextjs.org/docs/app/building-your-application/data-fetching/forms-and-mutations#how-server-actions-work)
 
@@ -165,10 +165,10 @@ export default function CreatePost() {
 </Instruction>
 
 <Note>
-Server Actions are really new and still considered experimental.
+Server Actions are really new and still considered experimental, so we have to opt into using them.
 </Note>
 
-<Instruction>
+<Instruction ratio="2:3">
 <Instruction.Action step={3}>
 Enable Server Actions in your next.config.js file:
 </Instruction.Action>
@@ -189,6 +189,7 @@ module.exports = {
 
 Now if you submit the form, you should see the console log in the server console. Submitting the form sends the form data in a POST request to an endpoint that next.js setup for us automatically. 
 
+## How Do Server Actions Work?
 
 <SideBySide ratio="3:5">
 Server actions must be defined with `"use server"` at the top of the function or the top of the file in which it's defined. 
@@ -227,7 +228,15 @@ export default function CreatePost() {
 ```
 </SideBySide>
 
-This works with or without client side JS.
+This form submission works with or without client side JS enabled, which gives us [Progressive Enhancement](https://developer.mozilla.org/en-US/docs/Glossary/Progressive_Enhancement).
+
+## Redirecting 
+
+## Revalidating 
+
+## Loading State
+
+## Error Handling
 
 {/* 
 
