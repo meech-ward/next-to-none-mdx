@@ -1,21 +1,22 @@
-# Client Components 
+# Client Components
 
 Up until very recently, client components were the only type of components that most developers knew about and used. All popular react tooling, like vite and create-react-app, only worked with client componetns, so we would build Single Page Applications (SPAs) using only client components. That means that all courses and videos that taught react, only taught client components.
 
-Server Components are becoming more popular since Next.js made it so easy to work with them. The default is to use server components, and we now have to opt in to using client components by adding `"use client"` to the top of every file that we want to use client components in. 
+Server Components are becoming more popular since Next.js made it so easy to work with them. The default is to use server components, and we now have to opt in to using client components by adding `"use client"` to the top of every file that we want to use client components in.
 
 ## Videos
 
 Here are a series of videos that go over some of the core concepts of React using vite. So all examples are for a SPA using only client components by default. You won't see `"use client"` anywhere because all the components are client components, also all code is in JavaScript instead of Typescript. All the concepts in these videos are still accurate and relevant, especially if you want to setup an SPA, but I have included code examples below each video to demonstrate how these things would work in a modern Next.js app.
 
-To follow along with these videos, you could setup a [vite](https://www.youtube.com/watch?v=-DTUdOJv8w8) app or just use a next.js app and add `"use client"` to the top of each file. 
+To follow along with these videos, you could setup a [vite](https://www.youtube.com/watch?v=-DTUdOJv8w8) app or just use a next.js app and add `"use client"` to the top of each file.
 
-## Event Handlers 
+## Event Handlers
 
-<YouTube videoId="lE31_0cXeAg" startTime={230} />
+<YouTube videoId="lE31_0cXeAg" />
 
+<CodeTabs>
 
-```page.tsx 
+```page.tsx
 "use client"
 
 import Form from "./form"
@@ -32,19 +33,18 @@ export default function Page() {
   return (
     <div className="App">
       <button onClick={handleClick}>Do Something</button>
-
       <Form onSubmit={handleSubmit} />
     </div>
   )
 }
 ```
 
-```form.tsx 
+```form.tsx
 "use client"
 
 type FormProps = {
   onSubmit: () => void
-} & React.ComponentProps<"form">
+} 
 
 export default function Form({ onSubmit }: FormProps) {
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
@@ -60,3 +60,331 @@ export default function Form({ onSubmit }: FormProps) {
   )
 }
 ```
+
+</CodeTabs>
+
+## useState
+
+<YouTube videoId="_wPGcpoZQn8" />
+
+
+<CodeTabs>
+
+```page.tsx
+import Jokes from "./jokes"
+
+export default function Page() {
+  const jokes = [
+    {
+      id: 1,
+      text: "I'm afraid for the calendar. Its days are numbered.",
+    },
+    {
+      id: 2,
+      text: "I used to be addicted to soap, but I'm clean now.",
+    },
+  ]
+
+  return (
+    <div>
+      <h1>Dad Jokes</h1>
+      <Jokes jokes={jokes} />
+    </div>
+  )
+}
+```
+
+```jokes.tsx
+"use client"
+
+import { useState } from "react"
+
+import Joke from "./joke"
+import JokeForm from "./joke-form"
+
+type Props = {
+  jokes: {
+    id: number
+    text: string
+  }[]
+}
+export default function Jokes({ jokes }: Props) {
+  const [favorite, setFavorite] = useState(1)
+
+  const handleFavorite = (id: number) => {
+    setFavorite(id)
+  }
+
+  const handleNewJoke = (text: string) => {
+    console.log("new joke", text)
+  }
+
+  return (
+    <div className="">
+      <h1>Dad Jokes</h1>
+
+      {jokes.map((joke) => (
+        <Joke
+          onFavorite={handleFavorite}
+          favorite={favorite === joke.id}
+          key={joke.id}
+          id={joke.id}
+          text={joke.text}
+        />
+      ))}
+
+      <JokeForm onNewJoke={handleNewJoke} />
+    </div>
+  )
+}
+```
+
+```joke.tsx 
+"use client"
+
+import { useState } from "react"
+
+type Props = {
+  id: number
+  text: string
+  favorite: boolean
+  onFavorite: (id: number) => void
+}
+export default function Joke({ id, text, favorite, onFavorite }: Props) {
+  const [likes, setLike] = useState(0)
+  const [dislikes, setDislike] = useState(0)
+
+  const handleLike = () => {
+    const newLikes = likes + 1
+    setLike(newLikes)
+    console.log(`like id: ${id}, totalLikes ${newLikes}`)
+  }
+
+  const handleDislike = () => {
+    setDislike(dislikes + 1)
+    console.log(`dislike id: ${id}, totalLikes ${likes}`)
+  }
+
+  const handleFavorite = () => {
+    onFavorite(id)
+  }
+
+  return (
+    <div>
+      <p>{text}</p>
+      <p>Likes: {likes - dislikes}</p>
+      <p>Favorite: {favorite ? "YES" : "NO"}</p>
+      <button onClick={handleLike}>👍</button>
+      <button onClick={handleDislike}>👎</button>
+      <button onClick={handleFavorite}>Favorite</button>
+    </div>
+  )
+}
+```
+
+```joke-form.tsx
+"use client"
+import { useState } from "react"
+
+type Props = {
+  onNewJoke: (text: string) => void
+}
+
+export default function JokeForm({ onNewJoke }: Props) {
+  const [text, setText] = useState("")
+
+  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault()
+    onNewJoke(text)
+    setText("")
+  }
+
+  return (
+    <form onSubmit={handleSubmit}>
+      <input
+        type="text"
+        placeholder="Enter a joke"
+        value={text}
+        onChange={(e) => setText(e.target.value)}
+      />
+      <button type="submit">Submit</button>
+    </form>
+  )
+}
+```
+
+</CodeTabs>
+
+## React State Array of Objects
+
+<YouTube videoId="95r9A5_taNo" />
+
+<CodeTabs>
+
+```page.tsx
+import Jokes from "./jokes"
+
+export default function Page() {
+  const jokes = [
+    {
+      id: "1",
+      text: "I'm afraid for the calendar. Its days are numbered.",
+      likes: 0
+    },
+    {
+      id: "2", 
+      text: "I used to be addicted to soap, but I'm clean now.",
+      likes: 0
+    }
+  ]
+
+  return (
+    <div>
+      <h1>Dad Jokes</h1>
+      <Jokes initialJokes={jokes} />
+    </div>
+  )
+}
+```
+
+```jokes.tsx 
+"use client"
+import Joke from "./joke"
+import JokeForm from "./joke-form"
+
+import { useState } from "react"
+
+type Props = {
+  initialJokes: {
+    text: string
+    id: string
+    likes: number
+  }[]
+}
+export default function Jokes({ initialJokes }: Props) {
+  const [jokes, setJokes] = useState(initialJokes)
+
+  const handleAddJoke = (text: string) => {
+    const joke = {
+      text,
+      id: self.crypto.randomUUID(),
+      likes: 0,
+    }
+    setJokes([joke, ...jokes])
+    console.log("New Joke:", text)
+  }
+
+  const handleDeleteJoke = (id: string) => {
+    setJokes(jokes.filter((joke) => joke.id !== id))
+    console.log("delete joke", id)
+  }
+
+  const handleLike = (id: string) => {
+    setJokes(
+      jokes.map((joke) => {
+        if (joke.id === id) {
+          return { ...joke, likes: joke.likes + 1 }
+        } else {
+          return joke
+        }
+      })
+    )
+  }
+
+  const handleDislike = (id: string) => {
+    setJokes(
+      jokes.map((joke) => {
+        if (joke.id === id) {
+          return { ...joke, likes: joke.likes - 1 }
+        } else {
+          return joke
+        }
+      })
+    )
+  }
+
+  const handleSort = () => {
+    setJokes([...jokes].sort((a, b) => b.likes - a.likes))
+  }
+
+  return (
+    <div className="">
+      <h1>Dad Jokes</h1>
+
+      <button onClick={handleSort}>Sort</button>
+
+      <JokeForm onAddJoke={handleAddJoke} />
+
+      {jokes.map((joke) => (
+        <Joke
+          onDelete={handleDeleteJoke}
+          key={joke.id}
+          onLike={handleLike}
+          onDislike={handleDislike}
+          {...joke}
+        />
+      ))}
+    </div>
+  )
+}
+```
+
+```joke.tsx
+"use client"
+
+type Props = {
+  id: string
+  text: string
+  likes: number
+  onDelete: (id: string) => void
+  onLike: (id: string) => void
+  onDislike: (id: string) => void
+}
+export default function Joke({ id, text, onDelete, likes, onLike, onDislike }: Props) {
+  const handleLike = () => {
+    onLike(id)
+  }
+
+  const handleDislike = () => {
+    onDislike(id)
+  }
+
+  return (
+    <div>
+      <p>{text}</p>
+      <p>Likes: {likes}</p>
+      <button onClick={handleLike}>👍</button>
+      <button onClick={handleDislike}>👎</button>
+      <button onClick={() => onDelete(id)}>delete</button>
+    </div>
+  )
+}
+```
+
+```joke-form.tsx
+"use client "
+import { useState } from "react"
+
+type Props = {
+  onAddJoke: (text: string) => void
+}
+export default function JokeForm({ onAddJoke }: Props) {
+  const [text, setText] = useState("")
+
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+    onAddJoke(text)
+    setText("")
+  }
+
+  return (
+    <form onSubmit={handleSubmit}>
+      <label htmlFor="text">New Joke</label>
+      <input type="text" id="text" value={text} onChange={(e) => setText(e.target.value)} />
+      <button type="submit">Add Joke</button>
+    </form>
+  )
+}
+```
+
+</CodeTabs>
