@@ -1,0 +1,62 @@
+# Client Components 
+
+Up until very recently, client components were the only type of components that most developers knew about and used. All popular react tooling, like vite and create-react-app, only worked with client componetns, so we would build Single Page Applications (SPAs) using only client components. That means that all courses and videos that taught react, only taught client components.
+
+Server Components are becoming more popular since Next.js made it so easy to work with them. The default is to use server components, and we now have to opt in to using client components by adding `"use client"` to the top of every file that we want to use client components in. 
+
+## Videos
+
+Here are a series of videos that go over some of the core concepts of React using vite. So all examples are for a SPA using only client components by default. You won't see `"use client"` anywhere because all the components are client components, also all code is in JavaScript instead of Typescript. All the concepts in these videos are still accurate and relevant, especially if you want to setup an SPA, but I have included code examples below each video to demonstrate how these things would work in a modern Next.js app.
+
+To follow along with these videos, you could setup a [vite](https://www.youtube.com/watch?v=-DTUdOJv8w8) app or just use a next.js app and add `"use client"` to the top of each file. 
+
+## Event Handlers 
+
+<YouTube videoId="lE31_0cXeAg" startTime={230} />
+
+
+```page.tsx 
+"use client"
+
+import Form from "./form"
+
+export default function Page() {
+  function handleClick(e: React.MouseEvent<HTMLButtonElement, MouseEvent>) {
+    console.log("Button clicked")
+  }
+
+  function handleSubmit() {
+    console.log("Form submitted")
+  }
+
+  return (
+    <div className="App">
+      <button onClick={handleClick}>Do Something</button>
+
+      <Form onSubmit={handleSubmit} />
+    </div>
+  )
+}
+```
+
+```form.tsx 
+"use client"
+
+type FormProps = {
+  onSubmit: () => void
+} & React.ComponentProps<"form">
+
+export default function Form({ onSubmit }: FormProps) {
+  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault()
+    onSubmit()
+  }
+
+  return (
+    <form onSubmit={handleSubmit}>
+      <input type="text" onChange={(e) => console.log(e.target.value)} />
+      <button type="submit">Submit</button>
+    </form>
+  )
+}
+```
