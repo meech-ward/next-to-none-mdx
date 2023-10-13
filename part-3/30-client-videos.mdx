@@ -394,7 +394,7 @@ export default function JokeForm({ onAddJoke }: Props) {
 <YouTube videoId="c8R4Cba7PPY">
 
  
-## [Components must be pure](https://beta.reactjs.org/learn/keeping-components-pure#side-effects-unintended-consequences)
+### [Components must be pure](https://beta.reactjs.org/learn/keeping-components-pure#side-effects-unintended-consequences)
 
 In React, components are functions that take input data and return output markup. It's important to keep the component function focused on rendering and not interacting with external systems like network requests or updating the window object. Any interaction with external systems is considered a side effect.
 
@@ -430,7 +430,7 @@ return (
 
 But if I refresh the page, we can see that the window's title isn't right, it should say 0 memes, or if I had some initial data in the images array, then it should say however many images i have. Basically, I don't want this side effect to be triggered by an user event. I want this side effect to be triggered by a state update.
 
-## useEffect
+### useEffect for Side Effects
 
 I want this side effect to be in sync with the state of my component. And this is where the `useEffect` hook comes in.
 
