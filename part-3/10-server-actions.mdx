@@ -5,6 +5,8 @@ title: Server Actions
 
 # Server Actions 
 
+Time to start creating posts. This means `POST`ing data to the server so we can store it in the database. 
+
 <Instruction ratio="1">
 <Instruction.Action step={1}>
 Make sure you create post page has some sort of form in it that allows you to create a post. 
@@ -58,7 +60,7 @@ The default behaviour of this form is not very helpful, it makes a `GET` request
 
 ## Submitting a Form
 
-Here's submitting this form should do:
+When we submit the form, here's what should happen:
 
 * Make a `POST` request to our backend with the form data
 * The backend code should create a new post in the database
@@ -124,13 +126,30 @@ Either way, we need to create some sort of server side endpoint that can handle 
 * What about serverless and edge and microservices?
 * What even is HTTP anyways?
 
-There's a lot of useless questions that come up when trying to implment some sort of backend endpoint. Let's think about what we actually need:
+There's a lot of useless questions that come up when trying to implment some sort of backend endpoint. 
 
-* Submitting the form should run some code on a server with the ability to connect to the database 
-* Writing the code and manually testing it should be easy. Not too many questions to ask or decisions to make. 
-* Maybe it could be done using a client side JS fetch request, or fall back to a standard form POST request if JS is disabled. That could be a nice feature. 
-* Type safety would be nice so we don't accidentally pass the incorrect data from client to server.
+<SideBySide ratio="2:3">
+<SideBySideBlock>
+And no matter what questions we ask or decisions we make, we need to end up with something like this. 
 
+A function that takes receives the data from the client and stores in a database. 
+</SideBySideBlock>
+```ts
+export async function POST(request: Request) {
+  const data = await request.json()
+  
+  await db.insert(posts).values(data)
+ 
+  redirect("/")
+}
+```
+</SideBySide>
+
+So wouldn't it be nice if we could simplify this entire process and only focus on the backend code? No unessary questions or decisions, just focus on the core logic that we need to write.
+
+<Card title="The Goal">
+Post data from the client and store it in the database.
+</Card>
 
 ## Next.js Server Actions
 
@@ -143,15 +162,16 @@ Update the create post page to use a server action.
 
 <Instruction.Implementation>
 ```create-post/page.tsx
-// focus(1:5)
-// focus(10:10)
-async function handleCreatePost(data: FormData) {
-  "use server"
-  const content = data.get("content") 
-  console.log("Create new post", content)
-}
-
+// focus(3:7)
+// focus(11:11)
 export default function CreatePost() {
+
+  async function handleCreatePost(data: FormData) {
+    "use server"
+    const content = data.get("content") 
+    console.log("Create new post", content)
+  }
+
   return (
     <main className="text-center mt-10">
       <form action={handleCreatePost}>
@@ -187,7 +207,7 @@ module.exports = {
 
 
 
-Now if you submit the form, you should see the console log in the server console. Submitting the form sends the form data in a POST request to an endpoint that next.js setup for us automatically. 
+Now if you submit the form, you should see the console log in the server console. Submitting the form sends the form data in a POST request to an endpoint on the server that next.js setup for us automatically. 
 
 ## How Do Server Actions Work?
 
@@ -228,15 +248,261 @@ export default function CreatePost() {
 ```
 </SideBySide>
 
+Essentially we've just made an API endpoint and sent a POST request to it. But instead of having to do all of this manually, all we have to do is define asynchronous server functions that can be called directly from your components.
 This form submission works with or without client side JS enabled, which gives us [Progressive Enhancement](https://developer.mozilla.org/en-US/docs/Glossary/Progressive_Enhancement).
+
+## Save The Post to The Database 
+
+<Instruction>
+<Instruction.Action step={4}>
+Create a new post in the database from the submitted form data.
+
+hard code the user id for now.
+</Instruction.Action>
+
+<Instruction.Implementation>
+```create-post/page.tsx
+// focus(1:2)
+// focus(7:12)
+import {db } from "@/db"
+import { posts } from "@/db/schema/posts"
+
+async function handleSubmit(data: FormData) {
+  "use server"
+
+  const content = data.get("content") as string
+
+  const result = await db.insert(posts).values({
+    content,
+    userId: "user-1"
+  }).returning()
+
+  console.log(result)
+}
+```
+</Instruction.Implementation>
+</Instruction>
+
+Test this out by trying to create a new post, you should see the new post appear in the database and the server console.
+
 
 ## Redirecting 
 
+Once we've created a new post, let's redirect the user back to the home page so they can see the new post appear in the feed. 
+
+<Instruction>
+<Instruction.Action step={4}>
+Import the `redirect` function from `next/navigation`
+
+Update the server action to redirect the user to the home page after creating a new post.
+</Instruction.Action>
+
+<Instruction.Implementation>
+```create-post/page.tsx
+// focus(1:1)
+// focus(13:13)
+import { redirect } from 'next/navigation'
+
+async function handleSubmit(data: FormData) {
+  "use server"
+
+  const content = data.get("content") as string
+
+  const result = await db.insert(posts).values({
+    content,
+    userId: "user-1"
+  }).returning()
+
+  redirect("/")
+}
+```
+</Instruction.Implementation>
+</Instruction>
+
+Notice that the redirect works, but the new post doesn't appear in the feed. 
+
+**Next.js will try to [cache everything](https://nextjs.org/docs/app/building-your-application/caching)**. The first time we loaded the home page feed, a request was made to the database to get all the posts. Next cached the result so that every time we make that same request to the database to get all posts, it will return the cached result instead of making a new request to the database. This is great for improving performance and reducing cost, but not great for our use case.
+
 ## Revalidating 
+
+<Instruction>
+<Instruction.Action step={5}>
+Import the `revalidatePath` function from `next/cache`
+
+Update the server action to revalidate the home page before redirecting the user
+</Instruction.Action>
+
+<Instruction.Implementation>
+```create-post/page.tsx
+// focus(1:1)
+// focus(13:13)
+import { revalidatePath } from 'next/cache'
+
+async function handleSubmit(data: FormData) {
+  "use server"
+
+  const content = data.get("content") as string
+
+  const result = await db.insert(posts).values({
+    content,
+    userId: "user-1"
+  }).returning()
+
+  revalidatePath("/")
+  redirect("/")
+}
+```
+</Instruction.Implementation>
+</Instruction>
+
+Before we redirect the user, we tell next that the home page needs to be revalidated. We're telling next to disregard any cached data for that route and make a new request to the database to get all the posts.
 
 ## Loading State
 
-## Error Handling
+When we submit the form, nothing happens in the UI while the request is being made. There's nothing to indicate a loading/processing state and the submit button is still active so we can accidentally submit more than once. Let's fix these issues.
+
+<Instruction ratio="1:1">
+<Instruction.Action step={6}>
+Create a new `submit-button` file. 
+</Instruction.Action>
+<Instruction.Implementation>
+  <FileTree focus={[{depth: 3, item: 2}]}>
+  - src
+    - app 
+    - create-post
+      - page.tsx
+      - submit-button.tsx
+  </FileTree>
+</Instruction.Implementation>
+</Instruction>
+
+<Instruction ratio="4:7">
+<Instruction.Action step={7}>
+Add the following code to the submit button file.
+</Instruction.Action>
+<Instruction.Implementation>
+```submit-button.tsx 
+"use client"
+
+import { twMerge } from "tailwind-merge"
+import { experimental_useFormStatus as useFormStatus } from "react-dom"
+
+export default function SubmitButton() {
+  const { pending } = useFormStatus()
+
+  return (
+    <button
+      type="submit"
+      className={twMerge(
+        "border rounded-xl px-4 py-2 disabled",
+        pending && 'opacity-50 cursor-not-allowed'
+        )}
+      disabled={pending}
+      aria-disabled={pending}
+    >
+      Post
+    </button>
+  )
+}
+```
+</Instruction.Implementation>
+</Instruction>
+
+
+<Instruction>
+<Instruction.Action step={8}>
+In the create post page, import the submit button and replace the form's button with the new `SubmitButton`
+</Instruction.Action>
+
+<Instruction.Implementation>
+```create-post/page.tsx
+// focus(1:1)
+// focus(15:15)
+import SubmitButton from './submit-button'
+
+export default function CreatePost() {
+  return (
+    <main className="text-center mt-10">
+      <form className="border border-neutral-500 rounded-lg px-6 py-4 flex flex-col gap-4">
+        <label className="w-full">
+          <textarea
+            className="bg-transparent flex-1 border-none outline-none w-full"
+            name="content"
+            placeholder="Post a thing..."
+            required
+          />
+        </label>
+        <SubmitButton />
+      </form>
+    </main>
+  )
+}
+```
+</Instruction.Implementation>
+</Instruction>
+
+Now if we submit a new post. The submit button will be disabled and the opacity will be reduced to indicate that the form is being submitted. It's a very subtle change, but it's a step in the right direction for a better user experience.
+
+Let's break down the code in the `SubmitButton` component. 
+
+### Submit Button
+
+<SideBySide>
+We start by adding "useClient to the top of the file. This allows us to run client-side JavaScript in the browser. More on this in the next section
+```submit-button.tsx 
+"use client"
+
+// ...
+```
+</SideBySide>
+
+
+<SideBySide ratio="3:5">
+Then we add the `useFormStatus` hook. This hook will interact the server action and give us information about the form's status. 
+```submit-button.tsx 
+// focus(1:3)
+// focus(6:6)
+import { 
+  experimental_useFormStatus as useFormStatus 
+} from "react-dom"
+
+export default function SubmitButton() {
+  const { pending } = useFormStatus()
+  // ...
+}
+```
+</SideBySide>
+
+<SideBySide ratio="3:5">
+Finally, we use the data to adjust the button's state. React will take care of actually updating the button when pending changes. 
+```submit-button.tsx 
+// focus(3:14)
+export default function SubmitButton() {
+  // ...
+  return (
+    <button
+      type="submit"
+      className={twMerge(
+        "border rounded-xl px-4 py-2 disabled",
+        pending && 'opacity-50 cursor-not-allowed'
+        )}
+      disabled={pending}
+      aria-disabled={pending}
+    >
+      Post
+    </button>
+  )
+}
+```
+</SideBySide>
+
+
+## More About Server Actions 
+
+<YouTube videoId="dDpZfOQBMaU" />
+
+Docs: [https://nextjs.org/docs/app/building-your-application/data-fetching/forms-and-mutations](https://nextjs.org/docs/app/building-your-application/data-fetching/forms-and-mutations)
+
 
 {/* 
 

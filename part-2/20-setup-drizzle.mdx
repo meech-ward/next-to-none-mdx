@@ -775,8 +775,8 @@ Drizzle is responsible for translating our TypeScript code into SQL and running 
   </Instruction.Action>
   <Instruction.Implementation>
 
-    ```src/db/index.ts.ts
-    import { neon, neonConfig } from '@neondatabase/serverless'
+    ```src/db/index.ts
+    import { neon } from '@neondatabase/serverless'
     import { drizzle } from 'drizzle-orm/neon-http'
 
     const sql = neon(process.env.DATABASE_URL!);
