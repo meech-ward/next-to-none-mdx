@@ -201,7 +201,7 @@ It doesn't matter what we name this file or where we put it, there are no specia
 </Note>
 
 <Instruction ratio="4:7">
-  <Instruction.Action step={1}>
+  <Instruction.Action step={2}>
     Add the following code to the `actions.ts` file.
   </Instruction.Action>
   <Instruction.Implementation>
@@ -272,7 +272,7 @@ export async function createPost(content: string) {
 </SideBySide>
 
 <Instruction ratio="3:5">
-<Instruction.Action step={1}>
+<Instruction.Action step={3}>
 Update the `handleSubmit` function on the create post page to use this server action.
 </Instruction.Action>
 
@@ -333,8 +333,50 @@ const handleSubmit = async (e: React.FormEvent) => {
 
 This is similar to the form submission we had before, but now we have a lot more control over the process. One drawback is that this won't work without client side JavaScript enabled, however, this process is really common and makes for a better user experience. 
 
-## Zod 
-
 ## Next Safe Action 
 
-## 
+Being able to create a server action and invoke it from client side JavaScript is great, but it can be even better. 
+
+Server actions don't have any built in plan for:
+
+* Type safety: There is compile time typesafety with TypeScript, but we don't have any runtime type safety.  
+* Input validation: We have to manually check the content length is at least 3 characters long.
+* Server errors: Again, we manually manage errors by sending back some arbitary object with the error information in it. 
+
+Lucky for us, there's a library called `next-safe-action` that handles all of this and more! It makes using server actions a lot easier and safer. 
+
+<Instruction ratio="1:1">
+<Instruction.Action step={}>
+Follow the getting started guide to upgrade the server actions to use `next-safe-action`.
+</Instruction.Action>
+<Instruction.Implementation>
+[next-safe-action.dev](https://next-safe-action.dev/docs/getting-started)
+</Instruction.Implementation>
+</Instruction>
+
+## Zod 
+
+> "Zod is a TypeScript-first schema declaration and validation library."
+
+Basically Zod does type checking at runtime instead of compile time. 
+
+```ts
+// creating a schema for strings
+const mySchema = z.string();
+
+// parsing
+mySchema.parse("tuna"); // => "tuna"
+mySchema.parse(12); // => throws ZodError
+```
+
+So you can handle invalid types in your logic. 
+
+It also validates more fine grained checks. For example, you can make sure a string is at least 3 characters long and at most 280 characters long. 
+
+```ts
+const mySchema = z.string().min(3).max(280);
+```
+
+Zod integrates into all kinds of other libraries including next-safe-action and drizzle. 
+
+[https://github.com/colinhacks/zod](https://github.com/colinhacks/zod)
