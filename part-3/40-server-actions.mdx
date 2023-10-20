@@ -1,0 +1,340 @@
+---
+slug: client-server-actions
+name: "Client Server Actions"
+---
+
+# Client Server Actions
+
+Let's go down a more client component driven approach, to submit the new post form. This will allow us to take control by running logic on the client, before sending the data to the server.
+
+<Instruction ratio="1">
+<Instruction.Action step={1}>
+Update the create post page to be a client component. This will remove the server action for now but we'll add that back in later. 
+</Instruction.Action>
+
+<Instruction.Implementation>
+```create-post/page.tsx
+"use client"
+
+import { useState } from "react"
+import { twMerge } from "tailwind-merge"
+
+export default function CreatePost() {
+  const [content, setContent] = useState("")
+
+  const buttonDisabled = content.length < 3
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
+    console.log(content)
+    // We'll post the data soon
+  }
+
+  return (
+    <main className="text-center mt-10">
+      <form
+        onSubmit={handleSubmit}
+        className="border border-neutral-500 rounded-lg px-6 py-4 flex flex-col gap-4"
+      >
+        <label className="w-full">
+          <textarea
+            className="bg-transparent flex-1 border-none outline-none w-full"
+            name="content"
+            placeholder="Post a thing..."
+            required
+            value={content}
+            onChange={(e) => setContent(e.target.value)}
+          />
+        </label>
+
+        <div className="text-neutral-500">Characters: {content.length}</div>
+
+        <button
+          type="submit"
+          className={twMerge(
+            "border rounded-xl px-4 py-2 disabled",
+            buttonDisabled && "opacity-50"
+          )}
+          disabled={buttonDisabled}
+          aria-disabled={buttonDisabled}
+        >
+          Post
+        </button>
+      </form>
+    </main>
+  )
+}
+```
+</Instruction.Implementation>
+</Instruction>
+
+This "client" version of the create post page has more room for a better user experience. Right now there is an arbitraty requirement that a post must be at least 3 characters long, but hopefully you see the potential for more complex validation and a better user experience. 
+
+Let's break down what's going on in this big code block.
+
+### useState
+
+<SideBySide ratio="5:3">
+```tsx
+// focus(1:1)
+// focus(4:4)
+// focus(11:12)
+// focus(16:16)
+import { useState } from "react" // 1
+
+export default function CreatePost() {
+  const [content, setContent] = useState("") // 2
+
+  return (
+    <form>
+      <textarea
+        name="content"
+        required
+        value={content} // 3
+        onChange={(e) => setContent(e.target.value)} // 4
+      />
+
+    <div className="text-neutral-500">
+      Characters: {content.length} {/* 5 */}
+    </div>
+  </form>
+  )
+}
+```
+<SideBySideBlock>
+1. Import `useState`
+2. Create a state for the text input
+3. Set the value of the text area to be the value of the state variable 
+4. When the value changes, update the state 
+5. Present the value of the state variable as the character count
+</SideBySideBlock>
+</SideBySide>
+
+### buttonDisabled
+
+<SideBySide ratio="5:3">
+```tsx
+// focus(4:4)
+// focus(10:12)
+export default function CreatePost() {
+  const [content, setContent] = useState("")
+
+  const buttonDisabled = content.length <= 3 
+
+  return (
+    <form>
+      <button
+        type="submit"
+        className={buttonDisabled && "opacity-50"}
+        disabled={buttonDisabled}
+        aria-disabled={buttonDisabled}
+      >
+        Post
+      </button>
+    </form>
+  )
+}
+```
+<SideBySideBlock>
+1. Create a `buttonDisabled` variable. This is plain variable, not a state variable, but it's based on the value of the state variable `content`.
+2. Only disable the button when that variable is true 
+</SideBySideBlock>
+</SideBySide>
+
+### handleSubmit
+
+<SideBySide ratio="5:3">
+```tsx
+// focus(3:6)
+// focus(9:9)
+export default function CreatePost() {
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
+    console.log(content)
+  }
+
+  return (
+    <form onSubmit={handleSubmit}>
+    </form>
+  )
+}
+```
+<SideBySideBlock>
+1. Create a `handleSubmit` function that just logs the content to the console.
+2. Add the `handleSubmit` function to the form's `onSubmit` prop
+</SideBySideBlock>
+</SideBySide>
+
+If you test out this component, obviously no network requests happen and no data is stored in the database. When we submit the form, we get a console log in the browser and that's it. But by adding client side JavaScript, we can create a more unique experience for the user. 
+
+## Server Action 
+
+But this is all worthless without actually being able to save the data to the database. Let's create a server action! 
+
+But there's one issue, **we can't create a server action in a client component.**
+
+This makes sense if you think about it. All code in a client component will run on the client (web browser) so obviously we can't run server-side code there. 
+
+<Instruction ratio="1:1">
+  <Instruction.Action  step={1}>
+    Create a new file inside of `create-post` called `actions.ts`.
+  </Instruction.Action>
+  <Instruction.Implementation>
+    <Card>
+      <FileTree focus={[{depth: 4, item: 2}]}>
+      - src
+        - app 
+          - page.tsx 
+          - create-post 
+            - page.tsx 
+            - actions.ts (server actions)
+      </FileTree>
+    </Card>
+  </Instruction.Implementation>
+</Instruction>
+
+As the name implies, this file will contain our server action. 
+
+<Note>
+It doesn't matter what we name this file or where we put it, there are no special conventions here. I think this just makes sense. 
+</Note>
+
+<Instruction ratio="4:7">
+  <Instruction.Action step={1}>
+    Add the following code to the `actions.ts` file.
+  </Instruction.Action>
+  <Instruction.Implementation>
+    ```actions.tsx
+    "use server"
+
+    import { redirect } from "next/navigation"
+    import { revalidatePath } from "next/cache"
+
+    import { db } from "@/db"
+    import { posts as postsTable } from "@/db/schema/posts"
+
+    export async function createPost(content: string) {
+      console.log(content)
+
+      if (!content || content.length < 3) {
+        return { error: "not enough content" }
+      }
+
+      try {
+        await db.insert(postsTable).values({
+          content,
+          userId: "user-1",
+        })
+      } catch (error) {
+        console.error(error)
+        return { error: "something went wrong" }
+      }
+      
+      revalidatePath("/")
+      redirect(`/`)
+    }
+    ```
+  </Instruction.Implementation>
+</Instruction>
+
+<SideBySide ratio="5:3">
+```tsx
+"use server" // 1
+
+// 2
+export async function createPost(content: string) { 
+
+  // 3
+  if (!content || content.length < 3) { 
+    return { error: "not enough content" }
+  }
+
+  // 4
+  try {
+    await db.insert(postsTable).values(/* ... */)
+  } catch (error) {
+    return { error: "something went wrong" }
+  }
+  
+  // 5
+  revalidatePath("/")
+  redirect(`/`)
+}
+```
+<SideBySideBlock>
+1. Adding "use server" ensures that all code within this file will only ever run on the server.
+2. This function is going to be invoked using client side JavaScript, so we will send the content as an argument instead of `FormData`.
+3. We can do some basic validation here. This is going to be a duplicate of the client side validation.
+4. Now we can try to insert the data into the database and handle any errors that might occur.
+5. If everything goes well, we can revalidate the home page and redirect the user back to the home page.
+</SideBySideBlock>
+</SideBySide>
+
+<Instruction ratio="3:5">
+<Instruction.Action step={1}>
+Update the `handleSubmit` function on the create post page to use this server action.
+</Instruction.Action>
+
+<Instruction.Implementation>
+```create-post/page.tsx
+// focus(3:3)
+// focus(7:18)
+"use client"
+
+import { createPost } from './actions'
+
+export default function CreatePost() {
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    
+    const result = await createPost(content)
+    if (result.error) {
+      console.log(error)
+      // handle the error
+      return 
+    }
+
+    setContent("")
+  }
+  // ...
+}
+```
+</Instruction.Implementation>
+</Instruction>
+
+<SideBySide ratio="3:2">
+```tsx
+import { createPost } from './actions' // 1
+
+const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault()
+  
+  const result = await createPost(content) // 2
+
+  // 3
+  if (result.error) {
+    console.log(error)
+    // handle the error
+    return 
+  }
+
+  setContent("") // 4
+}
+```
+<SideBySideBlock>
+1. Import the action into the client component. The code won't run on the client because of the "use server" directive at the top of the file.
+2. Call the function directly from the client side code. This will make an HTTP request and post the data. 
+3. Handle any server side errors. We'll need more state for that. 
+4. Reset the form after the post is created.
+</SideBySideBlock>
+</SideBySide>
+
+This is similar to the form submission we had before, but now we have a lot more control over the process. One drawback is that this won't work without client side JavaScript enabled, however, this process is really common and makes for a better user experience. 
+
+## Zod 
+
+## Next Safe Action 
+
+## 
