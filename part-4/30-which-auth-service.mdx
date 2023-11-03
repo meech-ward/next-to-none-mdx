@@ -1,0 +1,34 @@
+---
+slug: which-auth-service
+name: "Which Auth Service"
+---
+
+# Which Auth Service
+
+If you need more than just simple social login, you'll need to choose an auth service. These are services that cost money but handle complete user management. All user emails, phone numbers, passwords, etc are stored in their database. They handle things like password reset, email verification, two factor authentication, and pretty much everything else that's comlicated about auth. 
+
+## Why an auth service
+
+I was going to write a whole section about why you should use a full auth service, but these tweets summarize this pretty well. 
+
+https://twitter.com/thdxr/status/1695814589894553923
+
+https://twitter.com/devagrawal09/status/1686978368246280192/photo/1
+
+
+## Which service to use
+
+There are a lot of auth services and I'm not going to take the time to compare them all here. But here's a quick comparrison:
+
+* AWS Cognito: Too complicated and not customizable enough
+* Octa: Too complicated and only for enterprise
+* Auth0: Not terrible, but not great
+* Clerk: Good, but their next library is outdated: https://twitter.com/Meech_Ward/status/1719240117070749760
+* Kinde: Looks promising, works really well with modern next.js, but still very new
+
+## Kinde 
+
+So I suggest Kinde and I'll show you how to use it when I get around to making a video on it. In the mean time, here's some links:
+
+* [https://kinde.com/blog/engineering/nextjs-with-drizzle-and-kinde-auth/](https://kinde.com/blog/engineering/nextjs-with-drizzle-and-kinde-auth/)
+* [https://kinde.com/blog/releases/nextjs-13/](https://kinde.com/blog/releases/nextjs-13/)
