@@ -15,6 +15,10 @@ This setup will enable users to log in to your app using social sign-in provider
 
 The instructions are a modified version of what's found on the authjs website: [https://authjs.dev/reference/nextjs](https://authjs.dev/reference/nextjs)
 
+<Card title="warning">
+The middleware features seem a bit buggy right now, so avoid using middleware until it's more stable: [https://authjs.dev/reference/nextjs#in-middleware](https://authjs.dev/reference/nextjs#in-middleware)
+</Card>
+
 ## Setup 
 
 <Instruction>
@@ -363,14 +367,14 @@ export const { handlers, auth, signOut } = NextAuth(authConfig)
 
 # References
 
-* https://authjs.dev/guides/upgrade-to-v5
-* https://next-auth.js.org/getting-started/rest-api
-* https://authjs.dev/reference/adapter/drizzle
-* https://next-auth.js.org/configuration/callbacks#session-callback
-* https://next-auth.js.org/getting-started/typescript
-* https://next-auth.js.org/configuration/callbacks
-* https://github.com/nextauthjs/next-auth/issues/535#issuecomment-668576271
-* https://authjs.dev/getting-started/adapters#user
+* [https://authjs.dev/guides/upgrade-to-v5](https://authjs.dev/guides/upgrade-to-v5)
+* [https://next-auth.js.org/getting-started/rest-api](https://next-auth.js.org/getting-started/rest-api)
+* [https://authjs.dev/reference/adapter/drizzle](https://authjs.dev/reference/adapter/drizzle)
+* [https://next-auth.js.org/configuration/callbacks#session-callback](https://next-auth.js.org/configuration/callbacks#session-callback)
+* [https://next-auth.js.org/getting-started/typescript](https://next-auth.js.org/getting-started/typescript)
+* [https://next-auth.js.org/configuration/callbacks](https://next-auth.js.org/configuration/callbacks)
+* [https://github.com/nextauthjs/next-auth/issues/535#issuecomment-668576271](https://github.com/nextauthjs/next-auth/issues/535#issuecomment-668576271)
+* [https://authjs.dev/getting-started/adapters#user](https://authjs.dev/getting-started/adapters#user)
 
 <Note>
 When using `auth()`, the **`[session()` callback](https://authjs.dev/reference/core/types#session)** is ignored. `auth()` will expose anything returned from the **`[jwt()` callback](https://authjs.dev/guides/reference/core/types#jwt)** or if using a **`["database"` strategy](https://authjs.dev/reference/core#session)**, from the **[User](https://authjs.dev/reference/adapters#user)**. This is because the `session()` callback was designed to protect you from exposing sensitive information to the client, but when using `auth()` you are always on the server.
