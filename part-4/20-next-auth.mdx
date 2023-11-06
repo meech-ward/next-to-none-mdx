@@ -48,7 +48,7 @@ Install Next Auth 5
 </Instruction>
 
 <Instruction ratio="1:1">
-  <Instruction.Action step={1}>
+  <Instruction.Action step={2}>
     Create a new file inside of `src` called `auth.ts`.
   </Instruction.Action>
  <Instruction.Implementation>
@@ -64,7 +64,7 @@ Install Next Auth 5
 </Instruction>
 
 <Instruction>
-<Instruction.Action step={1}>
+<Instruction.Action step={3}>
 Add the following code to `auth.ts`
 </Instruction.Action>
 <Instruction.Implementation>
@@ -87,7 +87,7 @@ export const {
 </Instruction>
 
 <Instruction ratio="1:1">
-  <Instruction.Action step={1}>
+  <Instruction.Action step={4}>
     Create a new file for the auth HTTP routes.
   </Instruction.Action>
  <Instruction.Implementation>
@@ -106,7 +106,7 @@ export const {
 </Instruction>
 
 <Instruction ratio="1:1">
-<Instruction.Action step={1}>
+<Instruction.Action step={5}>
 Add the following code to `api/auth/[...nextauth]/route.ts`
 </Instruction.Action>
 <Instruction.Implementation>
@@ -120,7 +120,7 @@ export const { GET, POST } = handlers;
 
 
 <Instruction>
-<Instruction.Action step={1}>
+<Instruction.Action step={6}>
 Add the following environment variables to your `.env.local` file.
 </Instruction.Action>
 <Instruction.Implementation>
@@ -139,13 +139,13 @@ You can generate an `AUTH_SECRET` using `openssl rand -hex 32`, or just click th
 ## Github OAuth
 
 <Instruction>
-<Instruction.Action step={1}>
+<Instruction.Action step={7}>
 Follow the instruction in the video (timestamp 4:16) to create a new GitHub OAuth App and add the env vars to your `.env.local` file.
 </Instruction.Action>
 </Instruction>
 
 <Instruction>
-<Instruction.Action step={1}>
+<Instruction.Action step={8}>
 Test login is working by navigating to `localhost:3000/api/auth/signin` and clicking the GitHub button.
 </Instruction.Action>
 </Instruction>
@@ -153,13 +153,13 @@ Test login is working by navigating to `localhost:3000/api/auth/signin` and clic
 ## Drizzle
 
 <Instruction>
-<Instruction.Action step={1}>
+<Instruction.Action step={9}>
 Follow the instruction in the [drizzle adapter](https://authjs.dev/reference/adapter/drizzle) docs to install the drizzle adapter, and add the correct schema code for your database. 
 </Instruction.Action>
 </Instruction>
 
 <Instruction >
-  <Instruction.Action step={1}>
+  <Instruction.Action step={10}>
     Push the updated database schema to the database.
   </Instruction.Action>
   
@@ -190,7 +190,7 @@ Follow the instruction in the [drizzle adapter](https://authjs.dev/reference/ada
 </Instruction>
 
 <Instruction ratio="1:2">
-<Instruction.Action step={1}>
+<Instruction.Action step={11}>
 Update the `auth.ts` file to use the drizzle adapter.
 </Instruction.Action>
 <Instruction.Implementation>
@@ -218,7 +218,7 @@ export const {
 </Instruction>
 
 <Instruction>
-<Instruction.Action step={1}>
+<Instruction.Action step={12}>
 Create a new folder called `types/next-auth.d.ts` in the root of the project and add the following code:
 </Instruction.Action>
 <Instruction.Implementation>
@@ -238,7 +238,7 @@ declare module "next-auth" {
 
 
 <Instruction>
-<Instruction.Action step={1}>
+<Instruction.Action step={13}>
 Keep track of the user's id in the session.
 </Instruction.Action>
 <Instruction.Implementation>
