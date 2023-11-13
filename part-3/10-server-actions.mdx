@@ -9,7 +9,7 @@ Time to start creating posts. This means `POST`ing data to the server so we can 
 
 <Instruction ratio="1">
 <Instruction.Action step={1}>
-Make sure you create post page has some sort of form in it that allows you to create a post. 
+Make sure your create post page has some sort of form in it that allows you to create a post. 
 
 At a bare minimum it should have a textarea input and a submit button. 
 </Instruction.Action>
@@ -116,17 +116,17 @@ export default function CreatePost() {
 ```
 </SideBySide>
 
-Either way, we need to create some sort of server side endpoint that can handle the POST request and communicate with the database. How would you go about implmenting that kind of endpoint?
+Either way, we need to create some sort of server side endpoint that can handle the POST request and communicate with the database. How would you go about implementing that kind of endpoint?
 
 * Would you try to make a RESTful API and do it wrong?
 * Use graphql because that's what all the job postings say?
 * Use trpc because someone said that's the new cool thing to do?
-* How should you orgnaize your backend JSON api files?
+* How should you organize your backend JSON api files?
 * Is JSON even the right format to use?
 * What about serverless and edge and microservices?
 * What even is HTTP anyways?
 
-There's a lot of useless questions that come up when trying to implment some sort of backend endpoint. 
+There's a lot of useless questions that come up when trying to implement some sort of backend endpoint. 
 
 <SideBySide ratio="2:3">
 <SideBySideBlock>
@@ -145,7 +145,7 @@ export async function POST(request: Request) {
 ```
 </SideBySide>
 
-So wouldn't it be nice if we could simplify this entire process and only focus on the backend code? No unessary questions or decisions, just focus on the core logic that we need to write.
+So wouldn't it be nice if we could simplify this entire process and only focus on the backend code? No unnecessary questions or decisions, just focus on the core logic that we need to write.
 
 <Card title="The Goal">
 Post data from the client and store it in the database.
