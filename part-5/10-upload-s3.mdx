@@ -1,0 +1,680 @@
+---
+title: "uplod to s3"
+---
+
+# Upload image from next.js to s3
+
+Starter Code:
+
+```tsx
+"use client";
+
+import Image from "next/image";
+import { useState } from "react";
+import { twMerge } from "tailwind-merge";
+
+export default function CreatePostForm({
+  user,
+}: {
+  user: { name?: string | null; image?: string | null };
+}) {
+  const [content, setContent] = useState("");
+
+  const [statusMessage, setStatusMessage] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const buttonDisabled = content.length < 1 || loading;
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    setStatusMessage("creating");
+    setLoading(true);
+
+    // Do all the image upload and everything
+
+    setStatusMessage("created");
+    setLoading(false);
+  };
+
+  return (
+    <>
+      <form
+        className="border border-neutral-500 rounded-lg px-6 py-4"
+        onSubmit={handleSubmit}
+      >
+        {statusMessage && (
+          <p className="bg-yellow-100 border border-yellow-400 text-yellow-700 px-4 py-3 mb-4 rounded relative">
+            {statusMessage}
+          </p>
+        )}
+
+        <div className="flex gap-4 items-start pb-4 w-full">
+          <div className="rounded-full h-12 w-12 overflow-hidden relative">
+            <Image
+              className="object-cover"
+              src={user.image || "https://www.gravatar.com/avatar/?d=mp"}
+              alt={user.name || "user profile picture"}
+              priority={true}
+              fill={true}
+            />
+          </div>
+
+          <div className="flex flex-col gap-2 w-full">
+            <div>{user.name}</div>
+
+            <label className="w-full">
+              <input
+                className="bg-transparent flex-1 border-none outline-none"
+                type="text"
+                placeholder="Post a thing..."
+                value={content}
+                onChange={(e) => setContent(e.target.value)}
+              />
+            </label>
+
+            {/* Preivew File */}
+
+            <label className="flex">
+              <svg
+                className="w-5 h-5 hover:cursor-pointer transform-gpu active:scale-75 transition-all text-neutral-500"
+                aria-label="Attach media"
+                role="img"
+                viewBox="0 0 20 20"
+              >
+                <title>Attach media</title>
+                <path
+                  d="M13.9455 9.0196L8.49626 14.4688C7.16326 15.8091 5.38347 15.692 4.23357 14.5347C3.07634 13.3922 2.9738 11.6197 4.30681 10.2794L11.7995 2.78669C12.5392 2.04694 13.6745 1.85651 14.4289 2.60358C15.1833 3.3653 14.9855 4.4859 14.2458 5.22565L6.83367 12.6524C6.57732 12.9088 6.28435 12.8355 6.10124 12.6671C5.94011 12.4986 5.87419 12.1983 6.12322 11.942L11.2868 6.78571C11.6091 6.45612 11.6164 5.97272 11.3088 5.65778C10.9938 5.35749 10.5031 5.35749 10.1808 5.67975L4.99529 10.8653C4.13835 11.7296 4.1823 13.0626 4.95134 13.8316C5.77898 14.6592 7.03874 14.6446 7.903 13.7803L15.3664 6.32428C16.8678 4.81549 16.8312 2.83063 15.4909 1.4903C14.1799 0.179264 12.1584 0.106021 10.6496 1.60749L3.10564 9.16608C1.16472 11.1143 1.27458 13.9268 3.06169 15.7139C4.8488 17.4937 7.6613 17.6109 9.60955 15.6773L15.1027 10.1841C15.4103 9.87653 15.4103 9.30524 15.0881 9.00495C14.7878 8.68268 14.2677 8.70465 13.9455 9.0196Z"
+                  className="fill-current"
+                ></path>
+              </svg>
+
+              <input
+                className="bg-transparent flex-1 border-none outline-none hidden"
+                name="media"
+                type="file"
+                accept="image/jpeg,image/png,image/webp,image/gif,video/mp4,video/webm"
+              />
+            </label>
+          </div>
+        </div>
+
+        <div className="flex justify-between items-center mt-5">
+          <div className="text-neutral-500">Characters: {content.length}</div>
+          <button
+            type="submit"
+            className={twMerge(
+              "border rounded-xl px-4 py-2 disabled",
+              buttonDisabled && "opacity-50 cursor-not-allowed"
+            )}
+            disabled={buttonDisabled}
+            aria-disabled={buttonDisabled}
+          >
+            Post
+          </button>
+        </div>
+      </form>
+    </>
+  );
+}
+```
+
+Keep track of the file in state:
+
+```tsx
+const [file, setFile] = useState<File | null>(null);
+// ...
+const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const file = e.target.files?.[0] ?? null;
+};
+// ...
+<input
+  type="file"
+  // ...
+  onChange={handleFileChange}
+/>;
+
+const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  e.preventDefault();
+
+  setStatusMessage("creating");
+  setLoading(true);
+
+  // Do all the image upload and everything
+  console.log(content, file);
+
+  setStatusMessage("created");
+  setLoading(false);
+};
+```
+
+Display the file to the user
+
+```tsx
+const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+
+const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const file = e.target.files?.[0] ?? null;
+  setFile(file);
+  if (previewUrl) {
+    URL.revokeObjectURL(previewUrl);
+  }
+  if (file) {
+    const url = URL.createObjectURL(file);
+    setPreviewUrl(url);
+  } else {
+    setPreviewUrl(null);
+  }
+};
+
+{
+  previewUrl && file && (
+    <div className="mt-4">
+      {file.type.startsWith("image/") ? (
+        <img src={previewUrl} alt="Selected file" />
+      ) : file.type.startsWith("video/") ? (
+        <video src={previewUrl} controls />
+      ) : null}
+    </div>
+  );
+}
+```
+
+Back to what we really want to do, upload the file to s3. There's two things that we want to happen:
+
+1. upload to s3
+2. store data in the database
+
+Let's do s3 first.
+
+## Create an S3 Bucket
+
+- Go to the AWS Console and create an S3 bucket.
+- Make sure to uncheck "Block all public access" and check "I acknowledge that the current settings might result in this bucket and the objects within becoming public."
+- Click "Create bucket"
+- Click on the bucket name
+
+### Bucket Permissions
+
+You only need to make it public if you're doing client side put and get, if you want to keep your bucket private, use these instructions instead: https://www.sammeechward.com/storing-images-in-s3-from-node-server
+
+- Click on "Permissions"
+- Click on "Bucket Policy"
+- Paste in the following policy, replacing `BUCKET_NAME` with the name of your bucket:
+
+```json
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "PublicReadGetObject",
+      "Effect": "Allow",
+      "Principal": "*",
+      "Action": ["s3:GetObject"],
+      "Resource": ["arn:aws:s3:::BUCKET_NAME/*"]
+    }
+  ]
+}
+```
+
+- Click "Save changes"
+
+### Bucket CORS Configuration
+
+- Click on "Permissions"
+- Click on "CORS configuration"
+- Paste in the following configuration:
+
+```json
+[
+  {
+    "AllowedHeaders": ["*"],
+    "AllowedMethods": ["PUT", "GET"],
+    "AllowedOrigins": ["*"],
+    "ExposeHeaders": [],
+    "MaxAgeSeconds": 3000
+  }
+]
+```
+
+## Create an IAM User
+
+- Go to the AWS Console and search for "IAM"
+- Click on "Users" in the left sidebar
+- Click "Add user"
+- Enter a username, e.g. `next-s3-upload`
+- People will tell you to use "AmazonS3FullAccess", but don't
+- make a new policy and attach it
+
+```json
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "VisualEditor0",
+      "Effect": "Allow",
+      "Action": ["s3:PutObject", "s3:DeleteObject"],
+      "Resource": "arn:aws:s3:::sams-test-bucket-1/*"
+    }
+  ]
+}
+```
+
+Copy the access key and secret key as environment variables
+
+```bash
+AWS_ACCESS_KEY
+AWS_SECRET_ACCESS_KEY
+AWS_BUCKET_NAME
+AWS_BUCKET_REGION
+```
+
+Now we're ready to start using the aws-sdk.
+
+## Upload to S3
+
+We can't give the client direct access to s3, then users could upload whatever they want. Instead, we need our server to generate a presigned url that the client can use to upload the file.
+
+That way our own nextjs server can verify who the user is and make sure they only upload the files we want them to.
+
+So we need a server action that will generate a presigned url that the client can use to upload the file.
+
+So first create a server action to generate the signed url:
+
+```actions.ts
+import { auth } from "@/auth"
+
+export async function getSignedURL() {
+  if (!session) {
+    return { failure: "not authenticated" }
+  }
+
+  return {success: {url: ""}}
+}
+```
+
+```actions.ts
+type SignedURLResponse = Promise<
+  { failure?: undefined; success: { url: string } }
+  | { failure: string; success?: undefined }
+>
+export async function getSignedURL(): SignedURLResponse {
+  if (!session) {
+    return { failure: "not authenticated" }
+  }
+
+  return {success: {url: ""}}
+}
+```
+
+<Note>
+  This will allow us to handle error cases and success cases, but really i would
+  suggest you use something like https://next-safe-action.dev/
+</Note>
+
+Then we can import and call it from the client:
+
+````create-post-form.tsx
+const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  e.preventDefault()
+  // ...
+  if (file) {
+    const signedURLResult = await getSignedURL()
+    if (signedURLResult.failure !== undefined) {
+      console.error(signedURLResult.failure)
+      return
+    }
+
+    const { url } = signedURLResult.success
+    console.log({url})
+  }
+}
+```
+
+
+Now to actually generate a URL, install:
+
+```bash
+bun install @aws-sdk/client-s3
+bun install @aws-sdk/s3-request-presigner
+````
+
+Update the actions file:
+
+```actions.ts
+import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3"
+import { getSignedUrl } from "@aws-sdk/s3-request-presigner"
+
+const s3Client = new S3Client({
+  region: process.env.AWS_BUCKET_REGION!,
+  credentials: {
+    accessKeyId: process.env.AWS_ACCESS_KEY!,
+    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY!,
+  },
+})
+
+export async function getSignedURL(): SignedURLResponse {
+  if (!session) {
+    return { failure: "not authenticated" }
+  }
+
+  const putObjectCommand = new PutObjectCommand({
+    Bucket: process.env.AWS_BUCKET_NAME!,
+    Key: "test-file",
+  })
+
+  const url = await getSignedUrl(
+    s3Client,
+    putObjectCommand,
+    { expiresIn: 60 } // 60 seconds
+  )
+
+  return {success: {url}}
+}
+```
+
+This should generate a url now so submit the client and see what get's console.logged
+
+Then update the client code to actually send the file to s3:
+
+```tsx
+const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  e.preventDefault()
+  // ...
+  if (file) {
+    const signedURLResult = await getSignedURL()
+    if (signedURLResult.failure !== undefined) {
+      console.error(signedURLResult.failure)
+      return
+    }
+
+    const { url } = signedURLResult.success
+    console.log({url})
+    await fetch(url, {
+      method: "PUT",
+      headers: {
+        "Content-Type": file.type,
+      },
+      body: file,
+    })
+  }
+})
+```
+
+Check s3 and you should have an image there now. You should be able to view it using the url.
+
+Yay it's working, but it's not a great. We're doing nothing to ensure that the user actually uploads an image or video. They could realistically upload any file of any size. The form input only allows:
+
+```
+accept="image/jpeg,image/png,image/webp,image/gif,video/mp4,video/webm"
+```
+
+But this doesn't enforce anything on the server side. So on the sever, we're going to do a couple of checks.
+
+1. make sure the file is one we accept
+2. make sure it's not too big
+3. use a hash of the file to make sure there's not issues during the transport from the client to S3.
+
+So in the function that generates the signed url, we're going to add a couple of checks:
+
+```actions.ts
+
+const allowedFileTypes = [
+  "image/jpeg",
+  "image/png",
+  "video/mp4",
+  "video/quicktime"
+]
+
+const maxFileSize = 1048576 * 10 // 1 MB
+
+type GetSignedURLParams = {
+  fileType: string
+  fileSize: number
+  checksum: string
+}
+export async function getSignedURL({
+  fileType,
+  fileSize,
+  checksum,
+}: GetSignedURLParams): SignedURLResponse {
+    const session = await auth()
+
+  if (!session) {
+    return { failure: "not authenticated" }
+  }
+
+  // first just make sure in our code that we're only allowing the file types we want
+  if (!allowedFileTypes.includes(fileType)) {
+    return { failure: "File type not allowed" }
+  }
+
+  if (fileSize > maxFileSize) {
+    return { failure: "File size too large" }
+  }
+
+  const putObjectCommand = new PutObjectCommand({
+    Bucket: process.env.AWS_BUCKET_NAME!,
+    Key: "test-file",
+    ContentType: fileType,
+    ContentLength: fileSize,
+    ChecksumSHA256: checksum,
+    // Let's also add some metadata which is stored in s3.
+    Metadata: {
+      userId: session.user.id
+    },
+  })
+
+// ...
+}
+```
+
+Then on teh client we need to pass up with information
+
+```tsx
+const computeSHA256 = async (file: File) => {
+  const buffer = await file.arrayBuffer();
+  const hashBuffer = await crypto.subtle.digest("SHA-256", buffer);
+  const hashArray = Array.from(new Uint8Array(hashBuffer));
+  const hashHex = hashArray
+    .map((b) => b.toString(16).padStart(2, "0"))
+    .join("");
+  return hashHex;
+};
+const signedURLResult = await getSignedURL({
+  fileSize: file.size,
+  fileType: file.type,
+  checksum: await computeSHA256(file),
+});
+```
+
+This should still work unless one of the checks was off.
+
+But notice that there's still only one file in s3, that's because we're using the same key for every file. So let's update the key to be something else.
+
+Since this is going to end up being a public url, we'll make this an unguessable name. This is actually how discord does things. You can go into one of your private dms and copy an image url and that url is available to everyone in the internet, but because it's an unguessable url, it's considered safe enough. So we'll use crypto to generate a random unguessable string.
+
+```actions.ts
+import crypto from "crypto"
+const generateFileName = (bytes = 32) => crypto.randomBytes(bytes).toString("hex")
+```
+
+of If you're running this on an edge function
+
+```actions.ts
+const generateFileName = (bytes = 32) => {
+  const array = new Uint8Array(bytes)
+  crypto.getRandomValues(array)
+  return [...array].map((b) => b.toString(16).padStart(2, "0")).join("")
+}
+```
+
+## Database
+
+Now we need to associate the s3 file with something in the app. I have users and posts in my app that i need to associate this file with. In the database I have a media table which I will use to reference the s3 bucket, then i can associate that with a post and a user.
+
+When the user first sets up the signed url, create an entry in the media table and send back the id from that table
+
+```ts
+export async function getSignedURL(): SignedURLResponse {
+
+  // ...
+
+
+  const results = await db
+    .insert(mediaTable)
+    .values({
+      type: fileType.startsWith("image") ? "image" : "video",
+      url: url.split("?")[0],
+      userId: session.user.id,
+    })
+    .returning()
+
+  return { success: { url, id: results[0].id } }
+}
+```
+
+Maybe also wrap all of that in a try catch for error handling
+
+
+Then on the client, we can see the id and double check that in the datbase using drizzle-studio
+
+```tsx
+const signedURLResult = await getSignedURL({
+  fileSize: file.size,
+  fileType: file.type,
+  checksum: await computeSHA256(file),
+})
+if (signedURLResult.failure !== undefined) {
+  throw new Error(signedURLResult.failure)
+}
+const { url, id: fileId } = signedURLResult.success
+await fetch(url, {
+  method: "PUT",
+  headers: {
+    "Content-Type": file.type,
+  },
+  body: file,
+})
+
+console.log({ fileId })
+// now create a post in the database 
+```
+
+Once the file is uploaded and a media item exists in the database, we need to create a new post and associated the media item with it. 
+
+**server code**
+
+```actions.ts
+export async function createPost({
+  content,
+  fileId,
+}: {
+  content: string
+  fileId?: number
+}): Promise<{ failure: string } | undefined> {
+  const session = await auth()
+
+  if (!session) {
+    return { failure: "not authenticated" }
+  }
+
+  if (content.length < 1) {
+    return { failure: "not enough content" }
+  }
+
+  if (fileId) {
+    const result = await db
+      .select({ id: mediaTable.id })
+      .from(mediaTable)
+      .where(and(eq(mediaTable.id, fileId), eq(mediaTable.userId, session.user.id)))
+      .then((rows) => rows[0])
+
+    if (!result) {
+      return { failure: "image not found" }
+    }
+  }
+
+  const results = await db
+    .insert(postsTable)
+    .values({
+      content,
+      userId: session.user.id,
+    })
+    .returning()
+
+  if (fileId) {
+    await db.update(mediaTable).set({ postId: results[0].id }).where(eq(mediaTable.id, fileId))
+  }
+
+  revalidatePath("/")
+  redirect("/")
+}
+```
+
+**Client code:**
+
+```tsx
+console.log({ fileId })
+// now create a post in the database 
+await createPost({
+  content,
+  fileId: fileId,
+})
+```
+
+You might want to add some server side verification that the file upload was succesfful. Maybe you check with s3 from your server or use a lambda function. but this is good enough for now. 
+
+
+## Displaying the posts 
+
+The Displaying posts code is already setup, so this should just work.
+
+## Deleting  a post 
+
+```ts
+"use server"
+
+import { db, eq } from "@/db"
+import { posts as postsTable } from "@/db/schema/posts"
+import { media as mediaTable } from "@/db/schema/media"
+import { revalidatePath } from "next/cache"
+
+import { S3Client, DeleteObjectCommand } from "@aws-sdk/client-s3"
+
+const s3Client = new S3Client({
+  region: process.env.AWS_BUCKET_REGION!,
+  credentials: {
+    accessKeyId: process.env.AWS_ACCESS_KEY!,
+    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY!,
+  },
+})
+
+export async function deletePost(postId: number) {
+  try {
+    const deletedMedia = await db
+      .delete(mediaTable)
+      .where(eq(mediaTable.postId, postId))
+      .returning()
+      .then((res) => res[0])
+
+    await db.delete(postsTable).where(eq(postsTable.id, postId)).returning()
+
+    if (deletedMedia) {
+      const url = deletedMedia.url
+      const key = url.split("/").slice(-1)[0]
+
+      const deleteParams = {
+        Bucket: process.env.AWS_BUCKET_NAME!,
+        Key: key,
+      }
+
+      await s3Client.send(new DeleteObjectCommand(deleteParams))
+    }
+
+    revalidatePath("/")
+  } catch (e) {
+    console.error(e)
+  }
+}
+```
