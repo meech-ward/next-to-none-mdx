@@ -16,9 +16,6 @@ export const db = drizzle(sql, { logger: true });
 ```
 
 
-const result = await db.select().from(users).leftJoin(pets, eq(users.id, pets.ownerId))
-
-
 ---
 
 ### Select 
@@ -347,11 +344,6 @@ export default function FeedPost({ post }: { post: Post }) {
 * `ReturnType<typeof prepared.execute>` gets the return type of the execute method, which is expected to be a Promise (due to asynchronous database operations).
 * By appending `[0]`, we're extracting the type of a single element from the returned array. This gives us the structure of a single record.
 
-
-### One to Many
-
-```ts
-```
 
 ## Relational Queries
 
