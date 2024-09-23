@@ -506,7 +506,7 @@ All of the `drizzle-kit` commands use a `drizzle.config.ts` file in the root of 
   
   <Instruction.Implementation>
     ```drizzle.config.ts
-    import { defineConfig } from 'drizzle-kit'
+    import { defineConfig } from "drizzle-kit"
     import * as dotenv from 'dotenv';
 
     dotenv.config({
@@ -514,11 +514,13 @@ All of the `drizzle-kit` commands use a `drizzle.config.ts` file in the root of 
     });
 
     export default defineConfig({
-      schema: "./src/db/schema/*",
-      driver: "pg",
+      schema: "./schema.ts",
+      dialect: 'postgresql',
       dbCredentials: {
-        connectionString: process.env.MIGRATION_DATABASE_URL!,
+        url: process.env.MIGRATION_DATABASE_URL!,
       },
+      verbose: true,
+      strict: true,
       out: "./drizzle",
     })
     ```
