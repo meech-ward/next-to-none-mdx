@@ -363,7 +363,7 @@ Add the following code to the submit button file.
 "use client"
 
 import { twMerge } from "tailwind-merge"
-import { experimental_useFormStatus as useFormStatus } from "react-dom"
+import { useFormStatus } from "react-dom"
 
 export default function SubmitButton() {
   const { pending } = useFormStatus()
@@ -438,11 +438,9 @@ We start by adding "useClient to the top of the file. This allows us to run clie
 <SideBySide ratio="3:5">
 Then we add the `useFormStatus` hook. This hook will interact the server action and give us information about the form's status. 
 ```submit-button.tsx 
-// focus(1:3)
-// focus(6:6)
-import { 
-  experimental_useFormStatus as useFormStatus 
-} from "react-dom"
+// focus(1:1)
+// focus(4:4)
+import { useFormStatus } from "react-dom"
 
 export default function SubmitButton() {
   const { pending } = useFormStatus()
@@ -473,6 +471,13 @@ export default function SubmitButton() {
 }
 ```
 </SideBySide>
+
+
+## Use Action State
+
+In react 19, there is a new hook called `useActionState` that adds even more client side state to our form while still using server actions and allowing progressive enhancement.
+
+It's very new and we won't cover it here, but here's the link: [https://react.dev/reference/react/useActionState](https://react.dev/reference/react/useActionState)
 
 
 ## More About Server Actions 
