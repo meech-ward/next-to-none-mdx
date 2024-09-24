@@ -184,28 +184,6 @@ export default function CreatePost() {
 </Instruction.Implementation>
 </Instruction>
 
-<Note>
-Server Actions are really new and still considered experimental, so we have to opt into using them.
-</Note>
-
-<Instruction ratio="2:3">
-<Instruction.Action step={3}>
-Enable Server Actions in your next.config.js file:
-</Instruction.Action>
-
-<Instruction.Implementation>
-```next.config.js
-// focus(2:4)
-module.exports = {
-  experimental: {
-    serverActions: true,
-  },
-}
-```
-</Instruction.Implementation>
-</Instruction>
-
-
 
 Now if you submit the form, you should see the console log in the server console. Submitting the form sends the form data in a POST request to an endpoint on the server that next.js setup for us automatically. 
 
