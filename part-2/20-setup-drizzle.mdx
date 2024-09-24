@@ -437,8 +437,8 @@ Either way, we're going to need Drizzle Kit.
 To run migrations, pushes, or do a bunch of other cool things, we can use the `drizzle-kit` library. 
 
 ```sh 
-drizzle-kit push:pg # Update Database Schema
-drizzle-kit generate:pg # Generate migration files from the database schema
+drizzle-kit push # Update Database Schema
+drizzle-kit generate # Generate migration files from the database schema
 drizzle-kit studio # Start Drizzle Studio
 ```
 
@@ -603,22 +603,22 @@ Running a migration creates a new SQL file that we have to run against the datab
     <Tabs>
       <Tab name='npm'>
         ```bash
-        npx drizzle-kit push:pg
+        npx drizzle-kit push
         ```
       </Tab>
       <Tab name='pnpm'>
         ```bash
-        pnpx drizzle-kit push:pg
+        pnpx drizzle-kit push
         ```
       </Tab>
       <Tab name='yarn'>
         ```bash
-        yarn dlx drizzle-kit push:pg
+        yarn dlx drizzle-kit push
         ```
       </Tab>
       <Tab name='bun'>
         ```bash
-        bunx drizzle-kit push:pg
+        bunx drizzle-kit push
         ```
       </Tab>
     </Tabs>
@@ -627,7 +627,7 @@ Running a migration creates a new SQL file that we have to run against the datab
 
 This will run the DDL, the `CREATE TABLE` statements, against the database and create the tables for us. You can verify this by checking out the **Tables** section in the Neon dashboard. Feel free to add some data to the tables while you're there. 
 
-If we need to make a change to the schema, we can just update the TypeScript files and run `drizzle-kit push:pg` again. Drizzle will handle the `ALTER TABLE` statements, we only need to worry about the structure of the schema.
+If we need to make a change to the schema, we can just update the TypeScript files and run `drizzle-kit push` again. Drizzle will handle the `ALTER TABLE` statements, we only need to worry about the structure of the schema.
 
 ## Drizzle Studio 
 
