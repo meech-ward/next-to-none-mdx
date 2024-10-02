@@ -33,11 +33,11 @@ Return a single root element, div or empty tag `<>`
 #### Instruction Block 
 
 ```mdx
-<InstructionBlock>
-  <InstructionBlock.Action step={1}>
+<Instruction>
+  <Instruction.Action step={1}>
     Add this code to your thing:
-  </InstructionBlock.Action>
-  <InstructionBlock.Implementation>
+  </Instruction.Action>
+  <Instruction.Implementation>
 
   ```App.js
   return (
@@ -48,8 +48,8 @@ Return a single root element, div or empty tag `<>`
       </div>
   )
   ```
-  </InstructionBlock.Implementation>
-</InstructionBlock>
+  </Instruction.Implementation>
+</Instruction>
 ```
 
 #### Tabs 
